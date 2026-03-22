@@ -1,15 +1,23 @@
 {
-  "description": "USD Monitor - Luffa SuperBox Miniprogram",
-  "setting": {
-    "urlCheck": false,
-    "es6": true,
-    "enhance": true,
-    "postcss": true,
-    "minified": true,
-    "newFeature": true
-  },
-  "compileType": "miniprogram",
-  "appid": "",
-  "projectname": "USD Monitor",
-  "condition": {}
+	"description": "USD Monitor - Luffa SuperBox Miniprogram",
+	"setting": {
+		"urlCheck": false,
+		"es6": true,
+		"enhance": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"nodeModules": true,
+		"autoAudits": false,
+		"uploadWithSourceMap": true,
+		"uglifyFileName": true,
+		"remoteDebugLogEnable": true,
+		"prefetch": false
+	},
+	"compileType": "miniprogram",
+	"appid": "",
+	"projectname": "USD%20Monitor",
+	"LuffaToolsappid": "mp6ukp3vvnunwdic",
+	"scripts": {},
+	"condition": {}
 }

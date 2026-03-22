@@ -57,29 +57,31 @@
           <text class="card-title">IC 追踪</text>
         </view>
 
-        <!-- Factor selector -->
-        <scroll-view scroll-x style="white-space:nowrap;margin-bottom:16rpx;">
+        <!-- Factor selector: 2-row grid -->
+        <view style="display:flex;flex-wrap:wrap;gap:10rpx;margin-bottom:20rpx;">
           <view wx:for="{{icFactors}}" wx:key="index"
-                style="display:inline-block;padding:8rpx 20rpx;margin-right:8rpx;border-radius:8rpx;font-size:22rpx;
+                style="padding:10rpx 16rpx;border-radius:10rpx;font-size:22rpx;
                        background:{{icFactorIdx === index ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.04)'}};
-                       color:{{icFactorIdx === index ? '#FBBF24' : '#9CA3AF'}};"
+                       color:{{icFactorIdx === index ? '#FBBF24' : '#9CA3AF'}};
+                       border:1rpx solid {{icFactorIdx === index ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.06)'}};"
                 data-idx="{{index}}" bindtap="switchIcFactor">
-            {{item}} {{icFactorNames[index]}}
+            {{item}}
           </view>
-        </scroll-view>
+        </view>
 
-        <view wx:if="{{ic}}" class="flex justify-between" style="margin-bottom:12rpx;">
-          <view>
-            <text class="text-xs text-muted">IC Today</text>
-            <text class="font-mono text-lg {{ic.ic_today >= 0 ? 'text-green' : 'text-red'}}" style="margin-left:8rpx;">{{ic.ic_today}}</text>
+        <!-- IC stats: 3-column grid -->
+        <view wx:if="{{ic}}" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12rpx;margin-bottom:16rpx;">
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+            <text class="text-xs text-muted" style="display:block;">IC Today</text>
+            <text class="font-mono font-bold {{ic.ic_today >= 0 ? 'text-green' : 'text-red'}}" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.ic_today}}</text>
           </view>
-          <view>
-            <text class="text-xs text-muted">IC MA20</text>
-            <text class="font-mono" style="margin-left:8rpx;">{{ic.ic_ma20}}</text>
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+            <text class="text-xs text-muted" style="display:block;">IC MA20</text>
+            <text class="font-mono font-bold text-white" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.ic_ma20}}</text>
           </view>
-          <view>
-            <text class="text-xs text-muted">ICIR</text>
-            <text class="font-mono text-gold" style="margin-left:8rpx;">{{ic.icir}}</text>
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+            <text class="text-xs text-muted" style="display:block;">ICIR</text>
+            <text class="font-mono font-bold text-gold" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.icir}}</text>
           </view>
         </view>
 
