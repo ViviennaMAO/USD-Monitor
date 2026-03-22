@@ -1,0 +1,15 @@
+{
+  "description": "USD Monitor - Luffa SuperBox Miniprogram",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true
+  },
+  "compileType": "miniprogram",
+  "appid": "",
+  "projectname": "USD Monitor",
+  "condition": {}
+}

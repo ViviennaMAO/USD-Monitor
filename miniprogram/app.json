@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/factors/factors",
+    "pages/analytics/analytics",
+    "pages/market/market"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#0A0E1A",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "USD Monitor",
+    "backgroundColor": "#050810",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6B7280",
+    "selectedColor": "#FBBF24",
+    "backgroundColor": "#0A0E1A",
+    "borderStyle": "black",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "看板",
+        "iconPath": "images/icon-dashboard.png",
+        "selectedIconPath": "images/icon-dashboard-active.png"
+      },
+      {
+        "pagePath": "pages/factors/factors",
+        "text": "因子",
+        "iconPath": "images/icon-factors.png",
+        "selectedIconPath": "images/icon-factors-active.png"
+      },
+      {
+        "pagePath": "pages/analytics/analytics",
+        "text": "分析",
+        "iconPath": "images/icon-chart.png",
+        "selectedIconPath": "images/icon-chart-active.png"
+      },
+      {
+        "pagePath": "pages/market/market",
+        "text": "市场",
+        "iconPath": "images/icon-market.png",
+        "selectedIconPath": "images/icon-market-active.png"
+      }
+    ]
+  }
+}

@@ -1,0 +1,154 @@
+<view class="container">
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" wx:key="index"
+          class="tab-item {{activeTab === index ? 'active' : ''}}"
+          data-idx="{{index}}" bindtap="switchTab">
+      {{item}}
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" style="text-align:center;padding:100rpx 0;">
+    <text class="text-muted">Loading...</text>
+  </view>
+
+  <block wx:else>
+    <!-- Tab 0: FX Pairs -->
+    <block wx:if="{{activeTab === 0}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">全球汇率对</text>
+        </view>
+
+        <view wx:for="{{fxPairs}}" wx:key="symbol"
+              style="background:rgba(255,255,255,0.03);border-radius:12rpx;padding:16rpx;margin-bottom:12rpx;">
+          <view class="flex justify-between items-center">
+            <view>
+              <text class="text-white font-bold">{{item.label}}</text>
+              <text class="text-xs text-muted" style="margin-left:8rpx;">{{item.symbol}}</text>
+            </view>
+            <view class="badge {{item.signalClass}}" style="font-size:18rpx;">{{item.signalText}}</view>
+          </view>
+          <view class="flex justify-between items-center" style="margin-top:8rpx;">
+            <text class="font-mono text-lg text-white">{{item.price}}</text>
+            <text class="font-mono {{item.changeClass}}">{{item.change}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- Tab 1: Yield Decomposition -->
+    <block wx:if="{{activeTab === 1 && yieldData}}">
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="card-title">10Y 收益率分解</text>
+          </view>
+          <text class="text-white font-bold font-mono text-xl">{{yieldData.nominal_10y}}%</text>
+        </view>
+
+        <!-- Driver badge -->
+        <view wx:if="{{yieldData.driver}}" style="text-align:center;margin-bottom:20rpx;">
+          <view class="badge badge-neutral" style="font-size:22rpx;padding:6rpx 20rpx;">
+            主导驱动: {{yieldData.driver}}
+          </view>
+        </view>
+
+        <!-- Stacked bar -->
+        <view style="height:40rpx;display:flex;border-radius:8rpx;overflow:hidden;margin-bottom:16rpx;">
+          <view wx:for="{{yieldBars}}" wx:key="label"
+                style="width:{{item.pct}}%;background:{{item.color}};display:flex;align-items:center;justify-content:center;">
+            <text class="text-xs text-white" wx:if="{{item.pct > 15}}">{{item.value}}</text>
+          </view>
+        </view>
+
+        <!-- Legend + values -->
+        <view wx:for="{{yieldBars}}" wx:key="label" class="data-row">
+          <view class="flex items-center gap-sm">
+            <view style="width:16rpx;height:16rpx;border-radius:4rpx;background:{{item.color}};"></view>
+            <text class="data-label">{{item.label}}</text>
+          </view>
+          <text class="data-value">{{item.value}}</text>
+        </view>
+
+        <!-- Extra data rows -->
+        <view style="margin-top:16rpx;border-top:1rpx solid rgba(255,255,255,0.06);padding-top:12rpx;">
+          <view class="data-row">
+            <text class="data-label">5Y BEI</text>
+            <text class="data-value">{{yieldData.bei_5y || '--'}}%</text>
+          </view>
+          <view class="data-row">
+            <text class="data-label">10Y BEI</text>
+            <text class="data-value">{{yieldData.bei_10y || '--'}}%</text>
+          </view>
+        </view>
+
+        <view wx:if="{{yieldData.note}}" class="note-box">{{yieldData.note}}</view>
+      </view>
+    </block>
+
+    <!-- Tab 2: Hedge Transmission -->
+    <block wx:if="{{activeTab === 2 && hedge}}">
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="card-title">对冲传导效率</text>
+          </view>
+          <text class="text-cyan font-bold font-mono text-lg">{{hedge.score || '--'}}/100</text>
+        </view>
+
+        <!-- Progress bar -->
+        <view class="progress-bar" style="margin-bottom:20rpx;height:12rpx;">
+          <view class="progress-fill" style="width:{{hedge.score || 0}}%;background:#06B6D4;"></view>
+        </view>
+
+        <!-- 2x3 Grid -->
+        <view style="display:grid;grid-template-columns:1fr 1fr;gap:12rpx;">
+          <view wx:for="{{hedgeGrid}}" wx:key="label"
+                style="background:rgba(6,182,212,0.06);border:1rpx solid rgba(6,182,212,0.15);border-radius:10rpx;padding:14rpx;">
+            <text class="text-xs text-muted">{{item.label}}</text>
+            <text class="font-mono text-sm text-white" style="display:block;margin-top:4rpx;">{{item.value}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{hedge.note}}" class="note-box">{{hedge.note}}</view>
+      </view>
+    </block>
+
+    <!-- Tab 3: Signal History -->
+    <block wx:if="{{activeTab === 3}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">信号历史 (7日)</text>
+        </view>
+
+        <view wx:for="{{history}}" wx:key="date" style="margin-bottom:16rpx;">
+          <view style="display:flex;align-items:flex-start;">
+            <!-- Timeline dot -->
+            <view style="width:40rpx;display:flex;flex-direction:column;align-items:center;padding-top:6rpx;">
+              <view style="width:16rpx;height:16rpx;border-radius:50%;background:{{item.scoreClass === 'score-high' ? '#22C55E' : item.scoreClass === 'score-low' ? '#EF4444' : '#F59E0B'}};"></view>
+              <view wx:if="{{index < history.length - 1}}" style="width:2rpx;height:60rpx;background:rgba(255,255,255,0.06);margin-top:4rpx;"></view>
+            </view>
+
+            <!-- Content -->
+            <view style="flex:1;margin-left:12rpx;">
+              <view class="flex justify-between items-center">
+                <view class="flex items-center gap-sm">
+                  <text class="text-sm text-white">{{item.date}}</text>
+                  <view class="badge {{item.signalClass}}" style="font-size:18rpx;">{{item.signalText}}</view>
+                  <text class="font-mono {{item.changeClass}}" style="font-size:22rpx;">{{item.change}}</text>
+                </view>
+                <text class="font-mono font-bold {{item.scoreClass}}">{{item.score}}</text>
+              </view>
+              <text wx:if="{{item.note}}" class="text-xs text-muted" style="margin-top:4rpx;display:block;">{{item.note}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view wx:if="{{!history.length}}" style="text-align:center;padding:40rpx;">
+          <text class="text-muted">暂无信号历史数据</text>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>

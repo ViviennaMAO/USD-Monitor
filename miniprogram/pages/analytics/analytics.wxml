@@ -1,0 +1,188 @@
+<view class="container">
+  <!-- Tab Bar -->
+  <scroll-view scroll-x class="tab-bar" style="white-space:nowrap;display:flex;">
+    <view wx:for="{{tabs}}" wx:key="index"
+          class="tab-item {{activeTab === index ? 'active' : ''}}"
+          data-idx="{{index}}" bindtap="switchTab"
+          style="flex-shrink:0;">
+      {{item}}
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{loading}}" style="text-align:center;padding:100rpx 0;">
+    <text class="text-muted">Loading...</text>
+  </view>
+
+  <block wx:else>
+    <!-- SHAP Waterfall -->
+    <block wx:if="{{activeTab === 0}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">SHAP 因子归因</text>
+          <text class="text-xs text-muted">{{shap.date || '--'}}</text>
+        </view>
+
+        <view wx:if="{{shap}}" class="flex justify-between items-center" style="margin-bottom:16rpx;">
+          <view>
+            <text class="text-xs text-muted">基准值</text>
+            <text class="font-mono text-sm" style="margin-left:8rpx;">{{shap.base_value}}</text>
+          </view>
+          <view>
+            <text class="text-xs text-muted">输出值</text>
+            <text class="font-mono text-sm text-gold" style="margin-left:8rpx;">{{shap.output_value}}</text>
+          </view>
+        </view>
+
+        <view wx:for="{{shapFactors}}" wx:key="name" style="margin-bottom:16rpx;">
+          <view class="flex justify-between items-center">
+            <text class="text-sm">{{item.name}}</text>
+            <view class="flex items-center gap-sm">
+              <text class="text-xs text-muted">值: {{item.factorValue}}</text>
+              <text class="font-mono text-sm {{item.isPositive ? 'text-green' : 'text-red'}}">{{item.value}}</text>
+            </view>
+          </view>
+          <view style="display:flex;align-items:center;margin-top:6rpx;">
+            <view wx:if="{{!item.isPositive}}" style="flex:1;"></view>
+            <view style="width:{{item.barWidth / 2}}%;height:16rpx;background:{{item.barColor}};border-radius:4rpx;min-width:4rpx;"></view>
+            <view wx:if="{{item.isPositive}}" style="flex:1;"></view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- IC Tracking -->
+    <block wx:if="{{activeTab === 1}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">IC 追踪</text>
+        </view>
+
+        <!-- Factor selector -->
+        <scroll-view scroll-x style="white-space:nowrap;margin-bottom:16rpx;">
+          <view wx:for="{{icFactors}}" wx:key="index"
+                style="display:inline-block;padding:8rpx 20rpx;margin-right:8rpx;border-radius:8rpx;font-size:22rpx;
+                       background:{{icFactorIdx === index ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.04)'}};
+                       color:{{icFactorIdx === index ? '#FBBF24' : '#9CA3AF'}};"
+                data-idx="{{index}}" bindtap="switchIcFactor">
+            {{item}} {{icFactorNames[index]}}
+          </view>
+        </scroll-view>
+
+        <view wx:if="{{ic}}" class="flex justify-between" style="margin-bottom:12rpx;">
+          <view>
+            <text class="text-xs text-muted">IC Today</text>
+            <text class="font-mono text-lg {{ic.ic_today >= 0 ? 'text-green' : 'text-red'}}" style="margin-left:8rpx;">{{ic.ic_today}}</text>
+          </view>
+          <view>
+            <text class="text-xs text-muted">IC MA20</text>
+            <text class="font-mono" style="margin-left:8rpx;">{{ic.ic_ma20}}</text>
+          </view>
+          <view>
+            <text class="text-xs text-muted">ICIR</text>
+            <text class="font-mono text-gold" style="margin-left:8rpx;">{{ic.icir}}</text>
+          </view>
+        </view>
+
+        <canvas type="2d" id="icCanvas" style="width:100%;height:300rpx;"></canvas>
+
+        <view class="note-box" style="margin-top:12rpx;">
+          <text class="text-xs">Rolling IC: 因子与未来收益的秩相关系数。IC MA20: 20日移动平均。ICIR = IC均值/IC标准差, ICIR越大越好(大于0.5优秀)。</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- Regime Heatmap -->
+    <block wx:if="{{activeTab === 2 && regime}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">Regime IC 热力图</text>
+        </view>
+
+        <!-- Table header -->
+        <view style="display:flex;margin-bottom:8rpx;">
+          <view style="width:120rpx;"></view>
+          <view wx:for="{{regime.regimes}}" wx:key="index" style="flex:1;text-align:center;">
+            <text class="text-xs text-muted">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- Table rows -->
+        <view wx:for="{{regime.factors}}" wx:key="index" style="display:flex;align-items:center;margin-bottom:6rpx;">
+          <view style="width:120rpx;">
+            <text class="text-xs text-muted">{{regime.factor_names[index] || item}}</text>
+          </view>
+          <view wx:for="{{regime.matrix[index]}}" wx:for-item="val" wx:for-index="j" wx:key="j"
+                style="flex:1;text-align:center;padding:8rpx 4rpx;margin:0 2rpx;border-radius:6rpx;
+                       background:{{val > 0.3 ? 'rgba(34,197,94,0.3)' : val > 0.1 ? 'rgba(34,197,94,0.15)' : val > -0.1 ? 'rgba(255,255,255,0.04)' : val > -0.3 ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.3)'}};">
+            <text class="text-xs font-mono {{val >= 0 ? 'text-green' : 'text-red'}}">{{val}}</text>
+          </view>
+        </view>
+
+        <view class="note-box">
+          <text class="text-xs">颜色越绿IC越高(因子越有效), 越红IC越低(因子失效)。不同利率环境下因子表现差异可辅助动态配权。</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- Correlation Matrix -->
+    <block wx:if="{{activeTab === 3 && correlation}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">因子相关性矩阵</text>
+        </view>
+
+        <!-- Header -->
+        <view style="display:flex;margin-bottom:6rpx;">
+          <view style="width:80rpx;"></view>
+          <view wx:for="{{correlation.labels}}" wx:key="index" style="flex:1;text-align:center;">
+            <text class="text-xs text-muted">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- Rows -->
+        <view wx:for="{{correlation.matrix}}" wx:for-item="row" wx:for-index="i" wx:key="i"
+              style="display:flex;align-items:center;margin-bottom:4rpx;">
+          <view style="width:80rpx;">
+            <text class="text-xs text-muted">{{correlation.labels[i]}}</text>
+          </view>
+          <view wx:for="{{row}}" wx:for-item="val" wx:for-index="j" wx:key="j"
+                style="flex:1;text-align:center;padding:6rpx 2rpx;margin:0 1rpx;border-radius:4rpx;
+                       background:{{i === j ? 'rgba(251,191,36,0.2)' : val > 0.5 ? 'rgba(34,197,94,0.25)' : val > 0.2 ? 'rgba(34,197,94,0.1)' : val > -0.2 ? 'rgba(255,255,255,0.03)' : val > -0.5 ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.25)'}};">
+            <text class="text-xs font-mono" style="font-size:18rpx;">{{i === j ? '1' : val}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- NAV Backtest -->
+    <block wx:if="{{activeTab === 4}}">
+      <view class="card">
+        <view class="card-header">
+          <text class="card-title">NAV 回测曲线</text>
+        </view>
+
+        <!-- Stats grid -->
+        <view wx:if="{{navStats.length}}" style="display:grid;grid-template-columns:1fr 1fr;gap:12rpx;margin-bottom:16rpx;">
+          <view wx:for="{{navStats}}" wx:key="label"
+                style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;">
+            <text class="text-xs text-muted">{{item.label}}</text>
+            <text class="font-mono font-bold {{item.cls}}" style="display:block;margin-top:4rpx;">{{item.value}}</text>
+          </view>
+        </view>
+
+        <canvas type="2d" id="navCanvas" style="width:100%;height:320rpx;"></canvas>
+
+        <view class="flex justify-between" style="margin-top:8rpx;">
+          <view class="flex items-center gap-sm">
+            <view style="width:20rpx;height:6rpx;background:#22C55E;border-radius:3rpx;"></view>
+            <text class="text-xs text-muted">策略NAV</text>
+          </view>
+          <view class="flex items-center gap-sm">
+            <view style="width:20rpx;height:6rpx;background:rgba(107,114,128,0.5);border-radius:3rpx;"></view>
+            <text class="text-xs text-muted">DXY基准</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>

@@ -1,0 +1,243 @@
+<view class="container">
+  <view wx:if="{{loading}}" style="text-align:center;padding:100rpx 0;">
+    <text class="text-muted">Loading...</text>
+  </view>
+
+  <block wx:else>
+    <!-- Tab Bar -->
+    <view class="tab-bar">
+      <view wx:for="{{tabs}}" wx:key="index"
+            class="tab-item {{activeTab === index ? 'active' : ''}}"
+            data-idx="{{index}}" bindtap="switchTab">
+        {{item}}
+      </view>
+    </view>
+
+    <!-- Tab 0: r_f 利率差异支撑 -->
+    <block wx:if="{{activeTab === 0 && rf}}">
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="text-green font-bold text-lg">r_f</text>
+            <text class="card-title" style="margin-left:12rpx;">Rate Differential · 利率差异支撑</text>
+          </view>
+          <text class="text-green font-bold font-mono text-lg">{{rf.score}}/100</text>
+        </view>
+
+        <!-- Sub-factors -->
+        <view wx:for="{{rf.sub_factors}}" wx:key="label" style="margin-bottom:16rpx;">
+          <view class="flex justify-between items-center">
+            <text class="text-sm">{{item.label}}</text>
+            <view class="flex items-center gap-sm">
+              <text class="text-xs text-muted">{{item.weight_label}}</text>
+              <text class="text-sm font-mono text-white">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="progress-bar" style="margin-top:6rpx;">
+            <view class="progress-fill" style="width:{{item.score}}%;background:#22C55E;"></view>
+          </view>
+        </view>
+
+        <!-- Data rows -->
+        <view style="margin-top:20rpx;border-top:1rpx solid rgba(255,255,255,0.06);padding-top:16rpx;">
+          <view wx:for="{{rf.data_rows}}" wx:key="label" class="data-row">
+            <text class="data-label">{{item.label}}</text>
+            <text class="data-value">{{item.value}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{rf.note}}" class="note-box">{{rf.note}}</view>
+      </view>
+    </block>
+
+    <!-- Tab 1: pi_risk 风险溢价 -->
+    <block wx:if="{{activeTab === 1 && piRisk}}">
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="text-amber font-bold text-lg">pi_risk</text>
+            <text class="card-title" style="margin-left:12rpx;">Risk Premium · 风险溢价</text>
+          </view>
+          <text class="text-amber font-bold font-mono text-lg">{{piRisk.score}}/100</text>
+        </view>
+
+        <!-- Risk type box -->
+        <view style="display:grid;grid-template-columns:1fr 1fr;gap:12rpx;margin-bottom:20rpx;">
+          <view style="background:rgba(34,197,94,0.08);border:1rpx solid rgba(34,197,94,0.2);border-radius:12rpx;padding:14rpx;">
+            <text class="text-green text-sm font-bold">全球风险</text>
+            <text class="text-xs text-muted" style="display:block;margin-top:4rpx;">VIX上升 + TP下降</text>
+            <text class="text-xs text-muted">= 飞向安全 (USD看多)</text>
+          </view>
+          <view style="background:rgba(239,68,68,0.08);border:1rpx solid rgba(239,68,68,0.2);border-radius:12rpx;padding:14rpx;">
+            <text class="text-red text-sm font-bold">美国特有风险</text>
+            <text class="text-xs text-muted" style="display:block;margin-top:4rpx;">VIX上升 + TP上升</text>
+            <text class="text-xs text-muted">= 财政恐惧 (USD看空)</text>
+          </view>
+        </view>
+
+        <view wx:for="{{piRisk.sub_factors}}" wx:key="label" style="margin-bottom:16rpx;">
+          <view class="flex justify-between items-center">
+            <text class="text-sm">{{item.label}}</text>
+            <text class="text-sm font-mono text-white">{{item.value}}</text>
+          </view>
+          <view class="progress-bar" style="margin-top:6rpx;">
+            <view class="progress-fill" style="width:{{item.score}}%;background:#F59E0B;"></view>
+          </view>
+        </view>
+
+        <view style="margin-top:20rpx;border-top:1rpx solid rgba(255,255,255,0.06);padding-top:16rpx;">
+          <view wx:for="{{piRisk.data_rows}}" wx:key="label" class="data-row">
+            <text class="data-label">{{item.label}}</text>
+            <text class="data-value">{{item.value}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{piRisk.note}}" class="note-box">{{piRisk.note}}</view>
+      </view>
+    </block>
+
+    <!-- Tab 2: cy 便利收益 -->
+    <block wx:if="{{activeTab === 2 && cy}}">
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="text-red font-bold text-lg">cy</text>
+            <text class="card-title" style="margin-left:12rpx;">Convenience Yield · 便利收益</text>
+          </view>
+          <text class="text-red font-bold font-mono text-lg">{{cy.score}}/100</text>
+        </view>
+
+        <view wx:for="{{cy.sub_factors}}" wx:key="label" style="margin-bottom:16rpx;">
+          <view class="flex justify-between items-center">
+            <text class="text-sm">{{item.label}}</text>
+            <view class="flex items-center gap-sm">
+              <text class="text-xs text-muted">{{item.weight_label}}</text>
+              <text class="text-sm font-mono text-white">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="progress-bar" style="margin-top:6rpx;">
+            <view class="progress-fill" style="width:{{item.score}}%;background:#EF4444;"></view>
+          </view>
+        </view>
+
+        <view style="margin-top:20rpx;border-top:1rpx solid rgba(255,255,255,0.06);padding-top:16rpx;">
+          <view wx:for="{{cy.data_rows}}" wx:key="label" class="data-row">
+            <text class="data-label">{{item.label}}</text>
+            <text class="data-value">{{item.value}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{cy.note}}" class="note-box">{{cy.note}}</view>
+      </view>
+    </block>
+
+    <!-- Tab 3: sigma_alert 12 Volatility Factors -->
+    <block wx:if="{{activeTab === 3 && volAlert}}">
+      <!-- Summary card -->
+      <view class="card">
+        <view class="card-header">
+          <view>
+            <text class="text-orange font-bold text-lg">sigma_alert</text>
+            <text class="card-title" style="margin-left:12rpx;">波动率预警</text>
+          </view>
+          <view class="flex items-center gap-sm">
+            <text class="text-orange font-bold font-mono text-lg">{{volAlert.score}}/100</text>
+            <view class="badge {{volAlert.alert_level === 'alert' ? 'badge-alert' : volAlert.alert_level === 'warning' ? 'badge-warning' : volAlert.alert_level === 'watch' ? 'badge-watch' : 'badge-calm'}}">
+              {{volAlert.alert_level === 'alert' ? '警报' : volAlert.alert_level === 'warning' ? '预警' : volAlert.alert_level === 'watch' ? '关注' : '平静'}}
+            </view>
+          </view>
+        </view>
+
+        <!-- Push vs Suppress bar -->
+        <view class="flex justify-between items-center" style="margin-bottom:12rpx;">
+          <text class="text-xs text-red">推升 {{volAlert.push_count}}</text>
+          <view style="flex:1;margin:0 16rpx;height:12rpx;background:rgba(255,255,255,0.06);border-radius:6rpx;overflow:hidden;display:flex;">
+            <view style="width:{{volAlert.push_count / (volAlert.push_count + volAlert.suppress_count) * 100}}%;background:rgba(239,68,68,0.6);"></view>
+            <view style="flex:1;background:rgba(34,197,94,0.6);"></view>
+          </view>
+          <text class="text-xs text-green">压制 {{volAlert.suppress_count}}</text>
+        </view>
+
+        <view wx:if="{{volAlert.summary}}" class="note-box">{{volAlert.summary}}</view>
+      </view>
+
+      <!-- Direct factors -->
+      <view class="card">
+        <text class="card-title" style="margin-bottom:16rpx;display:block;">一、直接美元波动率因子</text>
+        <view wx:for="{{volFactors}}" wx:key="id">
+          <block wx:if="{{item.category === 'direct'}}">
+            <view style="background:rgba(255,255,255,0.03);border-radius:12rpx;padding:16rpx;margin-bottom:12rpx;">
+              <view class="flex justify-between items-center">
+                <view class="flex items-center gap-sm">
+                  <text class="{{item.dirClass}} font-bold">{{item.dirIcon}}</text>
+                  <text class="text-sm text-white font-bold">{{item.id}}</text>
+                  <text class="text-sm text-muted">{{item.name}}</text>
+                </view>
+                <text class="font-mono text-sm {{item.dirClass}}">{{item.score}}</text>
+              </view>
+              <view class="flex justify-between items-center" style="margin-top:8rpx;">
+                <text class="font-mono text-white">{{item.value}}</text>
+                <text class="text-xs text-muted">{{item.detail}}</text>
+              </view>
+              <view class="progress-bar" style="margin-top:8rpx;">
+                <view class="progress-fill" style="width:{{item.score}}%;background:{{item.direction === 'push' ? '#EF4444' : item.direction === 'suppress' ? '#22C55E' : '#F59E0B'}};"></view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Cross-asset factors -->
+      <view class="card">
+        <text class="card-title" style="margin-bottom:16rpx;display:block;">二、跨资产波动率因子</text>
+        <view wx:for="{{volFactors}}" wx:key="id">
+          <block wx:if="{{item.category === 'cross_asset'}}">
+            <view style="background:rgba(255,255,255,0.03);border-radius:12rpx;padding:16rpx;margin-bottom:12rpx;">
+              <view class="flex justify-between items-center">
+                <view class="flex items-center gap-sm">
+                  <text class="{{item.dirClass}} font-bold">{{item.dirIcon}}</text>
+                  <text class="text-sm text-white font-bold">{{item.id}}</text>
+                  <text class="text-sm text-muted">{{item.name}}</text>
+                </view>
+                <text class="font-mono text-sm {{item.dirClass}}">{{item.score}}</text>
+              </view>
+              <view class="flex justify-between items-center" style="margin-top:8rpx;">
+                <text class="font-mono text-white">{{item.value}}</text>
+                <text class="text-xs text-muted">{{item.detail}}</text>
+              </view>
+              <view class="progress-bar" style="margin-top:8rpx;">
+                <view class="progress-fill" style="width:{{item.score}}%;background:{{item.direction === 'push' ? '#EF4444' : item.direction === 'suppress' ? '#22C55E' : item.direction === 'latent_push' ? '#F59E0B' : '#6B7280'}};"></view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Composite factors -->
+      <view class="card">
+        <text class="card-title" style="margin-bottom:16rpx;display:block;">三、交叉复合信号</text>
+        <view wx:for="{{volFactors}}" wx:key="id">
+          <block wx:if="{{item.category === 'composite'}}">
+            <view style="background:rgba(255,255,255,0.03);border-radius:12rpx;padding:16rpx;margin-bottom:12rpx;">
+              <view class="flex justify-between items-center">
+                <view class="flex items-center gap-sm">
+                  <text class="{{item.dirClass}} font-bold">{{item.dirIcon}}</text>
+                  <text class="text-sm text-white font-bold">{{item.id}}</text>
+                  <text class="text-sm text-muted">{{item.name}}</text>
+                </view>
+                <text class="font-mono text-sm {{item.dirClass}}">{{item.score}}</text>
+              </view>
+              <view class="flex justify-between items-center" style="margin-top:8rpx;">
+                <text class="font-mono text-white">{{item.value}}</text>
+                <text class="text-xs text-muted">{{item.detail}}</text>
+              </view>
+              <view class="progress-bar" style="margin-top:8rpx;">
+                <view class="progress-fill" style="width:{{item.score}}%;background:{{item.direction === 'push' ? '#EF4444' : item.direction === 'suppress' ? '#22C55E' : item.direction === 'latent_push' ? '#F59E0B' : '#6B7280'}};"></view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>
