@@ -5,14 +5,17 @@
   </view>
 
   <block wx:else>
-    <!-- Header: DXY Price + Signal -->
+    <!-- Header: DXY Price + Signal + VSTAR -->
     <view class="card" style="padding:20rpx 24rpx;">
       <view class="flex justify-between items-center">
         <view>
           <text class="text-gold font-bold" style="font-size:20rpx;">USD Valuation Model</text>
           <text class="text-muted text-xs" style="margin-left:12rpx;">v1.0</text>
         </view>
-        <view class="badge {{signalClass}}">{{signalText}}</view>
+        <view class="flex items-center" style="gap:12rpx;">
+          <view class="badge {{signalClass}}">{{signalText}}</view>
+          <view class="vstar-btn" bindtap="openVstar">VSTAR 交易</view>
+        </view>
       </view>
       <view class="flex justify-between items-center" style="margin-top:12rpx;">
         <view class="flex items-center gap-sm">

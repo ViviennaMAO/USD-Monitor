@@ -97,6 +97,15 @@ Page({
     }
   },
 
+  openVstar() {
+    wx.setClipboardData({
+      data: 'https://share.vstarau.com/sign-page/?lang=zh_CN&inviteCode=s7f5qfhy',
+      success() {
+        wx.showToast({ title: '链接已复制，请在浏览器中打开', icon: 'none', duration: 2500 })
+      }
+    })
+  },
+
   drawGauge(score) {
     const query = wx.createSelectorQuery()
     query.select('#gaugeCanvas')
