@@ -13,9 +13,9 @@
     <text class="text-muted">Loading...</text>
   </view>
 
-  <block wx:else>
+  <view wx:else>
     <!-- SHAP Waterfall -->
-    <block wx:if="{{activeTab === 0}}">
+    <view hidden="{{activeTab !== 0}}">
       <view class="card">
         <view class="card-header">
           <text class="card-title">SHAP 因子归因</text>
@@ -48,10 +48,10 @@
           </view>
         </view>
       </view>
-    </block>
+    </view>
 
     <!-- IC Tracking -->
-    <block wx:if="{{activeTab === 1}}">
+    <view hidden="{{activeTab !== 1}}">
       <view class="card">
         <view class="card-header">
           <text class="card-title">IC 追踪</text>
@@ -70,16 +70,16 @@
         </view>
 
         <!-- IC stats: 3-column grid -->
-        <view wx:if="{{ic}}" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12rpx;margin-bottom:16rpx;">
-          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+        <view wx:if="{{ic}}" style="display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:16rpx;">
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;margin:4rpx;">
             <text class="text-xs text-muted" style="display:block;">IC Today</text>
             <text class="font-mono font-bold {{ic.ic_today >= 0 ? 'text-green' : 'text-red'}}" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.ic_today}}</text>
           </view>
-          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;margin:4rpx;">
             <text class="text-xs text-muted" style="display:block;">IC MA20</text>
             <text class="font-mono font-bold text-white" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.ic_ma20}}</text>
           </view>
-          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;">
+          <view style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;text-align:center;margin:4rpx;">
             <text class="text-xs text-muted" style="display:block;">ICIR</text>
             <text class="font-mono font-bold text-gold" style="display:block;margin-top:6rpx;font-size:32rpx;">{{ic.icir}}</text>
           </view>
@@ -91,11 +91,11 @@
           <text class="text-xs">Rolling IC: 因子与未来收益的秩相关系数。IC MA20: 20日移动平均。ICIR = IC均值/IC标准差, ICIR越大越好(大于0.5优秀)。</text>
         </view>
       </view>
-    </block>
+    </view>
 
     <!-- Regime Heatmap -->
-    <block wx:if="{{activeTab === 2 && regime}}">
-      <view class="card">
+    <view hidden="{{activeTab !== 2}}">
+      <view class="card" wx:if="{{regime}}">
         <view class="card-header">
           <text class="card-title">Regime IC 热力图</text>
         </view>
@@ -124,11 +124,11 @@
           <text class="text-xs">颜色越绿IC越高(因子越有效), 越红IC越低(因子失效)。不同利率环境下因子表现差异可辅助动态配权。</text>
         </view>
       </view>
-    </block>
+    </view>
 
     <!-- Correlation Matrix -->
-    <block wx:if="{{activeTab === 3 && correlation}}">
-      <view class="card">
+    <view hidden="{{activeTab !== 3}}">
+      <view class="card" wx:if="{{correlation}}">
         <view class="card-header">
           <text class="card-title">因子相关性矩阵</text>
         </view>
@@ -154,19 +154,19 @@
           </view>
         </view>
       </view>
-    </block>
+    </view>
 
     <!-- NAV Backtest -->
-    <block wx:if="{{activeTab === 4}}">
+    <view hidden="{{activeTab !== 4}}">
       <view class="card">
         <view class="card-header">
           <text class="card-title">NAV 回测曲线</text>
         </view>
 
         <!-- Stats grid -->
-        <view wx:if="{{navStats.length}}" style="display:grid;grid-template-columns:1fr 1fr;gap:12rpx;margin-bottom:16rpx;">
+        <view wx:if="{{navStats.length}}" style="display:grid;grid-template-columns:1fr 1fr;margin-bottom:16rpx;">
           <view wx:for="{{navStats}}" wx:key="label"
-                style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;">
+                style="background:rgba(255,255,255,0.03);border-radius:10rpx;padding:12rpx;margin:4rpx;">
             <text class="text-xs text-muted">{{item.label}}</text>
             <text class="font-mono font-bold {{item.cls}}" style="display:block;margin-top:4rpx;">{{item.value}}</text>
           </view>
@@ -185,6 +185,6 @@
           </view>
         </view>
       </view>
-    </block>
-  </block>
+    </view>
+  </view>
 </view>
