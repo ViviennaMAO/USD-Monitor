@@ -57,10 +57,10 @@
           <text class="card-title">IC 追踪</text>
         </view>
 
-        <!-- Factor selector: 2-row grid -->
-        <view style="display:flex;flex-wrap:wrap;gap:10rpx;margin-bottom:20rpx;">
+        <!-- Factor selector: 5-col grid -->
+        <view style="display:grid;grid-template-columns:repeat(5,1fr);margin-bottom:20rpx;">
           <view wx:for="{{icFactors}}" wx:key="index"
-                style="padding:10rpx 16rpx;border-radius:10rpx;font-size:22rpx;
+                style="margin:4rpx;padding:12rpx 0;border-radius:10rpx;font-size:22rpx;text-align:center;
                        background:{{icFactorIdx === index ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.04)'}};
                        color:{{icFactorIdx === index ? '#FBBF24' : '#9CA3AF'}};
                        border:1rpx solid {{icFactorIdx === index ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.06)'}};"
