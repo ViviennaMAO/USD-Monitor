@@ -1,0 +1,20 @@
+# Node
+usd-dashboard/node_modules/
+usd-dashboard/.next/
+usd-dashboard/.env.local
+
+# Python
+usd-dashboard/pipeline/output/
+usd-dashboard/pipeline/__pycache__/
+usd-dashboard/pipeline/*.pyc
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
