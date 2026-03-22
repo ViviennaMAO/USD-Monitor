@@ -97,28 +97,55 @@ Page({
     }
   },
 
+  // Cache canvas references
+  _icCanvas: null,
+  _icCtx: null,
+  _navCanvas: null,
+  _navCtx: null,
+
+  clearCanvas(canvasId) {
+    var self = this
+    var key = canvasId === 'icCanvas' ? '_ic' : '_nav'
+    var canvas = self[key + 'Canvas']
+    var ctx = self[key + 'Ctx']
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  },
+
   switchIcFactor(e) {
     var idx = parseInt(e.currentTarget.dataset.idx)
+    this.clearCanvas('icCanvas')
     this.setData({ icFactorIdx: idx })
     this.loadTab(1)
   },
 
   drawIcChart(ic) {
+    var self = this
     var query = wx.createSelectorQuery()
     query.select('#icCanvas')
       .fields({ node: true, size: true })
       .exec(function(res) {
         if (!res || !res[0]) return
         var canvas = res[0].node
-        var ctx = canvas.getContext('2d')
         var dpr = wx.getWindowInfo().pixelRatio
         var width = res[0].width
         var height = res[0].height
 
-        canvas.width = width * dpr
-        canvas.height = height * dpr
-        ctx.scale(dpr, dpr)
-        ctx.clearRect(0, 0, width, height)
+        // Only set dimensions on first init
+        if (!self._icCanvas) {
+          canvas.width = width * dpr
+          canvas.height = height * dpr
+        }
+
+        var ctx = canvas.getContext('2d')
+        self._icCanvas = canvas
+        self._icCtx = ctx
+
+        // Reset transform and clear entire canvas in pixel space
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
         var data = ic.history
         if (!data || data.length === 0) return
@@ -185,21 +212,29 @@ Page({
   },
 
   drawNavChart(nav) {
+    var self = this
     var query = wx.createSelectorQuery()
     query.select('#navCanvas')
       .fields({ node: true, size: true })
       .exec(function(res) {
         if (!res || !res[0]) return
         var canvas = res[0].node
-        var ctx = canvas.getContext('2d')
         var dpr = wx.getWindowInfo().pixelRatio
         var width = res[0].width
         var height = res[0].height
 
-        canvas.width = width * dpr
-        canvas.height = height * dpr
-        ctx.scale(dpr, dpr)
-        ctx.clearRect(0, 0, width, height)
+        if (!self._navCanvas) {
+          canvas.width = width * dpr
+          canvas.height = height * dpr
+        }
+
+        var ctx = canvas.getContext('2d')
+        self._navCanvas = canvas
+        self._navCtx = ctx
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
         var data = nav.history
         if (!data || data.length === 0) return
