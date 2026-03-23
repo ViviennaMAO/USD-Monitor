@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server'
-import { readPipelineJson } from '@/lib/readPipelineJson'
+import { getLiveData } from '@/lib/liveData'
 import { mockData } from '@/data/mockData'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function GET() {
-  const data = await readPipelineJson('components.json', {
-    rf:      mockData.rf,
-    pi_risk: mockData.pi_risk,
-    cy:      mockData.cy,
-  })
-  return NextResponse.json(data)
+  try {
+    const { rf, pi, cy } = await getLiveData()
+    return NextResponse.json({ rf, pi_risk: pi, cy })
+  } catch (e) {
+    console.error('[/api/components]', e)
+    return NextResponse.json({ rf: mockData.rf, pi_risk: mockData.pi_risk, cy: mockData.cy })
+  }
 }
