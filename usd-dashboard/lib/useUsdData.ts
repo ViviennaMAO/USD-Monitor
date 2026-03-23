@@ -16,9 +16,28 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 const REFRESH = 5 * 60 * 1000   // 5 min polling
 
+// ─── Data validators ──────────────────────────────────────────────────────────
+// Guard against partial API responses where Yahoo Finance failed (null prices).
+// The ?? operator only falls back on null/undefined, not {price: null} objects.
+
+function validDxy(d: DxyData | undefined): boolean {
+  return d != null && d.price != null && isFinite(d.price as unknown as number)
+}
+
+function validFx(d: FxData | undefined): boolean {
+  return d != null && Array.isArray(d.pairs) && d.pairs.length > 0 &&
+    d.pairs[0].price != null && isFinite(d.pairs[0].price as unknown as number)
+}
+
+function validScore(d: ScoreData | undefined): boolean {
+  return d != null && d.gamma != null && isFinite(d.gamma as unknown as number)
+}
+
+// ─── Hooks ────────────────────────────────────────────────────────────────────
+
 export function useScore() {
   const { data, error, isLoading } = useSWR<ScoreData>('/api/score', fetcher, { refreshInterval: REFRESH })
-  return { data: data ?? mockData.score, error, isLoading }
+  return { data: validScore(data) ? data! : mockData.score, error, isLoading }
 }
 
 export function useComponents() {
@@ -40,12 +59,14 @@ export function useVolAlert() {
 
 export function useDxy() {
   const { data, error, isLoading } = useSWR<DxyData>('/api/dxy', fetcher, { refreshInterval: REFRESH })
-  return { data: data ?? mockData.dxy, error, isLoading }
+  // Fall back to mock if price is null/NaN (Yahoo Finance unavailable)
+  return { data: validDxy(data) ? data! : { ...mockData.dxy, real_rate: data?.real_rate ?? mockData.dxy.real_rate, sofr: data?.sofr ?? mockData.dxy.sofr }, error, isLoading }
 }
 
 export function useFxPairs() {
   const { data, error, isLoading } = useSWR<FxData>('/api/fx-pairs', fetcher, { refreshInterval: REFRESH })
-  return { data: data ?? mockData.fx, error, isLoading }
+  // Fall back to mock if prices are null (Yahoo Finance unavailable)
+  return { data: validFx(data) ? data! : mockData.fx, error, isLoading }
 }
 
 export function useYieldDecomp() {
