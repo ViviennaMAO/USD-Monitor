@@ -6,7 +6,18 @@ import {
 } from 'recharts'
 import { useIcTracking } from '@/lib/useUsdData'
 
-const FACTORS = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
+const FACTORS: { id: string; label: string }[] = [
+  { id: 'F1',  label: '利率差' },
+  { id: 'F2',  label: '实际利率' },
+  { id: 'F3',  label: '期限利差' },
+  { id: 'F4',  label: 'VIX' },
+  { id: 'F5',  label: '通胀预期' },
+  { id: 'F6',  label: '利率路径' },
+  { id: 'F7',  label: '美元动量' },
+  { id: 'F8',  label: '信用利差' },
+  { id: 'F9',  label: '波动率差' },
+  { id: 'F10', label: '资金压力' },
+]
 
 const REGIME_COLORS: Record<string, string> = {
   '加息期': 'rgba(239,68,68,0.12)',
@@ -65,14 +76,14 @@ export function IcTracking() {
       <div className="flex items-center gap-2 flex-wrap">
         {FACTORS.map(f => (
           <button
-            key={f}
-            onClick={() => setFactor(f)}
+            key={f.id}
+            onClick={() => setFactor(f.id)}
             className={`px-3 py-1 rounded text-xs font-mono border transition-colors
-              ${factor === f
+              ${factor === f.id
                 ? 'bg-blue-600/30 border-blue-500 text-blue-300'
                 : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-500'}`}
           >
-            {f}
+            {f.id} {f.label}
           </button>
         ))}
       </div>
