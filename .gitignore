@@ -4,9 +4,10 @@ usd-dashboard/.next/
 usd-dashboard/.env.local
 
 # Python
-usd-dashboard/pipeline/output/
 usd-dashboard/pipeline/__pycache__/
 usd-dashboard/pipeline/*.pyc
+usd-dashboard/pipeline/data_cache.pkl
+usd-dashboard/pipeline/model_dxy*.json
 __pycache__/
 *.pyc
 .venv/

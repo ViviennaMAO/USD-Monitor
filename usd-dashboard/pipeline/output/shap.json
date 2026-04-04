@@ -1,0 +1,57 @@
+{
+  "base_value": 0.0623,
+  "output_value": 1.157389,
+  "date": "2026-04-03",
+  "factors": [
+    {
+      "name": "期限利差 (10Y−2Y)",
+      "shap_value": 0.621616,
+      "factor_value": -0.6216
+    },
+    {
+      "name": "资金压力 (SOFR−IORB)",
+      "shap_value": 0.477937,
+      "factor_value": 0.1016
+    },
+    {
+      "name": "通胀预期 (BEI 10Y)",
+      "shap_value": 0.243599,
+      "factor_value": 0.8123
+    },
+    {
+      "name": "波动率差 (VIX−MOVE)",
+      "shap_value": -0.09777,
+      "factor_value": 0.3009
+    },
+    {
+      "name": "信用利差 (BBB OAS)",
+      "shap_value": -0.088195,
+      "factor_value": 0.386
+    },
+    {
+      "name": "美元动量 (20d)",
+      "shap_value": 0.040897,
+      "factor_value": 0.8512
+    },
+    {
+      "name": "利率路径 (2Y−FFR)",
+      "shap_value": -0.038516,
+      "factor_value": 0.0
+    },
+    {
+      "name": "实际利率 (TIPS 10Y)",
+      "shap_value": -0.034154,
+      "factor_value": 0.4342
+    },
+    {
+      "name": "利率差 (Fed−ECB)",
+      "shap_value": -0.016734,
+      "factor_value": 0.0
+    },
+    {
+      "name": "风险情绪 (VIX)",
+      "shap_value": -0.01359,
+      "factor_value": 1.3274
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "date": "2026-04-03",
+  "prediction": 1.1574,
+  "signal_grade": "Strong Buy",
+  "regime": {
+    "regime": "中性·Crisis Spike",
+    "regime_en": "Neutral·Crisis Spike",
+    "multiplier": 0.71,
+    "confidence": 0.53,
+    "risk_off_score": 26.5,
+    "risk_on_score": 0.0,
+    "layer1": {
+      "quadrant": "Neutral",
+      "quadrant_cn": "中性",
+      "quad_mult": 0.85,
+      "fed_cycle": "Neutral",
+      "fed_adj": 0.0,
+      "multiplier": 0.85
+    },
+    "layer2": {
+      "hmm_state": "Bear",
+      "hmm_confidence": 0.53,
+      "liqvol_regime": "Crisis Spike",
+      "adj_factor": 0.72
+    },
+    "layer3": {
+      "overlay_delta": 0.1,
+      "events": [
+        "smile:risk_off(+0.10)"
+      ],
+      "changepoint_detected": false,
+      "smile_type": "risk_off"
+    },
+    "version": "2.0-usd"
+  },
+  "dxy_price": 100.19
+}
