@@ -81,6 +81,37 @@ export async function fredHistory(
   }
 }
 
+/**
+ * Fetch historical series with dates from FRED.
+ * Returns { date, value }[] sorted oldest-first.
+ */
+export async function fredHistoryDated(
+  seriesId: string,
+  limit = 300
+): Promise<{ date: string; value: number }[]> {
+  const key = apiKey()
+  if (!key) return []
+  const url =
+    `${FRED_BASE}/series/observations` +
+    `?series_id=${seriesId}` +
+    `&api_key=${key}` +
+    `&sort_order=desc` +
+    `&limit=${limit}` +
+    `&file_type=json`
+  try {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = (await res.json()) as FredResponse
+    return data.observations
+      .filter((o) => o.value !== '.' && o.value.trim() !== '')
+      .map((o) => ({ date: o.date, value: parseFloat(o.value) }))
+      .reverse()
+  } catch (e) {
+    console.error(`[FRED] ${seriesId} historyDated:`, e)
+    return []
+  }
+}
+
 /** Fetch multiple FRED series in parallel. Returns a map { seriesId → value }. */
 export async function fredBatch(
   seriesIds: string[]

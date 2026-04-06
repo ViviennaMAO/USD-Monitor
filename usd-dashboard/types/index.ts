@@ -297,6 +297,102 @@ export interface NavCurveData {
   history: NavHistoryEntry[]
 }
 
+// ─── Yield Curve ──────────────────────────────────────────────────────────
+export interface YieldCurvePoint {
+  tenor: string           // "1M", "3M", "1Y", "10Y", etc.
+  value: number
+}
+
+export interface YieldCurveSnapshot {
+  label: string           // "当前", "1个月前", etc.
+  date: string
+  color: string
+  data: YieldCurvePoint[]
+}
+
+export interface YieldCurveData {
+  curves: YieldCurveSnapshot[]
+  tenors: string[]
+}
+
+// ─── SOFR Analysis ────────────────────────────────────────────────────────
+export interface SofrSpreadData {
+  date: string
+  sofr: number
+  p1: number              // 1st percentile
+  p25: number             // 25th percentile
+  p75: number             // 75th percentile
+  p99: number             // 99th percentile
+  spread_1_99: number     // p99 - p1
+  iorb: number
+  effr: number
+}
+
+export interface SofrAnalysisData {
+  current: SofrSpreadData
+  history: SofrSpreadData[]
+  assessment: string
+}
+
+// ─── Repo Market ──────────────────────────────────────────────────────────
+export interface RepoRateData {
+  date: string
+  sofr: number
+  effr: number
+  iorb: number
+  rrp: number             // ON RRP award rate
+  bgcr: number            // Broad General Collateral Rate
+  tgcr: number            // Tri-Party General Collateral Rate
+}
+
+export interface RepoMarketData {
+  current: RepoRateData
+  history: RepoRateData[]
+  assessment: string
+}
+
+// ─── FX Swap Term Structure ───────────────────────────────────────────────
+export interface SwapTenorPoint {
+  tenor: string           // "1W", "1M", "3M", "6M", "1Y"
+  points: number          // swap points (pips)
+}
+
+export interface FxSwapPair {
+  pair: string            // "USD/JPY", "EUR/USD", etc.
+  flag: string
+  data: SwapTenorPoint[]
+  assessment: string
+}
+
+export interface FxSwapData {
+  pairs: FxSwapPair[]
+  date: string
+  offshore_assessment: string
+}
+
+// ─── Fed Watch ────────────────────────────────────────────────────────────
+export type HawkDoveScore = -2 | -1 | 0 | 1 | 2  // -2=very dovish, 2=very hawkish
+
+export interface FomcEntry {
+  date: string
+  type: 'meeting' | 'minutes' | 'speech'
+  speaker?: string
+  title: string
+  summary: string
+  hawkdove: HawkDoveScore
+  has_vote: boolean
+  key_quotes?: string[]
+}
+
+export interface FedWatchData {
+  timeline: FomcEntry[]
+  hawkdove_trend: { date: string; score: number; ma5: number }[]
+  current_rate: number
+  next_meeting: string
+  dot_plot_median: number
+  assessment: string
+}
+
 // ─── Combined Dashboard Data ───────────────────────────────────────────────
 export interface DashboardData {
   score: ScoreData
