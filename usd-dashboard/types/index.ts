@@ -440,6 +440,65 @@ export interface UnifiedSignalData {
     gamma_dir: string
     ml_dir: string
   }
+
+  // P1: Orthogonalized ML
+  ml_ortho?: number | null
+
+  // P1: Calibration metadata
+  p1_calibration?: {
+    active: boolean
+    weights?: Record<string, number>
+    shifts?: Record<string, number>
+    component_ics?: Record<string, number>
+  }
+
+  // P1: Orthogonalization metadata
+  p1_orthogonalization?: {
+    active: boolean
+    ml_raw?: number
+    ml_ortho?: number
+    beta?: number
+    r_squared?: number
+    explained_by_gamma_pct?: number
+    reason?: string
+  }
+}
+
+// ─── P1: Calibration Data ────────────────────────────────────────────────
+export interface CalibrationData {
+  calibration_date: string
+  status: string
+  reason: string
+  base_weights: Record<string, number>
+  calibrated_weights: Record<string, number>
+  shifts: Record<string, number>
+  component_ics: Record<string, number>
+  max_shift_constraint: number
+  schedule: string
+}
+
+// ─── P1: Orthogonalization Data ──────────────────────────────────────────
+export interface OrthogonalizationData {
+  date: string
+  ols_params: {
+    alpha: number
+    beta: number
+    r_squared: number
+    n_obs: number
+  }
+  orthogonalization: {
+    ml_raw: number
+    ml_raw_norm: number
+    ml_ortho_norm: number
+    ml_ortho_pct: number
+    gamma_norm: number
+    gamma_expected_ml: number
+    beta: number
+    alpha: number
+    r_squared: number
+    explained_by_gamma_pct: number
+    independent_info_pct: number
+  }
 }
 
 // ─── Combined Dashboard Data ───────────────────────────────────────────────

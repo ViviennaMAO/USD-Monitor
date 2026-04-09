@@ -1,11 +1,12 @@
 """
 USD Monitor Phase 2 — Orchestrator
-Fetch → Features → Train (if needed) → Inference → Backtest → Signal Router
+Fetch → Features → Train → Inference → Backtest → Calibrate → Orthogonalize → Route
 
 Usage:
-    python run_phase2.py              # Full pipeline
-    python run_phase2.py --retrain    # Force model retrain
-    python run_phase2.py --diag       # Include IC diagnostics (slow)
+    python run_phase2.py                # Full pipeline
+    python run_phase2.py --retrain      # Force model retrain
+    python run_phase2.py --recalibrate  # Force Bayesian weight recalibration
+    python run_phase2.py --diag         # Include IC diagnostics (slow)
 """
 import sys
 import time
@@ -28,38 +29,46 @@ def main():
     print("=" * 60)
 
     # ── Step 1: Fetch Data ────────────────────────────────────────────────
-    print("\n[1/6] Fetching historical data...")
+    print("\n[1/8] Fetching historical data...")
     from fetch_features import fetch_all_history
     raw = fetch_all_history()
     print(f"  Raw data: {len(raw)} rows, {raw.index.min()} to {raw.index.max()}")
 
     # ── Step 2: Build Features ────────────────────────────────────────────
-    print("\n[2/6] Building features...")
+    print("\n[2/8] Building features...")
     from features import build_features
     features = build_features(raw)
 
     # ── Step 3: Train Model (if needed) ───────────────────────────────────
     if retrain or not MODEL_PATH.exists():
-        print("\n[3/6] Training model...")
+        print("\n[3/8] Training model...")
         from train import train_model
         model = train_model(features)
     else:
-        print(f"\n[3/6] Model exists at {MODEL_PATH}, skipping training.")
+        print(f"\n[3/8] Model exists at {MODEL_PATH}, skipping training.")
         print("  (use --retrain to force)")
 
     # ── Step 4: Daily Inference ───────────────────────────────────────────
-    print("\n[4/6] Running inference...")
+    print("\n[4/8] Running inference...")
     from inference import run_inference
     summary = run_inference(features)
 
     # ── Step 5: Backtest ──────────────────────────────────────────────────
-    print("\n[5/6] Running backtest...")
+    print("\n[5/8] Running backtest...")
     from backtest import run_backtest
     bt_result = run_backtest(features)
 
-    # ── Step 6: Unified Signal Router ─────────────────────────────────────
-    print("\n[6/6] Running unified signal router...")
-    from signal_router import route_signal
+    # ── Step 6: P1 Bayesian Calibration ─────────────────────────────────────
+    print("\n[6/8] Running Bayesian calibration (P1)...")
+    from bayesian_calibrator import calibrate_weights
+    regime_mult = summary.get("regime", {}).get("multiplier", 1.0)
+    calibration = calibrate_weights(
+        features, regime_multiplier=regime_mult, force="--recalibrate" in sys.argv
+    )
+
+    # ── Step 7: P1 OLS Orthogonalization ──────────────────────────────────
+    print("\n[7/8] Running OLS orthogonalization (P1)...")
+    from orthogonalizer import run_orthogonalization
 
     # Read γ score from Phase 1 output (score.json)
     gamma_score = 50.0
@@ -82,6 +91,22 @@ def main():
     except Exception as e:
         print(f"  ⚠ Failed to read score.json: {e}, using default γ=50")
 
+    ml_pred = summary.get("prediction", 0.0)
+
+    # Note: In production, gamma_history and ml_history would come from
+    # a persistent store of daily γ + ML predictions. For now, we run
+    # orthogonalization with whatever history is available.
+    ortho_result = run_orthogonalization(
+        ml_pred=ml_pred,
+        gamma_score=gamma_score,
+        gamma_history=None,  # TODO: persist daily γ history
+        ml_history=None,     # TODO: persist daily ML history
+    )
+
+    # ── Step 8: Unified Signal Router ─────────────────────────────────────
+    print("\n[8/8] Running unified signal router...")
+    from signal_router import route_signal
+
     # Read SHAP factors from inference output
     shap_factors = []
     try:
@@ -101,16 +126,18 @@ def main():
     except Exception:
         pass
 
-    # Route signal
+    # Route signal with P1 enrichments
     unified = route_signal(
         gamma_score=gamma_score,
         gamma_components=gamma_components,
-        ml_pred=summary.get("prediction", 0.0),
+        ml_pred=ml_pred,
         shap_factors=shap_factors,
         regime_result=summary.get("regime", {}),
         vix_z=vix_z,
         dxy_price=summary.get("dxy_price", 0.0),
         date=summary.get("date", ""),
+        calibration=calibration,
+        orthogonalization=ortho_result,
     )
 
     # ── Optional: IC Diagnostics ──────────────────────────────────────────

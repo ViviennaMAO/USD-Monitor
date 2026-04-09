@@ -327,6 +327,8 @@ def route_signal(
     vix_z: float = 0.0,
     dxy_price: float = 0.0,
     date: str = "",
+    calibration=None,
+    orthogonalization=None,
 ) -> dict:
     """
     Unified Signal Router — merges γ and ML into a single trading decision.
@@ -340,38 +342,83 @@ def route_signal(
         vix_z: current VIX Z-score
         dxy_price: current DXY price
         date: date string
+        calibration: P1 Bayesian calibration result (optional)
+        orthogonalization: P1 OLS orthogonalization result (optional)
 
     Returns:
         Unified signal dict → saved as unified_signal.json
     """
     print("=" * 60)
-    print("[router] Unified Signal Router")
+    print("[router] Unified Signal Router (P0 + P1)")
     print("=" * 60)
 
-    # Step 1: Conflict score
-    conflict = compute_conflict_score(gamma_score, ml_pred)
+    # ── P1: Orthogonalization ─────────────────────────────────────────────
+    # Use orthogonalized ML if available (removes γ-redundant info)
+    ml_for_routing = ml_pred
+    ortho_info = None
+    if orthogonalization and "orthogonalization" in orthogonalization:
+        ortho = orthogonalization["orthogonalization"]
+        ml_ortho = ortho.get("ml_ortho_pct", ml_pred)
+        beta = ortho.get("beta", 0.0)
+        r_sq = ortho.get("r_squared", 0.0)
+
+        # Only use ortho if meaningful β and sufficient R²
+        if abs(beta) > 0.05 and r_sq > 0.02:
+            ml_for_routing = ml_ortho
+            ortho_info = {
+                "active": True,
+                "ml_raw": round(ml_pred, 4),
+                "ml_ortho": round(ml_ortho, 4),
+                "beta": round(beta, 4),
+                "r_squared": round(r_sq, 4),
+                "explained_by_gamma_pct": ortho.get("explained_by_gamma_pct", 0),
+            }
+            print(f"  P1 Ortho: ML raw={ml_pred:+.3f}% → ortho={ml_ortho:+.3f}% "
+                  f"(β={beta:.3f}, R²={r_sq:.3f}, γ explains {ortho.get('explained_by_gamma_pct', 0):.1f}%)")
+        else:
+            ortho_info = {"active": False, "reason": f"β={beta:.3f} or R²={r_sq:.3f} too small"}
+            print(f"  P1 Ortho: skipped (β={beta:.3f}, R²={r_sq:.3f} — insignificant)")
+
+    # ── P1: Calibration info ─────────────────────────────────────────────
+    calibration_info = None
+    if calibration and calibration.get("status") == "calibrated":
+        cal_weights = calibration.get("calibrated_weights", {})
+        shifts = calibration.get("shifts", {})
+        calibration_info = {
+            "active": True,
+            "weights": cal_weights,
+            "shifts": shifts,
+            "component_ics": calibration.get("component_ics", {}),
+        }
+        print(f"  P1 Calibration: {' | '.join(f'{k}={v:.3f}' for k, v in cal_weights.items())}")
+        print(f"  P1 Shifts:      {' | '.join(f'{k}={v:+.3f}' for k, v in shifts.items())}")
+    else:
+        calibration_info = {"active": False}
+
+    # ── Step 1: Conflict score (uses ortho ML if available) ──────────────
+    conflict = compute_conflict_score(gamma_score, ml_for_routing)
     print(f"  γ={gamma_score:.0f} ({_gamma_direction(gamma_score)}), "
-          f"ML={ml_pred:+.3f}% ({_ml_direction(ml_pred)}), "
+          f"ML={ml_for_routing:+.3f}% ({_ml_direction(ml_for_routing)}), "
           f"Conflict={conflict:.3f}")
 
-    # Step 2: Regime routing
+    # ── Step 2: Regime routing ───────────────────────────────────────────
     regime_state = determine_regime_state(regime_result, conflict, vix_z)
     print(f"  Regime state: {regime_state}")
 
-    # Step 3: Route signal
+    # ── Step 3: Route signal ─────────────────────────────────────────────
     if regime_state == "crisis":
         decision = route_crisis()
     elif regime_state == "policy_shock":
         decision = route_policy_shock(gamma_score)
     elif regime_state == "transition":
-        decision = route_transition(gamma_score, ml_pred)
+        decision = route_transition(gamma_score, ml_for_routing)
     else:
-        decision = route_normal(gamma_score, ml_pred)
+        decision = route_normal(gamma_score, ml_for_routing)
 
     print(f"  Decision: {decision['action']} (size={decision['size_mult']:.0%}, "
           f"source={decision['source']})")
 
-    # Step 4: Conflict diagnosis
+    # ── Step 4: Conflict diagnosis ───────────────────────────────────────
     diagnosis = diagnose_conflict(gamma_components, shap_factors, conflict)
     if diagnosis.get("has_conflict"):
         print(f"  ⚠ {diagnosis['diagnosis']}")
@@ -387,7 +434,10 @@ def route_signal(
         "ml_prediction": round(ml_pred, 4),
         "ml_signal": _ml_direction(ml_pred).upper(),
 
-        # Conflict analysis
+        # P1: Orthogonalized ML
+        "ml_ortho": round(ml_for_routing, 4) if ml_for_routing != ml_pred else None,
+
+        # Conflict analysis (computed on ortho ML if available)
         "conflict_score": conflict,
         "conflict_level": (
             "high" if conflict > 0.6 else
@@ -416,6 +466,10 @@ def route_signal(
             "gamma_dir": decision.get("gamma_dir", ""),
             "ml_dir": decision.get("ml_dir", ""),
         },
+
+        # P1: Calibration & Orthogonalization metadata
+        "p1_calibration": calibration_info,
+        "p1_orthogonalization": ortho_info,
     }
 
     _save_json(unified, "unified_signal.json")

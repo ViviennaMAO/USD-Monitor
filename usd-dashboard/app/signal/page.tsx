@@ -3,17 +3,28 @@ import { useEffect, useState } from 'react'
 import { ConflictGauge } from '@/components/signal/ConflictGauge'
 import { CredibilityMatrix } from '@/components/signal/CredibilityMatrix'
 import { ShapConflict } from '@/components/signal/ShapConflict'
-import type { UnifiedSignalData } from '@/types'
+import { CalibrationPanel } from '@/components/signal/CalibrationPanel'
+import { OrthoPanel } from '@/components/signal/OrthoPanel'
+import type { UnifiedSignalData, CalibrationData, OrthogonalizationData } from '@/types'
 
 export default function SignalPage() {
   const [data, setData] = useState<UnifiedSignalData | null>(null)
+  const [calibration, setCalibration] = useState<CalibrationData | null>(null)
+  const [ortho, setOrtho] = useState<OrthogonalizationData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/unified-signal')
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false) })
-      .catch(() => setLoading(false))
+    Promise.all([
+      fetch('/api/unified-signal').then(r => r.json()),
+      fetch('/api/calibration').then(r => r.json()).catch(() => null),
+    ]).then(([signal, calData]) => {
+      setData(signal)
+      if (calData) {
+        setCalibration(calData.calibration)
+        setOrtho(calData.orthogonalization)
+      }
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }, [])
 
   if (loading) {
@@ -200,25 +211,49 @@ export default function SignalPage() {
           </div>
         </div>
 
+        {/* P1: Calibration + Orthogonalization */}
+        {(calibration || ortho) && (
+          <>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+              <span className="text-xs font-semibold text-purple-400">P1 — 信号优化层</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {calibration && <CalibrationPanel data={calibration} />}
+              {ortho && <OrthoPanel data={ortho} />}
+            </div>
+          </>
+        )}
+
         {/* Architecture explanation */}
         <div className="bg-slate-900/30 border border-slate-800 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-slate-300 mb-3">架构说明</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-[10px] text-slate-500">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-[10px] text-slate-500">
             <div>
-              <div className="text-amber-400 font-medium mb-1">γ 规则引擎</div>
+              <div className="text-amber-400 font-medium mb-1">P0: γ 规则引擎</div>
               <p>基于宏观因子的因果模型: r_f + π_risk - cy + σ_alert → 0-100评分。优势: 可解释、对新事件有天然响应。</p>
             </div>
             <div>
-              <div className="text-blue-400 font-medium mb-1">ML 预测引擎</div>
-              <p>XGBoost 10因子模型预测20日DXY回报。优势: 捕捉非线性关系、自适应权重。</p>
+              <div className="text-blue-400 font-medium mb-1">P0: ML 预测引擎</div>
+              <p>XGBoost 10因子模型预测20日DXY回报。3×3矩阵融合信号，Conflict Option处理矛盾。</p>
             </div>
             <div>
-              <div className="text-purple-400 font-medium mb-1">冲突诊断</div>
-              <p>Conflict Score = |norm(γ) - norm(ML)| / 2。&gt;0.6 = Regime转换领先指标 (Soros)。SHAP归因定位分歧根源 (Simons)。</p>
+              <div className="text-purple-400 font-medium mb-1">P0: 冲突诊断</div>
+              <p>Conflict Score = |norm(γ) - norm(ML)| / 2。&gt;0.6 = Regime转换领先指标。SHAP归因定位分歧根源。</p>
+            </div>
+            <div>
+              <div className="text-cyan-400 font-medium mb-1">P1: Bayesian 校准</div>
+              <p>基于各组件IC的后验权重更新。±10%约束防止过拟合，季度频率避免噪声，Regime冻结保护极端环境。</p>
+            </div>
+            <div>
+              <div className="text-pink-400 font-medium mb-1">P1: OLS 正交化</div>
+              <p>ml_ortho = ml_pred − β×γ_norm。消除双重计数，使冲突分数反映真实分歧。R²衡量γ对ML的解释力。</p>
             </div>
             <div>
               <div className="text-emerald-400 font-medium mb-1">统一路由</div>
-              <p>Normal→3×3矩阵, Transition→Conflict Option (Taleb: 0.25×仓+宽止损), Crisis→熔断器, Policy Shock→γ单引擎。</p>
+              <p>Normal→3×3矩阵, Transition→Conflict Option (0.25×仓+宽止损), Crisis→熔断器, Policy Shock→γ单引擎。</p>
             </div>
           </div>
         </div>

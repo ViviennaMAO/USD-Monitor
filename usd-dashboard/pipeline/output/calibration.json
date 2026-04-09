@@ -1,0 +1,31 @@
+{
+  "calibration_date": "2026-04-09",
+  "status": "calibrated",
+  "reason": "forced",
+  "base_weights": {
+    "rf": 0.35,
+    "pi_risk": 0.25,
+    "cy": 0.25,
+    "sigma": 0.15
+  },
+  "calibrated_weights": {
+    "rf": 0.45,
+    "pi_risk": 0.2015,
+    "cy": 0.1862,
+    "sigma": 0.1557
+  },
+  "shifts": {
+    "rf": 0.1,
+    "pi_risk": -0.0485,
+    "cy": -0.0638,
+    "sigma": 0.0057
+  },
+  "component_ics": {
+    "rf": 0.3097092427310683,
+    "pi_risk": 0.06905272631815797,
+    "cy": 0.029522238055951402,
+    "sigma": 0.19562189054726373
+  },
+  "max_shift_constraint": 0.1,
+  "schedule": "quarterly"
+}
