@@ -5,23 +5,35 @@ import { CredibilityMatrix } from '@/components/signal/CredibilityMatrix'
 import { ShapConflict } from '@/components/signal/ShapConflict'
 import { CalibrationPanel } from '@/components/signal/CalibrationPanel'
 import { OrthoPanel } from '@/components/signal/OrthoPanel'
-import type { UnifiedSignalData, CalibrationData, OrthogonalizationData } from '@/types'
+import { ConflictBacktestPanel } from '@/components/signal/ConflictBacktestPanel'
+import { AttributionPanel } from '@/components/signal/AttributionPanel'
+import type {
+  UnifiedSignalData, CalibrationData, OrthogonalizationData,
+  ConflictBacktestData, SignalAttributionData,
+} from '@/types'
 
 export default function SignalPage() {
   const [data, setData] = useState<UnifiedSignalData | null>(null)
   const [calibration, setCalibration] = useState<CalibrationData | null>(null)
   const [ortho, setOrtho] = useState<OrthogonalizationData | null>(null)
+  const [conflictBt, setConflictBt] = useState<ConflictBacktestData | null>(null)
+  const [attribution, setAttribution] = useState<SignalAttributionData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       fetch('/api/unified-signal').then(r => r.json()),
       fetch('/api/calibration').then(r => r.json()).catch(() => null),
-    ]).then(([signal, calData]) => {
+      fetch('/api/conflict-backtest').then(r => r.json()).catch(() => null),
+    ]).then(([signal, calData, p2Data]) => {
       setData(signal)
       if (calData) {
         setCalibration(calData.calibration)
         setOrtho(calData.orthogonalization)
+      }
+      if (p2Data) {
+        setConflictBt(p2Data.backtest)
+        setAttribution(p2Data.attribution)
       }
       setLoading(false)
     }).catch(() => setLoading(false))
@@ -223,6 +235,22 @@ export default function SignalPage() {
             <div className="grid lg:grid-cols-2 gap-6">
               {calibration && <CalibrationPanel data={calibration} />}
               {ortho && <OrthoPanel data={ortho} />}
+            </div>
+          </>
+        )}
+
+        {/* P2: Conflict Backtest + Signal Attribution */}
+        {(conflictBt || attribution) && (
+          <>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-rose-500/30 to-transparent" />
+              <span className="text-xs font-semibold text-rose-400">P2 — 回测验证层</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-rose-500/30 to-transparent" />
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {conflictBt && <ConflictBacktestPanel data={conflictBt} />}
+              {attribution && <AttributionPanel data={attribution} />}
             </div>
           </>
         )}

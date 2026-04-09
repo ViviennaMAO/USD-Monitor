@@ -7,6 +7,7 @@ Usage:
     python run_phase2.py --retrain      # Force model retrain
     python run_phase2.py --recalibrate  # Force Bayesian weight recalibration
     python run_phase2.py --diag         # Include IC diagnostics (slow)
+    python run_phase2.py --p2           # Include P2 conflict backtest + attribution
 """
 import sys
 import time
@@ -145,6 +146,15 @@ def main():
         print("\n[bonus] Running IC diagnostics...")
         from ic_diagnostic import run_diagnostics
         run_diagnostics(features)
+
+    # ── Optional: P2 Conflict Backtest + Signal Attribution ───────────────
+    if "--p2" in sys.argv:
+        print("\n[P2-1] Running conflict score backtest...")
+        from conflict_backtest import run_conflict_backtest, run_signal_attribution
+        conflict_bt = run_conflict_backtest(features)
+
+        print("\n[P2-2] Running signal attribution...")
+        attribution = run_signal_attribution(features)
 
     # ── Summary ───────────────────────────────────────────────────────────
     elapsed = time.time() - t0

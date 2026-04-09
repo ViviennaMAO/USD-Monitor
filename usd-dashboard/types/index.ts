@@ -501,6 +501,75 @@ export interface OrthogonalizationData {
   }
 }
 
+// ─── P2: Conflict Backtest ────────────────────────────────────────────────
+export interface ConflictBucket {
+  label: string
+  count: number
+  avg_return: number | null
+  std_return: number | null
+  win_rate: number | null
+  avg_abs_return: number | null
+}
+
+export interface ConsensusAttribution {
+  type: string
+  label: string
+  count: number
+  avg_strat_return: number
+  sharpe: number
+  hit_rate: number
+  avg_conflict: number
+}
+
+export interface ThresholdGridEntry {
+  threshold: number
+  total_return: number
+  sharpe: number
+  max_drawdown: number
+  conflict_pct: number
+}
+
+export interface ConflictTimeSeriesPoint {
+  date: string
+  conflict: number
+  actual_ret: number
+  consensus: string
+}
+
+export interface ConflictBacktestData {
+  date: string
+  test_period: { start: string; end: string; n_observations: number }
+  bucket_analysis: ConflictBucket[]
+  consensus_attribution: ConsensusAttribution[]
+  threshold_grid: ThresholdGridEntry[]
+  optimal_threshold: ThresholdGridEntry
+  time_series: ConflictTimeSeriesPoint[]
+  soros_hypothesis: {
+    description: string
+    high_conflict_pct: number
+    high_conflict_volatility: number | null
+    low_conflict_volatility: number | null
+  }
+}
+
+// ─── P2: Signal Attribution ──────────────────────────────────────────────
+export interface StrategyResult {
+  strategy: string
+  label: string
+  total_return: number
+  sharpe: number
+  max_drawdown: number
+  hit_rate: number
+  n_trades: number
+  nav_series: number[]
+}
+
+export interface SignalAttributionData {
+  date: string
+  strategies: StrategyResult[]
+  optimal_threshold: number
+}
+
 // ─── Combined Dashboard Data ───────────────────────────────────────────────
 export interface DashboardData {
   score: ScoreData
