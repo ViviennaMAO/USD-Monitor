@@ -1,0 +1,27 @@
+{
+  "date": "2026-04-03",
+  "dxy_price": 100.19,
+  "gamma_score": 50,
+  "gamma_signal": "NEUTRAL",
+  "ml_prediction": 1.1574,
+  "ml_signal": "BUY",
+  "conflict_score": 0.2893,
+  "conflict_level": "low",
+  "regime_state": "normal",
+  "regime_detail": {
+    "regime": "中性·Crisis Spike",
+    "multiplier": 0.71
+  },
+  "action": "LONG",
+  "size_mult": 0.5,
+  "stop_mult": 1.0,
+  "signal_source": "partial_consensus",
+  "diagnosis": {
+    "has_conflict": false,
+    "diagnosis": "信号基本一致，无需诊断"
+  },
+  "matrix_position": {
+    "gamma_dir": "neutral",
+    "ml_dir": "buy"
+  }
+}

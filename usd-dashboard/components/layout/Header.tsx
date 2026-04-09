@@ -46,6 +46,12 @@ export function Header({ score, dxy }: HeaderProps) {
             >
               美联储
             </Link>
+            <Link
+              href="/signal"
+              className="text-xs text-slate-500 hover:text-purple-400 transition-colors border border-slate-700 hover:border-purple-500/50 rounded px-2 py-0.5"
+            >
+              信号路由
+            </Link>
             <div className="h-4 w-px bg-slate-700" />
             <div>
               <div className="flex items-baseline gap-2">

@@ -393,6 +393,55 @@ export interface FedWatchData {
   assessment: string
 }
 
+// ─── Unified Signal (Signal Router) ──────────────────────────────────────────
+export interface ConflictDiagnosis {
+  has_conflict: boolean
+  conflict_score?: number
+  gamma_driver?: string
+  gamma_driver_score?: number
+  ml_opposing_factor?: string
+  ml_opposing_shap?: number
+  diagnosis: string
+  top_shap_factors?: { name: string; shap: number }[]
+}
+
+export interface UnifiedSignalData {
+  date: string
+  dxy_price: number
+
+  // Input signals
+  gamma_score: number
+  gamma_signal: 'BULLISH' | 'BEARISH' | 'NEUTRAL'
+  ml_prediction: number
+  ml_signal: 'BUY' | 'SELL' | 'NEUTRAL'
+
+  // Conflict analysis
+  conflict_score: number
+  conflict_level: 'high' | 'medium' | 'low'
+
+  // Regime
+  regime_state: 'crisis' | 'policy_shock' | 'transition' | 'normal'
+  regime_detail: {
+    regime: string
+    multiplier: number
+  }
+
+  // Unified decision
+  action: 'LONG' | 'SHORT' | 'FLAT'
+  size_mult: number
+  stop_mult: number
+  signal_source: string
+
+  // Conflict diagnosis
+  diagnosis: ConflictDiagnosis
+
+  // Matrix position
+  matrix_position: {
+    gamma_dir: string
+    ml_dir: string
+  }
+}
+
 // ─── Combined Dashboard Data ───────────────────────────────────────────────
 export interface DashboardData {
   score: ScoreData
