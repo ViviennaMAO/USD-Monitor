@@ -19,38 +19,26 @@ export function Header({ score, dxy }: HeaderProps) {
 
           {/* Left: title + formula */}
           <div className="flex items-center gap-4">
-            <button className="text-slate-400 hover:text-slate-200 text-sm transition-colors">
-              ← Daily Dashboard
-            </button>
-            <Link
-              href="/analytics"
-              className="text-xs text-slate-500 hover:text-blue-400 transition-colors border border-slate-700 hover:border-blue-500/50 rounded px-2 py-0.5"
-            >
-              因子分析
+            <Link href="/" className="text-slate-400 hover:text-slate-200 text-sm transition-colors">
+              ← 总览
             </Link>
             <Link
-              href="/rates"
-              className="text-xs text-slate-500 hover:text-emerald-400 transition-colors border border-slate-700 hover:border-emerald-500/50 rounded px-2 py-0.5"
-            >
-              利率
-            </Link>
-            <Link
-              href="/liquidity"
+              href="/market"
               className="text-xs text-slate-500 hover:text-cyan-400 transition-colors border border-slate-700 hover:border-cyan-500/50 rounded px-2 py-0.5"
             >
-              流动性
-            </Link>
-            <Link
-              href="/fed"
-              className="text-xs text-slate-500 hover:text-amber-400 transition-colors border border-slate-700 hover:border-amber-500/50 rounded px-2 py-0.5"
-            >
-              美联储
+              市场
             </Link>
             <Link
               href="/signal"
               className="text-xs text-slate-500 hover:text-purple-400 transition-colors border border-slate-700 hover:border-purple-500/50 rounded px-2 py-0.5"
             >
-              信号路由
+              信号
+            </Link>
+            <Link
+              href="/analytics"
+              className="text-xs text-slate-500 hover:text-blue-400 transition-colors border border-slate-700 hover:border-blue-500/50 rounded px-2 py-0.5"
+            >
+              分析
             </Link>
             <div className="h-4 w-px bg-slate-700" />
             <div>
