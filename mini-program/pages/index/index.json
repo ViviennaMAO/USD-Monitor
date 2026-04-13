@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "USD Monitor",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "score-gauge": "/components/score-gauge/score-gauge"
+  }
+}

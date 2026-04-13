@@ -72,8 +72,8 @@ MIN_OBSERVATIONS = 60  # Minimum days to calibrate
 # Which ML factors most closely correspond to each γ component?
 # Used to compute per-component likelihood from SHAP/IC data.
 COMPONENT_FACTOR_MAP = {
-    "rf":      ["F1_RateDiff", "F2_RealRate", "F6_RatePath"],
-    "pi_risk": ["F4_VIX", "F8_CreditSpread", "F9_VolSpread"],
+    "rf":      ["F1_RateDiff", "F2_RealRateDelta", "F6_YCMomentum"],
+    "pi_risk": ["F4_VIX", "F8_CreditResidual", "F9_VolSpread"],
     "cy":      ["F10_FundingStress", "F5_BEI"],
     "sigma":   ["F4_VIX", "F9_VolSpread", "F3_TermSpread"],
 }
@@ -303,7 +303,7 @@ if __name__ == "__main__":
     for col in FACTOR_COLS:
         df[col] = np.random.randn(n)
     # Synthetic target correlated with F1, F2 (rf-related factors)
-    df["target"] = 0.5 * df["F1_RateDiff"] + 0.3 * df["F2_RealRate"] + 0.2 * np.random.randn(n)
+    df["target"] = 0.5 * df["F1_RateDiff"] + 0.3 * df["F2_RealRateDelta"] + 0.2 * np.random.randn(n)
 
     result = calibrate_weights(df, regime_multiplier=1.0, force=True)
     print(f"\n  Status: {result['status']}")

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "信号路由",
+  "usingComponents": {
+    "chart-canvas": "/components/chart-canvas/chart-canvas"
+  }
+}

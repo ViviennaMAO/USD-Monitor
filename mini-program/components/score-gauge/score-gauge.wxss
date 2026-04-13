@@ -1,0 +1,9 @@
+.gauge-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gauge-canvas {
+  width: 400rpx;
+  height: 300rpx;
+}

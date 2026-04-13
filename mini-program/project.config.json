@@ -1,0 +1,23 @@
+{
+	"projectname": "USD-monitor",
+	"description": "USD Monitor - 美元价值监控小程序",
+	"appid": "your-app-id",
+	"setting": {
+		"urlCheck": false,
+		"es6": true,
+		"enhance": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"nodeModules": true,
+		"autoAudits": false,
+		"uploadWithSourceMap": true,
+		"uglifyFileName": true,
+		"remoteDebugLogEnable": true,
+		"prefetch": false
+	},
+	"compileType": "miniprogram",
+	"LuffaToolsappid": "mpe5fp6sxaegbip9",
+	"scripts": {},
+	"condition": {}
+}

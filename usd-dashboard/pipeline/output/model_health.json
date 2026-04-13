@@ -1,21 +1,25 @@
 {
-  "timestamp": "2026-04-04T11:37:12.286282",
-  "oos_ic": 0.1853,
-  "recent_60d_ic": -0.235,
-  "ic_first_half": 0.6276,
-  "ic_second_half": -0.2492,
+  "timestamp": "2026-04-12T00:38:47.080939",
+  "oos_ic": -0.0956,
+  "recent_60d_ic": -0.3512,
+  "ic_first_half": 0.2062,
+  "ic_second_half": -0.3536,
   "factor_ics": {
-    "F1_RateDiff": 0.184,
-    "F2_RealRate": -0.2988,
-    "F3_TermSpread": -0.1182,
-    "F4_VIX": 0.2783,
-    "F5_BEI": 0.3847,
-    "F6_RatePath": -0.4406,
-    "F7_DXYMomentum": -0.3267,
-    "F8_CreditSpread": -0.2498,
-    "F9_VolSpread": -0.1777,
-    "F10_FundingStress": -0.1623
+    "F1_RateDiff": 0.1849,
+    "F2_RealRateDelta": -0.5009,
+    "F3_TermSpread": -0.1107,
+    "F4_VIX": 0.2614,
+    "F5_BEI": 0.3655,
+    "F6_YCMomentum": -0.2325,
+    "F7_LongYieldDelta": -0.4225,
+    "F8_CreditResidual": -0.4163,
+    "F9_VolSpread": -0.1648,
+    "F10_FundingStress": -0.1555
   },
-  "status": "healthy",
-  "warnings": []
+  "status": "degraded",
+  "warnings": [
+    "High correlation: F2_RealRateDelta × F7_LongYieldDelta = 0.87",
+    "High correlation: F3_TermSpread × F6_YCMomentum = 0.82",
+    "High correlation: F5_BEI × F8_CreditResidual = 0.71"
+  ]
 }

@@ -1,0 +1,172 @@
+<view class="page">
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{ tabs }}" wx:key="index"
+      class="tab-item {{ activeTab === index ? 'active' : '' }}"
+      data-idx="{{ index }}"
+      bindtap="switchTab"
+    >{{ item }}</view>
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{ loading }}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:if="{{ !loading }}" class="tab-content px-24">
+
+    <!-- Tab 0: SHAP header -->
+    <view wx:if="{{ activeTab === 0 }}">
+      <view class="card-title">SHAP 因子归因</view>
+      <view class="flex-row justify-between mb-16">
+        <text class="text-xs text-muted">Base: {{ shapBase }}</text>
+        <text class="text-xs text-accent">Output: {{ shapOutput }}</text>
+      </view>
+    </view>
+
+    <!-- Tab 1: IC header -->
+    <view wx:if="{{ activeTab === 1 }}">
+      <scroll-view scroll-x class="factor-scroll">
+        <view class="factor-pills">
+          <view
+            wx:for="{{ icFactors }}" wx:key="*this"
+            class="factor-pill {{ icFactor === item ? 'active' : '' }}"
+            data-factor="{{ item }}"
+            bindtap="switchFactor"
+          >{{ item }}</view>
+        </view>
+      </scroll-view>
+      <view class="flex-row justify-around mb-16 mt-16">
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">IC Today</text>
+          <text class="text-sm font-semibold">{{ icToday }}</text>
+        </view>
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">MA20</text>
+          <text class="text-sm font-semibold">{{ icMa20 }}</text>
+        </view>
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">ICIR</text>
+          <text class="text-sm font-semibold">{{ icir }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Tab 2: Regime header -->
+    <view wx:if="{{ activeTab === 2 }}">
+      <view class="card-title">Regime × Factor IC 热力图</view>
+    </view>
+
+    <!-- Tab 3: Correlation header -->
+    <view wx:if="{{ activeTab === 3 }}">
+      <view class="card-title">因子相关性矩阵</view>
+    </view>
+
+    <!-- Tab 4: NAV header -->
+    <view wx:if="{{ activeTab === 4 }}">
+      <view class="grid-3col mb-20">
+        <view class="g-card-sm">
+          <text class="g-label">总收益</text>
+          <text class="g-value-sm">{{ navReturn }}</text>
+        </view>
+        <view class="g-card-sm">
+          <text class="g-label">Sharpe</text>
+          <text class="g-value-sm">{{ navSharpe }}</text>
+        </view>
+        <view class="g-card-sm">
+          <text class="g-label">MaxDD</text>
+          <text class="g-value-sm text-bear">{{ navDD }}</text>
+        </view>
+      </view>
+      <view class="card-title">策略净值曲线</view>
+    </view>
+
+    <!-- Single shared canvas for tabs 0-4 -->
+    <view wx:if="{{ activeTab < 5 }}" class="card">
+      <canvas type="2d" id="mainChart" class="main-chart" style="height: {{ chartHeight }}rpx;"></canvas>
+    </view>
+
+    <!-- ═══ Tab 5: Model Health (no canvas) ═══ -->
+    <view wx:if="{{ activeTab === 5 }}">
+
+      <!-- Status Banner -->
+      <view class="health-banner">
+        <view class="flex-row items-center gap-16 mb-16">
+          <text class="text-lg font-bold {{ healthStatusClass }}">模型状态: {{ healthStatus }}</text>
+          <text class="badge {{ healthCircuitClass === 'text-bull' ? 'badge-bull' : healthCircuitClass === 'text-bear' ? 'badge-bear' : 'badge-neutral' }}">{{ healthCircuitBreaker }}</text>
+        </view>
+      </view>
+
+      <!-- Health Metrics Grid -->
+      <view class="card-title">核心指标</view>
+      <view class="health-grid">
+        <view wx:for="{{ healthIndicators }}" wx:key="label" class="health-cell">
+          <view class="health-dot {{ item.status === 'good' ? 'dot-green' : item.status === 'warn' ? 'dot-yellow' : 'dot-red' }}"></view>
+          <view class="flex-col flex-1">
+            <text class="text-xs text-muted">{{ item.label }}</text>
+            <text class="text-sm font-semibold">{{ item.value }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- CPCV Results -->
+      <view class="section-header" style="margin-left:0;margin-right:0;">
+        <view class="section-line"></view>
+        <text class="section-title">CPCV 交叉验证</text>
+        <view class="section-line"></view>
+      </view>
+
+      <view class="card">
+        <view class="flex-row justify-between items-center mb-16">
+          <text class="card-title" style="margin-bottom:0">组合清洗交叉验证</text>
+          <text class="badge badge-info">{{ cpcvPaths }}</text>
+        </view>
+        <view class="cpcv-grid">
+          <view class="cpcv-item">
+            <text class="text-xs text-muted">中位 Sharpe</text>
+            <text class="text-lg font-bold {{ cpcvMedianSharpe !== '--' ? 'text-accent' : '' }}">{{ cpcvMedianSharpe }}</text>
+          </view>
+          <view class="cpcv-item">
+            <text class="text-xs text-muted">Alpha t-stat</text>
+            <text class="text-lg font-bold">{{ cpcvAlphaT }}</text>
+          </view>
+          <view class="cpcv-item">
+            <text class="text-xs text-muted">Alpha p-value</text>
+            <text class="text-lg font-bold">{{ cpcvAlphaP }}</text>
+          </view>
+          <view class="cpcv-item">
+            <text class="text-xs text-muted">通过率</text>
+            <text class="text-lg font-bold text-bull">{{ cpcvPassRate }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Circuit Breaker Status -->
+      <view class="card">
+        <view class="card-title">熔断机制状态</view>
+        <view class="cb-row">
+          <text class="text-sm text-body">当前状态</text>
+          <text class="text-sm font-semibold {{ healthCircuitClass }}">{{ healthCircuitBreaker }}</text>
+        </view>
+        <view class="cb-row">
+          <text class="text-sm text-body">OOS IC</text>
+          <text class="text-sm font-semibold">{{ healthOosIC }}</text>
+        </view>
+        <view class="cb-row">
+          <text class="text-sm text-body">IC 变化趋势</text>
+          <text class="text-sm font-semibold">{{ healthIcTrend }} {{ healthIcTrendDir }}</text>
+        </view>
+        <view class="cb-row">
+          <text class="text-sm text-body">近60天IC</text>
+          <text class="text-sm font-semibold">{{ healthRecentIC }}</text>
+        </view>
+        <view class="cb-row" style="border-bottom:none;">
+          <text class="text-sm text-body">多重共线性 (VIF)</text>
+          <text class="text-sm font-semibold">{{ healthMulticol }}</text>
+        </view>
+      </view>
+
+    </view>
+  </view>
+</view>

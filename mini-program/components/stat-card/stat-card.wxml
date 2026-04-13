@@ -1,0 +1,5 @@
+<view class="stat-cell">
+  <text class="stat-label">{{ label }}</text>
+  <text class="stat-value {{ color ? 'text-' + color : '' }}">{{ value }}</text>
+  <text wx:if="{{ sub }}" class="stat-sub text-muted text-xs">{{ sub }}</text>
+</view>

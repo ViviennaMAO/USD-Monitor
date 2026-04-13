@@ -1,5 +1,5 @@
 {
-  "date": "2026-04-09",
+  "date": "2026-04-12",
   "test_period": {
     "start": "2025-10-01",
     "end": "2026-03-12",
@@ -8,31 +8,31 @@
   "bucket_analysis": [
     {
       "label": "低冲突 (<0.2)",
-      "count": 67,
-      "avg_return": 0.1158,
-      "std_return": 1.2348,
-      "win_rate": 0.5299,
-      "avg_abs_return": 1.0765
+      "count": 70,
+      "avg_return": 0.4243,
+      "std_return": 1.4492,
+      "win_rate": 0.4786,
+      "avg_abs_return": 1.2885
     },
     {
       "label": "中低 (0.2-0.4)",
-      "count": 44,
-      "avg_return": 0.2779,
-      "std_return": 1.7035,
-      "win_rate": 0.5114,
-      "avg_abs_return": 1.5177
+      "count": 40,
+      "avg_return": -0.184,
+      "std_return": 1.3836,
+      "win_rate": 0.55,
+      "avg_abs_return": 1.2284
     },
     {
       "label": "中高 (0.4-0.6)",
-      "count": 6,
-      "avg_return": 0.4787,
-      "std_return": 1.6065,
-      "win_rate": 0.8333,
-      "avg_abs_return": 1.4241
+      "count": 3,
+      "avg_return": null,
+      "std_return": null,
+      "win_rate": null,
+      "avg_abs_return": null
     },
     {
       "label": "高冲突 (>0.6)",
-      "count": 0,
+      "count": 4,
       "avg_return": null,
       "std_return": null,
       "win_rate": null,
@@ -44,850 +44,859 @@
       "type": "full",
       "label": "完全共识",
       "count": 30,
-      "avg_strat_return": 0.1388,
-      "sharpe": 0.6492,
-      "hit_rate": 0.3667,
-      "avg_conflict": 0.0962
+      "avg_strat_return": -0.1556,
+      "sharpe": -4.4215,
+      "hit_rate": 0.0667,
+      "avg_conflict": 0.0817
     },
     {
       "type": "partial",
       "label": "部分共识",
-      "count": 85,
-      "avg_strat_return": -0.106,
-      "sharpe": -0.2442,
-      "hit_rate": 0.4824,
-      "avg_conflict": 0.2244
+      "count": 78,
+      "avg_strat_return": -0.1595,
+      "sharpe": -1.9017,
+      "hit_rate": 0.4359,
+      "avg_conflict": 0.2063
+    },
+    {
+      "type": "conflict",
+      "label": "信号矛盾",
+      "count": 9,
+      "avg_strat_return": 0.2185,
+      "sharpe": 3.3088,
+      "hit_rate": 0.5556,
+      "avg_conflict": 0.5027
     }
   ],
   "threshold_grid": [
     {
       "threshold": 0.1,
-      "total_return": -0.0405,
-      "sharpe": -0.002,
-      "max_drawdown": 0.1144,
-      "conflict_pct": 76.9
+      "total_return": -1.2167,
+      "sharpe": -4.6051,
+      "max_drawdown": 0.0121,
+      "conflict_pct": 79.5
     },
     {
       "threshold": 0.15,
-      "total_return": -3.0829,
-      "sharpe": -0.12,
-      "max_drawdown": 0.1391,
-      "conflict_pct": 58.1
+      "total_return": -0.8501,
+      "sharpe": -2.7425,
+      "max_drawdown": 0.0121,
+      "conflict_pct": 56.4
     },
     {
       "threshold": 0.2,
-      "total_return": 0.0961,
-      "sharpe": 0.0032,
-      "max_drawdown": 0.1457,
-      "conflict_pct": 42.7
+      "total_return": -0.6962,
+      "sharpe": -2.0323,
+      "max_drawdown": 0.0133,
+      "conflict_pct": 40.2
     },
     {
       "threshold": 0.25,
-      "total_return": 1.9575,
-      "sharpe": 0.0638,
-      "max_drawdown": 0.1434,
-      "conflict_pct": 37.6
+      "total_return": -0.8869,
+      "sharpe": -2.4012,
+      "max_drawdown": 0.0134,
+      "conflict_pct": 28.2
     },
     {
       "threshold": 0.3,
-      "total_return": -8.4686,
-      "sharpe": -0.2258,
-      "max_drawdown": 0.2443,
-      "conflict_pct": 22.2
+      "total_return": -0.8256,
+      "sharpe": -2.0734,
+      "max_drawdown": 0.013,
+      "conflict_pct": 17.9
     },
     {
       "threshold": 0.35,
-      "total_return": -5.8331,
-      "sharpe": -0.1377,
-      "max_drawdown": 0.2857,
-      "conflict_pct": 10.3
+      "total_return": -0.8254,
+      "sharpe": -2.022,
+      "max_drawdown": 0.0135,
+      "conflict_pct": 11.1
     },
     {
       "threshold": 0.4,
-      "total_return": -5.8466,
-      "sharpe": -0.1317,
-      "max_drawdown": 0.3058,
-      "conflict_pct": 5.1
+      "total_return": -0.8458,
+      "sharpe": -2.0284,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 6.0
     },
     {
       "threshold": 0.45,
-      "total_return": -5.6658,
-      "sharpe": -0.1251,
-      "max_drawdown": 0.3153,
-      "conflict_pct": 1.7
+      "total_return": -0.7942,
+      "sharpe": -1.8968,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 4.3
     },
     {
       "threshold": 0.5,
-      "total_return": -3.734,
-      "sharpe": -0.082,
-      "max_drawdown": 0.3109,
-      "conflict_pct": 0.9
+      "total_return": -0.839,
+      "sharpe": -2.0024,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 3.4
     },
     {
       "threshold": 0.55,
-      "total_return": -3.734,
-      "sharpe": -0.082,
-      "max_drawdown": 0.3109,
-      "conflict_pct": 0.9
+      "total_return": -0.839,
+      "sharpe": -2.0024,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 3.4
     },
     {
       "threshold": 0.6,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
-      "conflict_pct": 0.0
+      "total_return": -0.839,
+      "sharpe": -2.0024,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 3.4
     },
     {
       "threshold": 0.65,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
-      "conflict_pct": 0.0
+      "total_return": -0.7785,
+      "sharpe": -1.8404,
+      "max_drawdown": 0.0131,
+      "conflict_pct": 1.7
     },
     {
       "threshold": 0.7,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
+      "total_return": -0.7573,
+      "sharpe": -1.7639,
+      "max_drawdown": 0.0131,
       "conflict_pct": 0.0
     },
     {
       "threshold": 0.75,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
+      "total_return": -0.7573,
+      "sharpe": -1.7639,
+      "max_drawdown": 0.0131,
       "conflict_pct": 0.0
     },
     {
       "threshold": 0.8,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
+      "total_return": -0.7573,
+      "sharpe": -1.7639,
+      "max_drawdown": 0.0131,
       "conflict_pct": 0.0
     },
     {
       "threshold": 0.85,
-      "total_return": -1.5879,
-      "sharpe": -0.0347,
-      "max_drawdown": 0.3062,
+      "total_return": -0.7573,
+      "sharpe": -1.7639,
+      "max_drawdown": 0.0131,
       "conflict_pct": 0.0
     }
   ],
   "optimal_threshold": {
-    "threshold": 0.25,
-    "total_return": 1.9575,
-    "sharpe": 0.0638,
-    "max_drawdown": 0.1434,
-    "conflict_pct": 37.6
+    "threshold": 0.7,
+    "total_return": -0.7573,
+    "sharpe": -1.7639,
+    "max_drawdown": 0.0131,
+    "conflict_pct": 0.0
   },
   "time_series": [
     {
       "date": "2025-10-01",
-      "conflict": 0.4956,
+      "conflict": 0.6203,
       "actual_ret": 1.5454,
       "consensus": "conflict"
     },
     {
       "date": "2025-10-02",
-      "conflict": 0.5722,
+      "conflict": 0.6609,
       "actual_ret": 1.7169,
       "consensus": "conflict"
     },
     {
       "date": "2025-10-03",
-      "conflict": 0.1178,
+      "conflict": 0.3104,
       "actual_ret": 2.1285,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-06",
-      "conflict": 0.2511,
+      "conflict": 0.1725,
       "actual_ret": 1.7939,
       "consensus": "partial"
     },
     {
       "date": "2025-10-07",
-      "conflict": 0.2477,
+      "conflict": 0.0016,
       "actual_ret": 1.6636,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-10-08",
-      "conflict": 0.2613,
+      "conflict": 0.2762,
       "actual_ret": 1.3657,
       "consensus": "partial"
     },
     {
       "date": "2025-10-09",
-      "conflict": 0.2471,
+      "conflict": 0.371,
       "actual_ret": 0.1909,
-      "consensus": "partial"
+      "consensus": "conflict"
     },
     {
       "date": "2025-10-10",
-      "conflict": 0.097,
+      "conflict": 0.0059,
       "actual_ret": 0.6264,
       "consensus": "full"
     },
     {
       "date": "2025-10-13",
-      "conflict": 0.0489,
+      "conflict": 0.0319,
       "actual_ret": 0.3526,
       "consensus": "full"
     },
     {
       "date": "2025-10-14",
-      "conflict": 0.1914,
+      "conflict": 0.0081,
       "actual_ret": 0.4139,
       "consensus": "full"
     },
     {
       "date": "2025-10-15",
-      "conflict": 0.2366,
+      "conflict": 0.2915,
       "actual_ret": 0.6985,
       "consensus": "partial"
     },
     {
       "date": "2025-10-16",
-      "conflict": 0.1278,
+      "conflict": 0.1254,
       "actual_ret": 0.8029,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-10-17",
-      "conflict": 0.1223,
+      "conflict": 0.1746,
       "actual_ret": 0.8534,
       "consensus": "partial"
     },
     {
       "date": "2025-10-20",
-      "conflict": 0.1162,
+      "conflict": 0.1504,
       "actual_ret": 1.0143,
       "consensus": "partial"
     },
     {
       "date": "2025-10-21",
-      "conflict": 0.1424,
+      "conflict": 0.1445,
       "actual_ret": 0.6267,
-      "consensus": "full"
-    },
-    {
-      "date": "2025-10-22",
-      "conflict": 0.0288,
-      "actual_ret": 1.3448,
       "consensus": "partial"
     },
     {
-      "date": "2025-10-23",
-      "conflict": 0.0104,
-      "actual_ret": 1.2331,
+      "date": "2025-10-22",
+      "conflict": 0.0116,
+      "actual_ret": 1.3448,
       "consensus": "full"
+    },
+    {
+      "date": "2025-10-23",
+      "conflict": 0.182,
+      "actual_ret": 1.2331,
+      "consensus": "partial"
     },
     {
       "date": "2025-10-24",
-      "conflict": 0.1406,
+      "conflict": 0.2964,
       "actual_ret": 1.2431,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-27",
-      "conflict": 0.1208,
+      "conflict": 0.3262,
       "actual_ret": 1.3768,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-28",
-      "conflict": 0.1554,
+      "conflict": 0.2733,
       "actual_ret": 0.9829,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-29",
-      "conflict": 0.0323,
+      "conflict": 0.3226,
       "actual_ret": 0.383,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-30",
-      "conflict": 0.014,
+      "conflict": 0.1469,
       "actual_ret": 0.0703,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-10-31",
-      "conflict": 0.1139,
+      "conflict": 0.2294,
       "actual_ret": -0.3407,
       "consensus": "partial"
     },
     {
       "date": "2025-11-03",
-      "conflict": 0.1588,
+      "conflict": 0.3701,
       "actual_ret": -0.4606,
       "consensus": "partial"
     },
     {
       "date": "2025-11-04",
-      "conflict": 0.1663,
+      "conflict": 0.2197,
       "actual_ret": -0.8581,
       "consensus": "partial"
     },
     {
       "date": "2025-11-05",
-      "conflict": 0.4404,
+      "conflict": 0.1484,
       "actual_ret": -1.3473,
       "consensus": "partial"
     },
     {
       "date": "2025-11-06",
-      "conflict": 0.2845,
+      "conflict": 0.1433,
       "actual_ret": -0.742,
       "consensus": "partial"
     },
     {
       "date": "2025-11-07",
-      "conflict": 0.4014,
+      "conflict": 0.1271,
       "actual_ret": -0.6125,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-10",
-      "conflict": 0.3465,
+      "conflict": 0.1667,
       "actual_ret": -0.532,
       "consensus": "partial"
     },
     {
       "date": "2025-11-11",
-      "conflict": 0.3661,
+      "conflict": 0.1745,
       "actual_ret": -0.2413,
       "consensus": "partial"
     },
     {
       "date": "2025-11-12",
-      "conflict": 0.3128,
+      "conflict": 0.1168,
       "actual_ret": -0.6936,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-13",
-      "conflict": 0.3426,
+      "conflict": 0.0517,
       "actual_ret": -0.8369,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-14",
-      "conflict": 0.406,
+      "conflict": 0.1459,
       "actual_ret": -0.8764,
       "consensus": "partial"
     },
     {
       "date": "2025-11-17",
-      "conflict": 0.3214,
+      "conflict": 0.1499,
       "actual_ret": -1.4459,
       "consensus": "partial"
     },
     {
       "date": "2025-11-18",
-      "conflict": 0.3598,
+      "conflict": 0.2065,
       "actual_ret": -1.4063,
       "consensus": "partial"
     },
     {
       "date": "2025-11-19",
-      "conflict": 0.3455,
+      "conflict": 0.1106,
       "actual_ret": -1.8557,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-20",
-      "conflict": 0.3437,
+      "conflict": 0.0343,
       "actual_ret": -1.7272,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-21",
-      "conflict": 0.368,
+      "conflict": 0.1574,
       "actual_ret": -1.5772,
       "consensus": "partial"
     },
     {
       "date": "2025-11-24",
-      "conflict": 0.3814,
+      "conflict": 0.1917,
       "actual_ret": -1.8474,
       "consensus": "partial"
     },
     {
       "date": "2025-11-25",
-      "conflict": 0.3297,
+      "conflict": 0.1047,
       "actual_ret": -1.7259,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-11-26",
-      "conflict": 0.0875,
+      "conflict": 0.2075,
       "actual_ret": -1.6265,
       "consensus": "partial"
     },
     {
       "date": "2025-11-27",
-      "conflict": 0.0832,
+      "conflict": 0.2301,
       "actual_ret": -1.6265,
       "consensus": "partial"
     },
     {
       "date": "2025-11-28",
-      "conflict": 0.0798,
+      "conflict": 0.2407,
       "actual_ret": -1.4478,
       "consensus": "partial"
     },
     {
       "date": "2025-12-01",
-      "conflict": 0.2719,
+      "conflict": 0.6788,
       "actual_ret": -1.3781,
-      "consensus": "full"
+      "consensus": "conflict"
     },
     {
       "date": "2025-12-02",
-      "conflict": 0.0523,
+      "conflict": 0.411,
       "actual_ret": -1.1272,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-12-03",
-      "conflict": 0.0301,
+      "conflict": 0.6007,
       "actual_ret": -0.5766,
-      "consensus": "full"
+      "consensus": "conflict"
     },
     {
       "date": "2025-12-04",
-      "conflict": 0.0345,
+      "conflict": 0.4855,
       "actual_ret": -0.7172,
-      "consensus": "full"
+      "consensus": "conflict"
     },
     {
       "date": "2025-12-05",
-      "conflict": 0.0026,
+      "conflict": 0.3439,
       "actual_ret": -0.5758,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-12-08",
-      "conflict": 0.0111,
+      "conflict": 0.1279,
       "actual_ret": -0.8275,
       "consensus": "full"
     },
     {
       "date": "2025-12-09",
-      "conflict": 0.0653,
+      "conflict": 0.1202,
       "actual_ret": -0.645,
       "consensus": "full"
     },
     {
       "date": "2025-12-10",
-      "conflict": 0.1226,
+      "conflict": 0.156,
       "actual_ret": -0.1113,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-12-11",
-      "conflict": 0.1973,
+      "conflict": 0.1716,
       "actual_ret": 0.5897,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-12-12",
-      "conflict": 0.2589,
+      "conflict": 0.1764,
       "actual_ret": 0.7419,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2025-12-15",
-      "conflict": 0.1919,
+      "conflict": 0.1046,
       "actual_ret": 0.7234,
       "consensus": "full"
     },
     {
       "date": "2025-12-16",
-      "conflict": 0.2804,
+      "conflict": 0.1226,
       "actual_ret": 0.9985,
       "consensus": "partial"
     },
     {
       "date": "2025-12-17",
-      "conflict": 0.1719,
+      "conflict": 0.1654,
       "actual_ret": 0.7726,
       "consensus": "partial"
     },
     {
       "date": "2025-12-18",
-      "conflict": 0.1782,
+      "conflict": 0.2118,
       "actual_ret": 0.9042,
       "consensus": "partial"
     },
     {
       "date": "2025-12-19",
-      "conflict": 0.1759,
+      "conflict": 0.1098,
       "actual_ret": 0.8012,
       "consensus": "partial"
     },
     {
       "date": "2025-12-22",
-      "conflict": 0.1692,
+      "conflict": 0.2271,
       "actual_ret": 1.1191,
       "consensus": "partial"
     },
     {
       "date": "2025-12-23",
-      "conflict": 0.2203,
+      "conflict": 0.1323,
       "actual_ret": 0.7147,
       "consensus": "partial"
     },
     {
       "date": "2025-12-24",
-      "conflict": 0.2819,
+      "conflict": 0.1321,
       "actual_ret": 0.7961,
       "consensus": "partial"
     },
     {
       "date": "2025-12-25",
-      "conflict": 0.282,
+      "conflict": 0.1344,
       "actual_ret": 0.3878,
       "consensus": "partial"
     },
     {
       "date": "2025-12-26",
-      "conflict": 0.2501,
+      "conflict": 0.0208,
       "actual_ret": -0.4285,
       "consensus": "partial"
     },
     {
       "date": "2025-12-29",
-      "conflict": 0.2016,
+      "conflict": 0.1481,
       "actual_ret": -1.02,
       "consensus": "partial"
     },
     {
       "date": "2025-12-30",
-      "conflict": 0.3001,
+      "conflict": 0.1232,
       "actual_ret": -2.0562,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2025-12-31",
-      "conflict": 0.1785,
+      "conflict": 0.2002,
       "actual_ret": -1.862,
       "consensus": "partial"
     },
     {
       "date": "2026-01-01",
-      "conflict": 0.014,
+      "conflict": 0.3381,
       "actual_ret": -2.035,
-      "consensus": "full"
-    },
-    {
-      "date": "2026-01-02",
-      "conflict": 0.1583,
-      "actual_ret": -1.453,
       "consensus": "partial"
     },
     {
-      "date": "2026-01-05",
-      "conflict": 0.1052,
-      "actual_ret": -0.6716,
+      "date": "2026-01-02",
+      "conflict": 0.1442,
+      "actual_ret": -1.453,
       "consensus": "full"
     },
     {
+      "date": "2026-01-05",
+      "conflict": 0.3499,
+      "actual_ret": -0.6716,
+      "consensus": "conflict"
+    },
+    {
       "date": "2026-01-06",
-      "conflict": 0.1205,
+      "conflict": 0.3503,
       "actual_ret": -1.1564,
       "consensus": "partial"
     },
     {
       "date": "2026-01-07",
-      "conflict": 0.1703,
+      "conflict": 0.2321,
       "actual_ret": -1.0742,
       "consensus": "full"
     },
     {
       "date": "2026-01-08",
-      "conflict": 0.2064,
+      "conflict": 0.1474,
       "actual_ret": -1.122,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-01-09",
-      "conflict": 0.2946,
+      "conflict": 0.211,
       "actual_ret": -1.5132,
       "consensus": "partial"
     },
     {
       "date": "2026-01-12",
-      "conflict": 0.3263,
+      "conflict": 0.1858,
       "actual_ret": -2.0635,
       "consensus": "partial"
     },
     {
       "date": "2026-01-13",
-      "conflict": 0.2786,
+      "conflict": 0.2721,
       "actual_ret": -2.3504,
       "consensus": "partial"
     },
     {
       "date": "2026-01-14",
-      "conflict": 0.1899,
+      "conflict": 0.1843,
       "actual_ret": -2.3202,
       "consensus": "partial"
     },
     {
       "date": "2026-01-15",
-      "conflict": 0.1859,
+      "conflict": 0.2102,
       "actual_ret": -2.4064,
       "consensus": "partial"
     },
     {
       "date": "2026-01-16",
-      "conflict": 0.0898,
+      "conflict": 0.2972,
       "actual_ret": -2.5254,
       "consensus": "partial"
     },
     {
       "date": "2026-01-19",
-      "conflict": 0.0908,
+      "conflict": 0.2777,
       "actual_ret": -2.5254,
       "consensus": "partial"
     },
     {
       "date": "2026-01-20",
-      "conflict": 0.1044,
+      "conflict": 0.0205,
       "actual_ret": -1.5004,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-01-21",
-      "conflict": 0.1364,
+      "conflict": 0.2244,
       "actual_ret": -1.0733,
       "consensus": "partial"
     },
     {
       "date": "2026-01-22",
-      "conflict": 0.1224,
+      "conflict": 0.182,
       "actual_ret": -0.4372,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2026-01-23",
-      "conflict": 0.1129,
+      "conflict": 0.2955,
       "actual_ret": 0.2049,
       "consensus": "partial"
     },
     {
       "date": "2026-01-26",
-      "conflict": 0.0935,
+      "conflict": 0.3225,
       "actual_ret": 0.6801,
       "consensus": "partial"
     },
     {
       "date": "2026-01-27",
-      "conflict": 0.1127,
+      "conflict": 0.3679,
       "actual_ret": 1.7252,
       "consensus": "partial"
     },
     {
       "date": "2026-01-28",
-      "conflict": 0.0934,
+      "conflict": 0.3943,
       "actual_ret": 1.296,
       "consensus": "partial"
     },
     {
       "date": "2026-01-29",
-      "conflict": 0.1036,
+      "conflict": 0.2622,
       "actual_ret": 1.5683,
       "consensus": "partial"
     },
     {
       "date": "2026-01-30",
-      "conflict": 0.0006,
+      "conflict": 0.1649,
       "actual_ret": 0.6392,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2026-02-02",
-      "conflict": 0.0596,
+      "conflict": 0.2982,
       "actual_ret": 0.7889,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2026-02-03",
-      "conflict": 0.1594,
+      "conflict": 0.1919,
       "actual_ret": 1.6523,
       "consensus": "partial"
     },
     {
       "date": "2026-02-04",
-      "conflict": 0.1107,
+      "conflict": 0.2945,
       "actual_ret": 1.178,
       "consensus": "partial"
     },
     {
       "date": "2026-02-05",
-      "conflict": 0.1653,
+      "conflict": 0.2336,
       "actual_ret": 1.5334,
       "consensus": "partial"
     },
     {
       "date": "2026-02-06",
-      "conflict": 0.1051,
+      "conflict": 0.0892,
       "actual_ret": 1.393,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-09",
-      "conflict": 0.1415,
+      "conflict": 0.1379,
       "actual_ret": 2.4375,
       "consensus": "partial"
     },
     {
       "date": "2026-02-10",
-      "conflict": 0.2681,
+      "conflict": 0.033,
       "actual_ret": 2.0971,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-11",
-      "conflict": 0.3408,
+      "conflict": 0.184,
       "actual_ret": 2.4786,
       "consensus": "partial"
     },
     {
       "date": "2026-02-12",
-      "conflict": 0.3715,
+      "conflict": 0.1398,
       "actual_ret": 2.899,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-13",
-      "conflict": 0.2859,
+      "conflict": 0.0943,
       "actual_ret": 3.5921,
       "consensus": "partial"
     },
     {
       "date": "2026-02-16",
-      "conflict": 0.2816,
+      "conflict": 0.0932,
       "actual_ret": 2.9211,
       "consensus": "partial"
     },
     {
       "date": "2026-02-17",
-      "conflict": 0.3097,
+      "conflict": 0.0582,
       "actual_ret": 2.4907,
       "consensus": "partial"
     },
     {
       "date": "2026-02-18",
-      "conflict": 0.4334,
+      "conflict": 0.1367,
       "actual_ret": 2.4463,
       "consensus": "partial"
     },
     {
       "date": "2026-02-19",
-      "conflict": 0.3056,
+      "conflict": 0.008,
       "actual_ret": 1.3275,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-20",
-      "conflict": 0.3867,
+      "conflict": 0.0114,
       "actual_ret": 1.8916,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-23",
-      "conflict": 0.19,
+      "conflict": 0.0324,
       "actual_ret": 1.2794,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-02-24",
-      "conflict": 0.2869,
+      "conflict": 0.0667,
       "actual_ret": 1.5836,
       "consensus": "partial"
     },
     {
       "date": "2026-02-25",
-      "conflict": 0.3112,
+      "conflict": 0.0715,
       "actual_ret": 1.9447,
       "consensus": "partial"
     },
     {
       "date": "2026-02-26",
-      "conflict": 0.3105,
+      "conflict": 0.0382,
       "actual_ret": 2.1577,
       "consensus": "partial"
     },
     {
       "date": "2026-02-27",
-      "conflict": 0.2555,
+      "conflict": 0.018,
       "actual_ret": 2.6022,
       "consensus": "partial"
     },
     {
       "date": "2026-03-02",
-      "conflict": 0.2931,
+      "conflict": 0.0679,
       "actual_ret": 2.1651,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-03-03",
-      "conflict": 0.1118,
+      "conflict": 0.0398,
       "actual_ret": 0.9187,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-03-04",
-      "conflict": 0.0737,
+      "conflict": 0.0305,
       "actual_ret": 0.891,
       "consensus": "partial"
     },
     {
       "date": "2026-03-05",
-      "conflict": 0.0234,
+      "conflict": 0.2881,
       "actual_ret": 0.7149,
-      "consensus": "full"
+      "consensus": "partial"
     },
     {
       "date": "2026-03-06",
-      "conflict": 0.0738,
+      "conflict": 0.4447,
       "actual_ret": 1.0506,
-      "consensus": "partial"
+      "consensus": "conflict"
     },
     {
       "date": "2026-03-09",
-      "conflict": 0.0806,
+      "conflict": 0.3127,
       "actual_ret": 0.8066,
-      "consensus": "full"
+      "consensus": "conflict"
     },
     {
       "date": "2026-03-10",
-      "conflict": 0.1149,
+      "conflict": 0.1166,
       "actual_ret": 0.8196,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-03-11",
-      "conflict": 0.0611,
+      "conflict": 0.1631,
       "actual_ret": -0.2016,
-      "consensus": "partial"
+      "consensus": "full"
     },
     {
       "date": "2026-03-12",
-      "conflict": 0.2557,
+      "conflict": 0.3995,
       "actual_ret": -0.7118,
       "consensus": "partial"
     }
   ],
   "soros_hypothesis": {
     "description": "冲突分数>0.6是否为regime转换的领先指标?",
-    "high_conflict_pct": 0.0,
-    "high_conflict_volatility": null,
-    "low_conflict_volatility": 1.3337
+    "high_conflict_pct": 3.4,
+    "high_conflict_volatility": 1.5427,
+    "low_conflict_volatility": 1.4878
   }
 }

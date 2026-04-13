@@ -11,8 +11,10 @@ from xgboost import XGBRegressor
 from scipy.stats import spearmanr
 
 from config_v2 import (
-    CPCV_N_BLOCKS, CPCV_N_TEST, XGB_PARAMS, FACTOR_COLS,
+    CPCV_N_BLOCKS_V2 as CPCV_N_BLOCKS,
+    CPCV_N_TEST, XGB_PARAMS, FACTOR_COLS,
     FORWARD_DAYS, TRAIN_END, OUTPUT_DIR,
+    SAMPLE_WEIGHT_DECAY, SAMPLE_WEIGHT_HALFLIFE_DAYS,
 )
 
 
@@ -65,9 +67,18 @@ def run_cpcv_validation(features_df: pd.DataFrame) -> dict:
         X_train, y_train = X[purged_train], y[purged_train]
         X_test, y_test = X[test_idx], y[test_idx]
 
+        # Sample weight decay (3.3): recent samples get more weight
+        train_dates = df.index[purged_train]
+        if SAMPLE_WEIGHT_DECAY and len(train_dates) > 0:
+            last_date = train_dates.max()
+            days_from_last = np.array([(last_date - d).days for d in train_dates], dtype=float)
+            weights = np.power(0.5, days_from_last / SAMPLE_WEIGHT_HALFLIFE_DAYS)
+        else:
+            weights = np.ones(len(purged_train))
+
         # Train
         model = XGBRegressor(**XGB_PARAMS)
-        model.fit(X_train, y_train, verbose=False)
+        model.fit(X_train, y_train, sample_weight=weights, verbose=False)
         preds = model.predict(X_test)
 
         # IC

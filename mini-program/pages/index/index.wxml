@@ -1,0 +1,122 @@
+<view class="page">
+  <view wx:if="{{ loading }}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- Header -->
+    <view class="header flex-row justify-between items-center px-30 py-16">
+      <text class="text-base text-muted">{{ date }}</text>
+      <text class="badge badge-info">{{ regime }}</text>
+    </view>
+
+    <!-- Score Gauge -->
+    <view class="card mx-24">
+      <score-gauge score="{{ gammaScore }}" label="γ Score" />
+      <view class="flex-row justify-center items-center mt-16 gap-16">
+        <text class="badge badge-{{ gammaZone.zone }}">{{ gammaZone.label }}</text>
+        <text class="text-lg font-bold {{ action === 'LONG' ? 'text-bull' : action === 'SHORT' ? 'text-bear' : 'text-neutral' }}">{{ action }}</text>
+      </view>
+    </view>
+
+    <!-- Quick Decision Bar (NEW) -->
+    <view class="decision-bar mx-24">
+      <view class="decision-cell">
+        <text class="decision-label">确信度</text>
+        <text class="decision-value {{ confidence === '高确信' ? 'text-bull' : confidence === '低确信' ? 'text-bear' : 'text-neutral' }}">{{ confidence }}</text>
+      </view>
+      <view class="decision-divider"></view>
+      <view class="decision-cell">
+        <text class="decision-label">仓位系数</text>
+        <text class="decision-value text-accent">{{ positionSize }}</text>
+      </view>
+      <view class="decision-divider"></view>
+      <view class="decision-cell">
+        <text class="decision-label">冲突分</text>
+        <text class="decision-value">{{ conflict }}</text>
+      </view>
+    </view>
+
+    <!-- Stats Grid -->
+    <view class="grid-2col mx-24">
+      <view class="g-card">
+        <text class="g-label">DXY</text>
+        <text class="g-value">{{ dxy }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">ML 预测</text>
+        <text class="g-value {{ mlSignal === 'BUY' ? 'text-bull' : mlSignal === 'SELL' ? 'text-bear' : 'text-neutral' }}">{{ mlPred }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">r_f 利差</text>
+        <text class="g-value">{{ rf }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">π_risk</text>
+        <text class="g-value">{{ piRisk }}</text>
+      </view>
+    </view>
+
+    <!-- 24H Catalysts (NEW) -->
+    <view class="section-header mx-24">
+      <view class="section-line"></view>
+      <text class="section-title">未来 24H 关键触发</text>
+      <view class="section-line"></view>
+    </view>
+    <view class="card mx-24">
+      <view wx:for="{{ catalysts }}" wx:key="event" class="catalyst-row">
+        <view class="catalyst-time">
+          <text class="text-xs text-muted">{{ item.time }}</text>
+        </view>
+        <view class="catalyst-body">
+          <text class="text-sm font-medium">{{ item.event }}</text>
+          <view class="flex-row items-center gap-16 mt-4">
+            <text class="badge {{ item.impact === 'high' ? 'badge-bear' : 'badge-neutral' }}">{{ item.impact === 'high' ? '高影响' : '中影响' }}</text>
+            <text class="text-xs text-muted">{{ item.direction }}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Benefit / Avoid Assets (NEW) -->
+    <view class="section-header mx-24">
+      <view class="section-line"></view>
+      <text class="section-title">资产配置建议</text>
+      <view class="section-line"></view>
+    </view>
+    <view class="asset-cols mx-24">
+      <!-- Benefit -->
+      <view class="asset-col">
+        <text class="text-sm font-semibold text-bull mb-16">▲ 受益资产</text>
+        <view wx:for="{{ benefitAssets }}" wx:key="ticker" class="asset-item">
+          <view class="flex-row items-center gap-16">
+            <text class="text-sm font-medium">{{ item.name }}</text>
+            <text class="ticker-badge">{{ item.ticker }}</text>
+          </view>
+          <text class="text-xs text-muted">{{ item.reason }}</text>
+        </view>
+      </view>
+      <!-- Avoid -->
+      <view class="asset-col">
+        <text class="text-sm font-semibold text-bear mb-16">▼ 回避资产</text>
+        <view wx:for="{{ avoidAssets }}" wx:key="ticker" class="asset-item">
+          <view class="flex-row items-center gap-16">
+            <text class="text-sm font-medium">{{ item.name }}</text>
+            <text class="ticker-badge">{{ item.ticker }}</text>
+          </view>
+          <text class="text-xs text-muted">{{ item.reason }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- NAV Chart -->
+    <view class="section-header mx-24">
+      <view class="section-line"></view>
+      <text class="section-title">净值曲线 (30d)</text>
+      <view class="section-line"></view>
+    </view>
+    <view class="card mx-24">
+      <canvas type="2d" id="navChart" class="nav-chart"></canvas>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,44 @@
+.page { min-height: 100vh; padding-bottom: 40rpx; }
+.mx-24 { margin-left: 24rpx; margin-right: 24rpx; }
+.mt-20 { margin-top: 20rpx; }
+.mb-16 { margin-bottom: 16rpx; }
+
+/* Hero decision */
+.hero-card {
+  background: rgba(15,23,42,0.6); border: 1rpx solid rgba(51,65,85,0.5);
+  border-radius: 24rpx; padding: 32rpx; text-align: center;
+}
+.hero-action { font-size: 64rpx; font-weight: 800; letter-spacing: 4rpx; }
+.hero-meta { margin-top: 16rpx; display: flex; justify-content: center; align-items: center; gap: 20rpx; }
+
+/* Grid */
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; margin-top: 16rpx; }
+.g-card { display: flex; flex-direction: column; background: rgba(15,23,42,0.6); border: 1rpx solid rgba(51,65,85,0.5); border-radius: 20rpx; padding: 20rpx 24rpx; }
+.g-label { font-size: 22rpx; color: #64748b; margin-bottom: 8rpx; }
+.g-value { font-size: 36rpx; font-weight: 700; color: #e2e8f0; }
+
+/* Matrix */
+.matrix-row { display: flex; flex-direction: row; }
+.matrix-corner { width: 110rpx; height: 50rpx; }
+.matrix-col-header { flex: 1; text-align: center; padding: 8rpx 0; }
+.matrix-row-header { width: 110rpx; display: flex; align-items: center; justify-content: flex-end; padding-right: 12rpx; }
+.matrix-cell { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14rpx 4rpx; margin: 4rpx; border-radius: 12rpx; background: rgba(15,23,42,0.8); border: 1rpx solid rgba(51,65,85,0.3); }
+.matrix-active { border: 2rpx solid #38bdf8; background: rgba(56,189,248,0.1); }
+.matrix-emoji { font-size: 28rpx; margin-bottom: 4rpx; }
+
+/* Invalidation */
+.inv-row { display: flex; flex-direction: row; padding: 14rpx 0; border-bottom: 1rpx solid rgba(51,65,85,0.2); }
+.inv-row:last-child { border-bottom: none; }
+.inv-icon { width: 40rpx; flex-shrink: 0; font-size: 28rpx; font-weight: 700; }
+.inv-text { flex: 1; line-height: 1.6; }
+
+/* Toggle */
+.section-toggle { padding: 16rpx 0; }
+
+/* Attribution table */
+.attr-table { width: 100%; }
+.attr-row { display: flex; padding: 12rpx 0; border-bottom: 1rpx solid rgba(51,65,85,0.3); }
+.attr-header { border-bottom: 2rpx solid rgba(51,65,85,0.5); }
+.attr-header .attr-cell { color: #64748b; font-weight: 600; }
+.attr-cell { flex: 1; font-size: 22rpx; text-align: center; color: #cbd5e1; }
+.attr-name { flex: 1.5; text-align: left; }

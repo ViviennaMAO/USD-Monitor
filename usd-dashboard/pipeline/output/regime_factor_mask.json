@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-04-12T00:38:47.088564",
+  "regimes": [
+    "加息期",
+    "降息期"
+  ],
+  "masks": {
+    "加息期": {
+      "F1_RateDiff": 1.0,
+      "F2_RealRateDelta": 1.0,
+      "F3_TermSpread": 1.0,
+      "F4_VIX": 1.0,
+      "F5_BEI": 1.0,
+      "F6_YCMomentum": 1.0,
+      "F7_LongYieldDelta": 1.0,
+      "F8_CreditResidual": 1.0,
+      "F9_VolSpread": 1.0,
+      "F10_FundingStress": 1.0
+    },
+    "降息期": {
+      "F1_RateDiff": 1.0,
+      "F2_RealRateDelta": 1.0,
+      "F3_TermSpread": 1.0,
+      "F4_VIX": 1.0,
+      "F5_BEI": 1.0,
+      "F6_YCMomentum": 1.0,
+      "F7_LongYieldDelta": 1.0,
+      "F8_CreditResidual": 1.0,
+      "F9_VolSpread": 1.0,
+      "F10_FundingStress": 1.0
+    }
+  },
+  "factor_regime_ic": {
+    "加息期": {
+      "F1_RateDiff": 0.0018,
+      "F2_RealRateDelta": 0.0887,
+      "F3_TermSpread": -0.0513,
+      "F4_VIX": 0.0021,
+      "F5_BEI": 0.1273,
+      "F6_YCMomentum": 0.1219,
+      "F7_LongYieldDelta": 0.0979,
+      "F8_CreditResidual": 0.0055,
+      "F9_VolSpread": -0.1389,
+      "F10_FundingStress": -0.0375
+    },
+    "降息期": {
+      "F1_RateDiff": null,
+      "F2_RealRateDelta": null,
+      "F3_TermSpread": null,
+      "F4_VIX": null,
+      "F5_BEI": null,
+      "F6_YCMomentum": null,
+      "F7_LongYieldDelta": null,
+      "F8_CreditResidual": null,
+      "F9_VolSpread": null,
+      "F10_FundingStress": null
+    }
+  },
+  "min_ic_threshold": -0.15,
+  "min_obs_per_regime": 40
+}

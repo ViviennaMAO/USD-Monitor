@@ -1,0 +1,140 @@
+<view class="page">
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{ tabs }}" wx:key="index"
+      class="tab-item {{ activeTab === index ? 'active' : '' }}"
+      data-idx="{{ index }}"
+      bindtap="switchTab"
+    >{{ item }}</view>
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{ loading }}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:if="{{ !loading }}" class="tab-content px-24">
+
+    <!-- ═══ Tab 0: Cross-Asset Correlation ═══ -->
+    <view wx:if="{{ activeTab === 0 }}">
+      <view class="flex-row justify-between items-center mb-16">
+        <text class="card-title" style="margin-bottom:0">跨资产相关性矩阵</text>
+        <view class="period-toggle">
+          <view class="period-btn {{ corrPeriod === '30d' ? 'active' : '' }}" data-p="30d" bindtap="switchPeriod">30d</view>
+          <view class="period-btn {{ corrPeriod === '90d' ? 'active' : '' }}" data-p="90d" bindtap="switchPeriod">90d</view>
+        </view>
+      </view>
+      <view class="card">
+        <canvas type="2d" id="corrChart" class="corr-chart" style="height: {{ chartHeight }}rpx;"></canvas>
+      </view>
+      <!-- Key insights -->
+      <view class="verify-card" wx:if="{{ corrInsights.length > 0 }}">
+        <text class="verify-title">关键发现</text>
+        <view wx:for="{{ corrInsights }}" wx:key="text" class="trigger-item" style="margin-top:8rpx;">
+          <text class="trigger-bullet">→</text>
+          <text class="trigger-text">{{ item.text }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ═══ Tab 1: Rates Verification ═══ -->
+    <view wx:if="{{ activeTab === 1 }}">
+      <!-- Yield curve judgment -->
+      <view class="judgment-bar {{ ratesJudgment.dir === 'bull' ? 'judgment-bull' : ratesJudgment.dir === 'bear' ? 'judgment-bear' : 'judgment-neutral' }}">
+        <text class="judgment-icon">{{ ratesJudgment.icon }}</text>
+        <text class="judgment-text {{ ratesJudgment.dir === 'bull' ? 'text-bull' : ratesJudgment.dir === 'bear' ? 'text-bear' : 'text-neutral' }}">{{ ratesJudgment.text }}</text>
+        <text class="badge {{ ratesJudgment.dir === 'bull' ? 'badge-bull' : ratesJudgment.dir === 'bear' ? 'badge-bear' : 'badge-neutral' }}">{{ ratesJudgment.confirmed }}/{{ ratesJudgment.total }}</text>
+      </view>
+
+      <!-- Key rates scores -->
+      <view class="score-row">
+        <view class="score-item">
+          <text class="score-label">利差分</text>
+          <text class="score-value text-accent">{{ ratesScores.spread }}</text>
+        </view>
+        <view class="score-item">
+          <text class="score-label">实际利率</text>
+          <text class="score-value">{{ ratesScores.realRate }}</text>
+        </view>
+        <view class="score-item">
+          <text class="score-label">期限结构</text>
+          <text class="score-value">{{ ratesScores.termSpread }}</text>
+        </view>
+      </view>
+
+      <!-- Verification indicators -->
+      <view class="verify-card">
+        <view class="verify-header">
+          <text class="verify-title">验证指标</text>
+          <text class="badge {{ ratesConfirmedPct >= 60 ? 'badge-bull' : ratesConfirmedPct >= 40 ? 'badge-neutral' : 'badge-bear' }}">{{ ratesConfirmedPct }}% 已确认</text>
+        </view>
+        <view wx:for="{{ ratesIndicators }}" wx:key="name" class="ind-row">
+          <view class="ind-dot {{ item.status === 'confirmed' ? 'ind-dot-green' : item.status === 'pending' ? 'ind-dot-yellow' : 'ind-dot-red' }}"></view>
+          <text class="ind-name">{{ item.name }}</text>
+          <text class="ind-value">{{ item.value }}</text>
+          <text class="ind-status badge {{ item.status === 'confirmed' ? 'status-confirmed' : item.status === 'pending' ? 'status-pending' : 'status-unconfirmed' }}">{{ item.statusText }}</text>
+        </view>
+      </view>
+
+      <!-- Trigger conditions -->
+      <view class="trigger-box">
+        <text class="text-sm text-muted mb-16" style="display:block;margin-bottom:12rpx;">触发条件</text>
+        <view wx:for="{{ ratesTriggers }}" wx:key="text" class="trigger-item">
+          <text class="trigger-bullet">⚡</text>
+          <text class="trigger-text">{{ item.text }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ═══ Tab 2: Liquidity Verification ═══ -->
+    <view wx:if="{{ activeTab === 2 }}">
+      <!-- Liquidity judgment -->
+      <view class="judgment-bar {{ liqJudgment.dir === 'bull' ? 'judgment-bull' : liqJudgment.dir === 'bear' ? 'judgment-bear' : 'judgment-neutral' }}">
+        <text class="judgment-icon">{{ liqJudgment.icon }}</text>
+        <text class="judgment-text {{ liqJudgment.dir === 'bull' ? 'text-bull' : liqJudgment.dir === 'bear' ? 'text-bear' : 'text-neutral' }}">{{ liqJudgment.text }}</text>
+        <text class="badge {{ liqJudgment.dir === 'bull' ? 'badge-bull' : liqJudgment.dir === 'bear' ? 'badge-bear' : 'badge-neutral' }}">{{ liqJudgment.confirmed }}/{{ liqJudgment.total }}</text>
+      </view>
+
+      <!-- Liquidity scores -->
+      <view class="score-row">
+        <view class="score-item">
+          <text class="score-label">SOFR</text>
+          <text class="score-value text-accent">{{ liqScores.sofr }}</text>
+        </view>
+        <view class="score-item">
+          <text class="score-label">RRP</text>
+          <text class="score-value">{{ liqScores.rrp }}</text>
+        </view>
+        <view class="score-item">
+          <text class="score-label">压力指数</text>
+          <text class="score-value">{{ liqScores.stress }}</text>
+        </view>
+      </view>
+
+      <!-- Verification indicators -->
+      <view class="verify-card">
+        <view class="verify-header">
+          <text class="verify-title">验证指标</text>
+          <text class="badge {{ liqConfirmedPct >= 60 ? 'badge-bull' : liqConfirmedPct >= 40 ? 'badge-neutral' : 'badge-bear' }}">{{ liqConfirmedPct }}% 已确认</text>
+        </view>
+        <view wx:for="{{ liqIndicators }}" wx:key="name" class="ind-row">
+          <view class="ind-dot {{ item.status === 'confirmed' ? 'ind-dot-green' : item.status === 'pending' ? 'ind-dot-yellow' : 'ind-dot-red' }}"></view>
+          <text class="ind-name">{{ item.name }}</text>
+          <text class="ind-value">{{ item.value }}</text>
+          <text class="ind-status badge {{ item.status === 'confirmed' ? 'status-confirmed' : item.status === 'pending' ? 'status-pending' : 'status-unconfirmed' }}">{{ item.statusText }}</text>
+        </view>
+      </view>
+
+      <!-- Trigger conditions -->
+      <view class="trigger-box">
+        <text class="text-sm text-muted" style="display:block;margin-bottom:12rpx;">触发条件</text>
+        <view wx:for="{{ liqTriggers }}" wx:key="text" class="trigger-item">
+          <text class="trigger-bullet">⚡</text>
+          <text class="trigger-text">{{ item.text }}</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

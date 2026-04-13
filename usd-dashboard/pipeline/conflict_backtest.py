@@ -58,13 +58,19 @@ def _proxy_gamma(row) -> float:
     Approximate γ score from ML factors when actual Phase 1 γ unavailable.
     Uses rf-related factors as proxy.
 
-    γ_proxy = 50 + 10*(F1_RateDiff) + 5*(F2_RealRate) - 5*(F4_VIX_norm) + 3*(F6_RatePath)
+    v2: γ_proxy = 50 + 10*(F1_RateDiff) + 5*(F2_RealRateDelta) - 5*(F4_VIX) + 3*(F6_YCMomentum)
     Clipped to [0, 100].
     """
-    f1 = row.get("F1_RateDiff", 0) if not np.isnan(row.get("F1_RateDiff", 0)) else 0
-    f2 = row.get("F2_RealRate", 0) if not np.isnan(row.get("F2_RealRate", 0)) else 0
-    f4 = row.get("F4_VIX", 0) if not np.isnan(row.get("F4_VIX", 0)) else 0
-    f6 = row.get("F6_RatePath", 0) if not np.isnan(row.get("F6_RatePath", 0)) else 0
+    def _safe(val):
+        try:
+            return 0 if (val is None or np.isnan(val)) else val
+        except (TypeError, ValueError):
+            return 0
+
+    f1 = _safe(row.get("F1_RateDiff", 0))
+    f2 = _safe(row.get("F2_RealRateDelta", row.get("F2_RealRate", 0)))
+    f4 = _safe(row.get("F4_VIX", 0))
+    f6 = _safe(row.get("F6_YCMomentum", row.get("F6_RatePath", 0)))
 
     gamma = 50.0 + 10 * f1 + 5 * f2 - 5 * f4 + 3 * f6
     return float(np.clip(gamma, 0, 100))
@@ -254,13 +260,14 @@ def run_conflict_backtest(features_df):
             else:
                 strat_rets.append(0)
 
-        sr = np.array(strat_rets)
+        # 3.4 fix: scale returns to daily exposure (each 20d return contributes 1/20 per day)
+        sr = np.array(strat_rets) / FORWARD_DAYS
         consensus_stats.append({
             "type": ctype,
             "label": {"full": "完全共识", "partial": "部分共识", "conflict": "信号矛盾"}[ctype],
             "count": int(len(subset)),
-            "avg_strat_return": round(float(sr.mean()), 4),
-            "sharpe": round(float(sr.mean() / sr.std() * np.sqrt(252 / FORWARD_DAYS)) if sr.std() > 0 else 0, 4),
+            "avg_strat_return": round(float(sr.mean() * FORWARD_DAYS), 4),  # display as per-trade
+            "sharpe": round(float(sr.mean() / sr.std() * np.sqrt(252)) if sr.std() > 0 else 0, 4),
             "hit_rate": round(float((sr > 0).mean()), 4),
             "avg_conflict": round(float(subset["conflict"].mean()), 4),
         })
@@ -297,9 +304,10 @@ def run_conflict_backtest(features_df):
                     ret = 0
             strat_rets.append(ret)
 
-        sr = np.array(strat_rets)
-        total_ret = float(sr.sum())
-        sharpe = float(sr.mean() / sr.std() * np.sqrt(252 / FORWARD_DAYS)) if sr.std() > 0 else 0
+        # 3.4 fix: scale to daily exposure for proper Sharpe/NAV
+        sr = np.array(strat_rets) / FORWARD_DAYS
+        total_ret = float(sr.sum())  # cumulative daily P&L
+        sharpe = float(sr.mean() / sr.std() * np.sqrt(252)) if sr.std() > 0 else 0
         max_dd = _compute_max_dd(sr)
 
         grid_results.append({
@@ -520,6 +528,17 @@ def run_signal_attribution(features_df):
             base_ret = strategies["matrix_conflict"]["returns"][-1]
             strategies["full_router"]["returns"].append(base_ret * min(regime_mult, 1.2))
 
+    # ── 3.4 Fix: Frequency-aligned P&L computation ─────────────────────
+    # The model predicts 20-day forward returns. Taking a daily signal and
+    # applying the full 20d return creates 20 overlapping positions
+    # (equivalent to 20× leverage). Scale each daily return by 1/FORWARD_DAYS
+    # so that the total daily exposure equals one full position.
+    #
+    # Mathematically: at any day t, the effective position is the average of
+    # the last 20 days' signals. Daily P&L = (1/20) × 20d_return × signal.
+    # This is the standard "overlapping windows" correction for attribution.
+    SCALE = 1.0 / FORWARD_DAYS
+
     # Compute statistics
     results = []
     for key, strat in strategies.items():
@@ -527,15 +546,19 @@ def run_signal_attribution(features_df):
         if len(rets) == 0:
             continue
 
-        total_ret = float(rets.sum())
-        avg_ret = float(rets.mean())
-        std_ret = float(rets.std()) if rets.std() > 0 else 0.001
-        sharpe = avg_ret / std_ret * np.sqrt(252 / FORWARD_DAYS) if std_ret > 0 else 0
-        max_dd = _compute_max_dd(rets)
-        hit_rate = float((rets > 0).mean())
+        # Apply frequency correction: each daily signal holds 1/20 position
+        daily_rets = rets * SCALE
 
-        # Cumulative NAV for chart
-        nav = np.cumprod(1 + rets / 100)
+        total_ret = float(daily_rets.sum())
+        avg_ret = float(daily_rets.mean())
+        std_ret = float(daily_rets.std()) if daily_rets.std() > 0 else 0.001
+        # Sharpe annualized on daily basis (252 trading days/year)
+        sharpe = avg_ret / std_ret * np.sqrt(252) if std_ret > 0 else 0
+        max_dd = _compute_max_dd(daily_rets)
+        hit_rate = float((rets > 0).mean())  # hit rate still based on 20d direction
+
+        # Cumulative NAV with realistic compounding
+        nav = np.cumprod(1 + daily_rets / 100)
         step = max(1, len(nav) // 100)
         nav_series = [round(float(nav[j]), 4) for j in range(0, len(nav), step)]
 

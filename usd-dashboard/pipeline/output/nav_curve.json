@@ -1,8 +1,8 @@
 {
-  "total_return": 2.1,
-  "sharpe": 1.4827,
-  "max_drawdown": 0.0067,
-  "win_rate": 0.625,
+  "total_return": -4.52,
+  "sharpe": -1.4144,
+  "max_drawdown": 0.0574,
+  "win_rate": 0.4444,
   "history": [
     {
       "date": "2025-10-01",
@@ -90,7 +90,7 @@
     },
     {
       "date": "2025-10-21",
-      "nav": 1.011882,
+      "nav": 1.011579,
       "dxy_norm": 1.012486,
       "drawdown": 0.0
     },
@@ -98,709 +98,733 @@
       "date": "2025-10-22",
       "nav": 1.011579,
       "dxy_norm": 1.012179,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-23",
       "nav": 1.011579,
       "dxy_norm": 1.012588,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-24",
       "nav": 1.011579,
       "dxy_norm": 1.012691,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-27",
       "nav": 1.011579,
       "dxy_norm": 1.010951,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-28",
       "nav": 1.011579,
       "dxy_norm": 1.01003,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-29",
       "nav": 1.011579,
       "dxy_norm": 1.015454,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-30",
       "nav": 1.011579,
       "dxy_norm": 1.018627,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-10-31",
       "nav": 1.011579,
       "dxy_norm": 1.02139,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-03",
       "nav": 1.011579,
       "dxy_norm": 1.022106,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-04",
       "nav": 1.011579,
       "dxy_norm": 1.025688,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-05",
       "nav": 1.011579,
       "dxy_norm": 1.025484,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-06",
       "nav": 1.011579,
       "dxy_norm": 1.020673,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-07",
       "nav": 1.011579,
       "dxy_norm": 1.019343,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-10",
-      "nav": 1.011579,
+      "nav": 1.018025,
       "dxy_norm": 1.019548,
-      "drawdown": 0.0003
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-11",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.01791,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-12",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.018115,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-13",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.015045,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-14",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.015966,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-17",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.019241,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-18",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.018831,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-19",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.025791,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-20",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.025074,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-21",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.025279,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-24",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.02487,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-25",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.019957,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-26",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.019343,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-27",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.019343,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-11-28",
-      "nav": 1.005246,
+      "nav": 1.018025,
       "dxy_norm": 1.01791,
-      "drawdown": 0.006559
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-01",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.017398,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-02",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.016887,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-03",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.011667,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-04",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.0131,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-05",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.0131,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-08",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.014123,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-09",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.015454,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-10",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.011053,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-11",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.00655,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-12",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.007062,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-15",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.004503,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-16",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.004503,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-17",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.006755,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-18",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.007369,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-19",
-      "nav": 1.005148,
+      "nav": 1.01956,
       "dxy_norm": 1.009109,
-      "drawdown": 0.006655
+      "drawdown": 0.0
     },
     {
       "date": "2025-12-22",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.005936,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-23",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.002354,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-24",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.002763,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-25",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.002763,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-26",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.003173,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-29",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.003377,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-30",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.005424,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2025-12-31",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.005834,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-01",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.005834,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-02",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.007266,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-05",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.005731,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-06",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.008904,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-07",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.009927,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-08",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.012486,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-09",
-      "nav": 1.015866,
+      "nav": 1.007465,
       "dxy_norm": 1.014533,
-      "drawdown": 0.0
+      "drawdown": 0.011863
     },
     {
       "date": "2026-01-12",
-      "nav": 1.009367,
+      "nav": 1.013005,
       "dxy_norm": 1.01177,
-      "drawdown": 0.006397
+      "drawdown": 0.006429
     },
     {
       "date": "2026-01-13",
-      "nav": 1.009367,
+      "nav": 1.013005,
       "dxy_norm": 1.014533,
-      "drawdown": 0.006397
+      "drawdown": 0.006429
     },
     {
       "date": "2026-01-14",
-      "nav": 1.009367,
+      "nav": 1.013005,
       "dxy_norm": 1.014533,
-      "drawdown": 0.006397
+      "drawdown": 0.006429
     },
     {
       "date": "2026-01-15",
-      "nav": 1.009367,
+      "nav": 1.013005,
       "dxy_norm": 1.016477,
-      "drawdown": 0.006397
+      "drawdown": 0.006429
     },
     {
       "date": "2026-01-16",
-      "nav": 1.009367,
+      "nav": 1.012701,
       "dxy_norm": 1.017194,
-      "drawdown": 0.006397
+      "drawdown": 0.006727
     },
     {
       "date": "2026-01-19",
-      "nav": 1.009367,
+      "nav": 1.012701,
       "dxy_norm": 1.017194,
-      "drawdown": 0.006397
+      "drawdown": 0.006727
     },
     {
       "date": "2026-01-20",
-      "nav": 1.009367,
+      "nav": 1.012701,
       "dxy_norm": 1.009518,
-      "drawdown": 0.006397
+      "drawdown": 0.006727
     },
     {
       "date": "2026-01-21",
-      "nav": 1.009367,
+      "nav": 1.012701,
       "dxy_norm": 1.010746,
-      "drawdown": 0.006397
+      "drawdown": 0.006727
     },
     {
       "date": "2026-01-22",
-      "nav": 1.009367,
+      "nav": 1.012701,
       "dxy_norm": 1.006652,
-      "drawdown": 0.006397
+      "drawdown": 0.006727
     },
     {
       "date": "2026-01-23",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.998874,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-01-26",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.993143,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-01-27",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.984751,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-01-28",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.987105,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-01-29",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.985365,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-01-30",
-      "nav": 1.009367,
+      "nav": 0.99386,
       "dxy_norm": 0.992631,
-      "drawdown": 0.006397
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-02",
-      "nav": 1.021827,
+      "nav": 0.99386,
       "dxy_norm": 0.998977,
-      "drawdown": 0.0
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-03",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.997237,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-04",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.999079,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-05",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 1.001126,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-06",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.999181,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-09",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.990891,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-10",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.990687,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-11",
-      "nav": 1.02152,
+      "nav": 0.99386,
       "dxy_norm": 0.990994,
-      "drawdown": 0.0003
+      "drawdown": 0.025206
     },
     {
       "date": "2026-02-12",
-      "nav": 1.02152,
+      "nav": 0.98674,
       "dxy_norm": 0.992017,
-      "drawdown": 0.0003
+      "drawdown": 0.032191
     },
     {
       "date": "2026-02-13",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 0.991505,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-16",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 0.991505,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-17",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 0.994371,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-18",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 0.999898,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-19",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 1.002252,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-20",
-      "nav": 1.02152,
+      "nav": 0.986444,
       "dxy_norm": 1.000921,
-      "drawdown": 0.0003
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-23",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 0.999898,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-24",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 1.00174,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-25",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 0.999898,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-26",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 1.000819,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-02-27",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 0.998977,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-03-02",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 1.006857,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-03-03",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 1.013714,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-03-04",
-      "nav": 1.02394,
+      "nav": 0.986444,
       "dxy_norm": 1.010848,
-      "drawdown": 0.0
+      "drawdown": 0.032481
     },
     {
       "date": "2026-03-05",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.016477,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-06",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.0131,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-09",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.015045,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-10",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.011463,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-11",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.015556,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-12",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.020776,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-13",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.027121,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-16",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.020469,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-17",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.019138,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-18",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.024358,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-19",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.015556,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-20",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.019855,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-23",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.012691,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-24",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.017603,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-25",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.019343,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-26",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.022413,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-27",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.024972,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-30",
-      "nav": 1.02394,
+      "nav": 0.961303,
       "dxy_norm": 1.028656,
-      "drawdown": 0.0
+      "drawdown": 0.057139
     },
     {
       "date": "2026-03-31",
-      "nav": 1.023632,
+      "nav": 0.961303,
       "dxy_norm": 1.023027,
-      "drawdown": 0.0003
+      "drawdown": 0.057139
     },
     {
       "date": "2026-04-01",
-      "nav": 1.023632,
+      "nav": 0.961303,
       "dxy_norm": 1.019855,
-      "drawdown": 0.0003
+      "drawdown": 0.057139
     },
     {
       "date": "2026-04-02",
-      "nav": 1.023632,
+      "nav": 0.961303,
       "dxy_norm": 1.023744,
-      "drawdown": 0.0003
+      "drawdown": 0.057139
     },
     {
       "date": "2026-04-03",
-      "nav": 1.023632,
-      "dxy_norm": 1.02534,
-      "drawdown": 0.0003
+      "nav": 0.961303,
+      "dxy_norm": 1.023744,
+      "drawdown": 0.057139
+    },
+    {
+      "date": "2026-04-06",
+      "nav": 0.961303,
+      "dxy_norm": 1.023232,
+      "drawdown": 0.057139
+    },
+    {
+      "date": "2026-04-07",
+      "nav": 0.961015,
+      "dxy_norm": 1.019752,
+      "drawdown": 0.057422
+    },
+    {
+      "date": "2026-04-08",
+      "nav": 0.961015,
+      "dxy_norm": 1.013509,
+      "drawdown": 0.057422
+    },
+    {
+      "date": "2026-04-09",
+      "nav": 0.961015,
+      "dxy_norm": 1.013509,
+      "drawdown": 0.057422
     }
   ]
 }

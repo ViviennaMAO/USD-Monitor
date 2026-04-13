@@ -1,0 +1,73 @@
+.page {
+  min-height: 100vh;
+}
+.tab-content {
+  padding-top: 20rpx;
+  padding-bottom: 40rpx;
+}
+
+/* 2-col grid */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+.g-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1rpx solid rgba(51, 65, 85, 0.5);
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+}
+.g-label {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-bottom: 10rpx;
+}
+.g-value {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #e2e8f0;
+  line-height: 1.2;
+}
+
+/* Data rows */
+.data-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid rgba(51, 65, 85, 0.2);
+}
+.data-label {
+  font-size: 26rpx;
+  color: #94a3b8;
+}
+.data-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Factor list */
+.factor-list {
+  display: flex;
+  flex-direction: column;
+}
+.factor-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid rgba(51, 65, 85, 0.2);
+}
+.factor-item:last-child {
+  border-bottom: none;
+}
+
+/* Legend list */
+.legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  line-height: 1.8;
+}

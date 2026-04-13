@@ -20,31 +20,54 @@ ZSCORE_WINDOW = 252         # 1 year rolling Z-score
 ZSCORE_CLIP = 5.0           # Clip Z-scores to [-5, 5]
 CACHE_TTL_HOURS = 20        # Refetch if cache older than this
 
-# ── 10-Factor Universe ─────────────────────────────────────────────────────
+# ── Training Strategy (v2: regime-aware) ──────────────────────────────────
+# Addresses 3.1 (CV expanding window) + 3.3 (IC decay via regime drift)
+CV_MODE = "sliding"              # "expanding" (old) or "sliding"
+CV_WINDOW_DAYS = 756             # 3 years rolling train window for sliding mode
+CV_N_SPLITS = 5
+
+# Sample weight decay — recent samples get more weight
+SAMPLE_WEIGHT_DECAY = True
+SAMPLE_WEIGHT_HALFLIFE_DAYS = 504  # 2-year half-life
+
+# Regime-aware factor gating — mask factors with negative per-regime IC at inference
+REGIME_FACTOR_GATE = True
+REGIME_FACTOR_MIN_IC = -0.15      # Block factors with IC < -0.15 in current regime
+REGIME_FACTOR_MIN_OBS = 40        # Minimum obs to trust regime IC
+
+# CPCV configuration (addresses 3.2)
+CPCV_N_BLOCKS_V2 = 8              # Was 6 → finer regime resolution
+
+# ── 10-Factor Universe (v2: post-bias-audit) ──────────────────────────────
+# Changes from v1:
+#   F2: level → Δ20d (fix Real Rate Illusion bias)
+#   F6: RatePath → YCMomentum (fix redundancy with F1, ICIR=-1.91)
+#   F7: DXYMomentum → RateVol (fix target leakage, ICIR=-2.16)
+#   F8: CreditSpread → CreditResidual (orthogonalize vs F4 VIX, ρ=0.583)
 FACTOR_COLS = [
     "F1_RateDiff",          # Fed-ECB rate differential
-    "F2_RealRate",          # TIPS 10Y real rate
+    "F2_RealRateDelta",     # TIPS 10Y 20d change (was: level)
     "F3_TermSpread",        # 10Y-2Y yield curve slope
     "F4_VIX",               # Equity risk sentiment
     "F5_BEI",               # 10Y breakeven inflation
-    "F6_RatePath",          # 2Y vs Fed Funds (market rate expectations)
-    "F7_DXYMomentum",       # DXY 20-day momentum
-    "F8_CreditSpread",      # BBB OAS credit conditions
+    "F6_YCMomentum",        # Yield curve flattening speed (was: RatePath)
+    "F7_LongYieldDelta",    # 10Y yield 20d change (was: DXYMomentum)
+    "F8_CreditResidual",    # BBB OAS orthogonalized vs VIX (was: raw CreditSpread)
     "F9_VolSpread",         # VIX-MOVE equity/bond vol divergence
     "F10_FundingStress",    # SOFR-IORB dollar funding stress
 ]
 
 FACTOR_DISPLAY = {
-    "F1_RateDiff":       "利率差 (Fed−ECB)",
-    "F2_RealRate":       "实际利率 (TIPS 10Y)",
-    "F3_TermSpread":     "期限利差 (10Y−2Y)",
-    "F4_VIX":            "风险情绪 (VIX)",
-    "F5_BEI":            "通胀预期 (BEI 10Y)",
-    "F6_RatePath":       "利率路径 (2Y−FFR)",
-    "F7_DXYMomentum":    "美元动量 (20d)",
-    "F8_CreditSpread":   "信用利差 (BBB OAS)",
-    "F9_VolSpread":      "波动率差 (VIX−MOVE)",
-    "F10_FundingStress": "资金压力 (SOFR−IORB)",
+    "F1_RateDiff":        "利率差 (Fed−ECB)",
+    "F2_RealRateDelta":   "实际利率变化 (TIPS Δ20d)",
+    "F3_TermSpread":      "期限利差 (10Y−2Y)",
+    "F4_VIX":             "风险情绪 (VIX)",
+    "F5_BEI":             "通胀预期 (BEI 10Y)",
+    "F6_YCMomentum":      "曲线动量 (利差Δ20d)",
+    "F7_LongYieldDelta":  "长端利率动量 (10YΔ20d)",
+    "F8_CreditResidual":  "信用残差 (BBB⊥VIX)",
+    "F9_VolSpread":       "波动率差 (VIX−MOVE)",
+    "F10_FundingStress":  "资金压力 (SOFR−IORB)",
 }
 
 # Short IDs for API (matches ic_tracking_F1.json etc.)
@@ -121,6 +144,14 @@ FED_CYCLE_ADJ = {
 HMM_N_STATES = 3
 HMM_LOOKBACK = 504          # 2 years rolling
 HMM_BASE_FACTORS = ["F1_RateDiff", "F4_VIX", "F5_BEI", "F3_TermSpread"]
+
+# ── Factor Audit Metadata (for dashboard display) ─────────────────────────
+FACTOR_AUDIT_LOG = {
+    "F2": "v1→level, v2→Δ20d: 消除实际利率幻觉偏见",
+    "F6": "v1→RatePath(ICIR=-1.91), v2→YCMomentum: 消除与F1的共线性",
+    "F7": "v1→DXYMomentum(ICIR=-2.16)→RateVol(ρ=0.93 vs F9)→LongYieldDelta: ρ=0.87 vs F2 acceptable (XGBoost handles collinearity, OOS IC +0.009)",
+    "F8": "v1→CreditSpread(ρ=0.583 vs F4), v2→CreditResidual: 正交化去重",
+}
 
 LIQVOL_MULT = {
     "Trending":      1.05,

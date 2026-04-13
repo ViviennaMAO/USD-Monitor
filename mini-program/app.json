@@ -1,0 +1,55 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/market/market",
+    "pages/signal/signal",
+    "pages/analytics/analytics"
+  ],
+  "window": {
+    "navigationBarTitleText": "USD Monitor",
+    "navigationBarBackgroundColor": "#0a0e1a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0a0e1a",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#64748b",
+    "selectedColor": "#38bdf8",
+    "backgroundColor": "#0f1729",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "总览",
+        "iconPath": "static/images/tab-home.png",
+        "selectedIconPath": "static/images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/market/market",
+        "text": "市场",
+        "iconPath": "static/images/tab-chart.png",
+        "selectedIconPath": "static/images/tab-chart-active.png"
+      },
+      {
+        "pagePath": "pages/signal/signal",
+        "text": "信号",
+        "iconPath": "static/images/tab-signal.png",
+        "selectedIconPath": "static/images/tab-signal-active.png"
+      },
+      {
+        "pagePath": "pages/analytics/analytics",
+        "text": "分析",
+        "iconPath": "static/images/tab-more.png",
+        "selectedIconPath": "static/images/tab-more-active.png"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 30000,
+    "downloadFile": 60000
+  },
+  "debug": false,
+  "subpackages": [],
+  "usingComponents": {}
+}

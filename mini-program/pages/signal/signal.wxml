@@ -1,0 +1,129 @@
+<view class="page">
+  <view wx:if="{{ loading }}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- Core Decision Card -->
+    <view class="hero-card mx-24 mt-20">
+      <view class="hero-action {{ action === 'LONG' ? 'text-bull' : action === 'SHORT' ? 'text-bear' : 'text-neutral' }}">{{ action }}</view>
+      <view class="hero-meta">
+        <text class="badge {{ confidence === '高确信' ? 'badge-bull' : confidence === '低确信' ? 'badge-bear' : 'badge-neutral' }}">{{ confidence }}({{ positionSize }})</text>
+        <text class="text-sm text-muted">来源: {{ source }}</text>
+      </view>
+    </view>
+
+    <!-- Stats -->
+    <view class="grid-2col mx-24">
+      <view class="g-card">
+        <text class="g-label">γ Score</text>
+        <text class="g-value {{ gammaDir === 'BULLISH' || gammaDir === 'BUY' ? 'text-bull' : gammaDir === 'BEARISH' || gammaDir === 'SELL' ? 'text-bear' : 'text-neutral' }}">{{ gammaScore }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">ML 预测</text>
+        <text class="g-value {{ mlDir === 'BUY' ? 'text-bull' : mlDir === 'SELL' ? 'text-bear' : 'text-neutral' }}">{{ mlPred }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">冲突分</text>
+        <text class="g-value text-neutral">{{ conflict }}</text>
+      </view>
+      <view class="g-card">
+        <text class="g-label">Regime</text>
+        <text class="g-value text-accent" style="font-size:28rpx;">{{ regime }}</text>
+      </view>
+    </view>
+
+    <!-- 3×3 Matrix -->
+    <view class="section-header mx-24">
+      <view class="section-line"></view>
+      <text class="section-title">3×3 可信度矩阵</text>
+      <view class="section-line"></view>
+    </view>
+    <view class="card mx-24">
+      <view class="matrix-row">
+        <view class="matrix-corner"></view>
+        <view wx:for="{{ matrixCols }}" wx:key="index" class="matrix-col-header">
+          <text class="text-xs text-muted">{{ item }}</text>
+        </view>
+      </view>
+      <block wx:for="{{ matrixRows }}" wx:for-item="rowLabel" wx:for-index="r" wx:key="r">
+        <view class="matrix-row">
+          <view class="matrix-row-header"><text class="text-xs text-muted">{{ rowLabel }}</text></view>
+          <view wx:for="{{ 3 }}" wx:for-index="c" wx:key="c"
+            class="matrix-cell {{ matrixCells[r * 3 + c].active ? 'matrix-active' : '' }}">
+            <text class="matrix-emoji">{{ matrixCells[r * 3 + c].emoji }}</text>
+            <text class="text-xs">{{ matrixCells[r * 3 + c].action }}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- Invalidation Conditions (NEW) -->
+    <view class="section-header mx-24">
+      <view class="section-line"></view>
+      <text class="section-title">失效条件</text>
+      <view class="section-line"></view>
+    </view>
+    <view class="card mx-24">
+      <view wx:for="{{ invalidations }}" wx:key="text" class="inv-row">
+        <text class="inv-icon text-bear">{{ item.icon }}</text>
+        <text class="inv-text text-sm text-body">{{ item.text }}</text>
+      </view>
+    </view>
+
+    <!-- Risk Budget (NEW) -->
+    <view class="card mx-24">
+      <view class="flex-row items-center gap-16 mb-16">
+        <text class="card-title" style="margin-bottom:0">风险预算</text>
+        <text class="badge badge-info">{{ positionSize }}</text>
+      </view>
+      <text class="text-sm text-muted" style="line-height:1.8;">{{ riskBudget }}</text>
+    </view>
+
+    <!-- P1 -->
+    <view class="section-toggle mx-24" bindtap="toggleP1">
+      <text class="text-sm text-accent">P1 信号优化 {{ showP1 ? '▲' : '▼' }}</text>
+    </view>
+    <view wx:if="{{ showP1 }}" class="card mx-24">
+      <view class="card-title">OLS 正交化</view>
+      <view class="flex-row justify-around">
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">R²</text>
+          <text class="text-sm font-semibold">{{ orthoR2 }}</text>
+        </view>
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">Beta</text>
+          <text class="text-sm font-semibold">{{ orthoBeta }}</text>
+        </view>
+        <view class="flex-col items-center">
+          <text class="text-xs text-muted">独立信息</text>
+          <text class="text-sm font-semibold text-accent">{{ orthoInfoPct }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- P2 -->
+    <view class="section-toggle mx-24" bindtap="toggleP2">
+      <text class="text-sm text-accent">P2 回测验证 {{ showP2 ? '▲' : '▼' }}</text>
+    </view>
+    <view wx:if="{{ showP2 }}" class="card mx-24">
+      <view class="card-title">策略归因</view>
+      <view class="attr-table">
+        <view class="attr-row attr-header">
+          <text class="attr-cell attr-name">策略</text>
+          <text class="attr-cell">收益</text>
+          <text class="attr-cell">Sharpe</text>
+          <text class="attr-cell">DD</text>
+          <text class="attr-cell">胜率</text>
+        </view>
+        <view wx:for="{{ attrStrategies }}" wx:key="label" class="attr-row">
+          <text class="attr-cell attr-name">{{ item.label }}</text>
+          <text class="attr-cell">{{ item.ret }}</text>
+          <text class="attr-cell">{{ item.sharpe }}</text>
+          <text class="attr-cell text-bear">{{ item.dd }}</text>
+          <text class="attr-cell">{{ item.hit }}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

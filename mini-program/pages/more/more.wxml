@@ -1,0 +1,117 @@
+<view class="page">
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{ tabs }}" wx:key="index"
+      class="tab-item {{ activeTab === index ? 'active' : '' }}"
+      data-idx="{{ index }}"
+      bindtap="switchTab"
+    >{{ item }}</view>
+  </view>
+
+  <view wx:if="{{ loading }}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- Tab 0: Model Health -->
+  <view wx:if="{{ !loading && activeTab === 0 }}" class="tab-content px-24">
+    <view class="card">
+      <view class="flex-row justify-between items-center mb-16">
+        <text class="card-title" style="margin-bottom:0">模型状态</text>
+        <text class="badge badge-{{ statusColor }}">{{ status }}</text>
+      </view>
+      <view class="divider"></view>
+
+      <view class="data-row">
+        <text class="data-label">OOS IC</text>
+        <text class="data-value {{ oosIC < 0 ? 'text-bear' : 'text-bull' }}">{{ oosIC }}</text>
+      </view>
+      <view class="data-row">
+        <text class="data-label">近 60 天 IC</text>
+        <text class="data-value {{ recent60d < 0 ? 'text-bear' : 'text-bull' }}">{{ recent60d }}</text>
+      </view>
+      <view class="data-row">
+        <text class="data-label">前半段 IC</text>
+        <text class="data-value">{{ icH1 }}</text>
+      </view>
+      <view class="data-row">
+        <text class="data-label">后半段 IC</text>
+        <text class="data-value {{ icH2 < 0 ? 'text-bear' : '' }}">{{ icH2 }}</text>
+      </view>
+    </view>
+
+    <!-- Legend -->
+    <view class="card">
+      <view class="card-title">诊断说明</view>
+      <view class="legend-list">
+        <text class="text-xs text-muted">OOS IC > 0.05 → healthy</text>
+        <text class="text-xs text-muted">OOS IC 0 ~ 0.05 → warning</text>
+        <text class="text-xs text-muted">OOS IC &lt; 0 → degraded</text>
+        <text class="text-xs text-muted mt-16">当 recent_60d &lt; -0.2 时建议触发 circuit breaker，暂停信号输出。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 1: CPCV -->
+  <view wx:if="{{ !loading && activeTab === 1 }}" class="tab-content px-24">
+    <view class="card">
+      <view class="card-title">CPCV 组合净化交叉验证</view>
+      <view class="grid-2col">
+        <view class="g-card">
+          <text class="g-label">路径数</text>
+          <text class="g-value">{{ cpcvPaths }}</text>
+        </view>
+        <view class="g-card">
+          <text class="g-label">中位 Sharpe</text>
+          <text class="g-value {{ cpcvMedian < 0 ? 'text-bear' : 'text-bull' }}">{{ cpcvMedian }}</text>
+        </view>
+        <view class="g-card">
+          <text class="g-label">p 值</text>
+          <text class="g-value">{{ cpcvPValue }}</text>
+        </view>
+        <view class="g-card">
+          <text class="g-label">正路径</text>
+          <text class="g-value">{{ cpcvPositive }}</text>
+        </view>
+        <view class="g-card">
+          <text class="g-label">最优</text>
+          <text class="g-value text-bull">{{ cpcvBest }}</text>
+        </view>
+        <view class="g-card">
+          <text class="g-label">最差</text>
+          <text class="g-value text-bear">{{ cpcvWorst }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">解读</view>
+      <view class="legend-list">
+        <text class="text-xs text-muted">CPCV (Combinatorial Purged Cross-Validation) 使用 C(8,2)=28 条路径评估模型泛化能力。</text>
+        <text class="text-xs text-muted mt-16">p &lt; 0.05 且 median Sharpe > 0 表示策略有显著正 alpha。</text>
+        <text class="text-xs text-muted">p &lt; 0.05 但 median Sharpe &lt; 0 表示显著负 alpha（当前状态）。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 2: Factor Universe -->
+  <view wx:if="{{ !loading && activeTab === 2 }}" class="tab-content px-24">
+    <view class="card">
+      <view class="card-title">因子宇宙 (v2)</view>
+      <view class="factor-list">
+        <view wx:for="{{ factors }}" wx:key="name" class="factor-item">
+          <view class="flex-row justify-between items-center">
+            <view class="flex-col">
+              <text class="text-sm font-semibold text-accent">{{ item.name }}</text>
+              <text class="text-xs text-muted">{{ item.fullName }}</text>
+            </view>
+            <view class="flex-col items-center">
+              <text class="text-xs text-muted">IC mean</text>
+              <text class="text-sm font-medium">{{ item.icMean }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

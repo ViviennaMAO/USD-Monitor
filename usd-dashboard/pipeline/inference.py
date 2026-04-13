@@ -47,6 +47,38 @@ def _get_regime_label(date: pd.Timestamp) -> str:
     return REGIME_DATE_LABELS[-1][1]
 
 
+def _load_regime_factor_mask():
+    """Load per-regime factor mask from regime_factor_mask.json (if exists)."""
+    path = OUTPUT_DIR / "regime_factor_mask.json"
+    if not path.exists():
+        return None
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _apply_regime_mask(X: np.ndarray, current_regime: str, mask_data: dict) -> tuple:
+    """
+    Apply regime-conditional factor mask to feature vector X.
+    Factors with mask=0.0 in current regime are zeroed out.
+
+    Returns: (X_masked, masked_factors_list)
+    """
+    if mask_data is None or current_regime not in mask_data.get("masks", {}):
+        return X, []
+
+    mask_dict = mask_data["masks"][current_regime]
+    masked_factors = []
+    X_out = X.copy()
+    for j, factor in enumerate(FACTOR_COLS):
+        if mask_dict.get(factor, 1.0) == 0.0:
+            X_out[:, j] = 0.0
+            masked_factors.append(factor)
+    return X_out, masked_factors
+
+
 # ── Signal Grade ───────────────────────────────────────────────────────────
 
 def _signal_grade(pred: float) -> str:
@@ -243,15 +275,27 @@ def run_inference(features_df: pd.DataFrame) -> dict:
     row = features_df.iloc[-1]
     X_latest = row[FACTOR_COLS].values.reshape(1, -1)
     X_latest = np.nan_to_num(X_latest, nan=0.0, posinf=5.0, neginf=-5.0)
-    pred = float(model.predict(X_latest)[0])
-    grade = _signal_grade(pred)
-    print(f"[inference] Prediction: {pred:+.4f}% (20d), Grade: {grade}")
-    print(f"[inference] Date: {features_df.index[-1].strftime('%Y-%m-%d')}")
 
-    # Regime detection
+    # Regime detection (must happen before prediction for regime-gating)
     from regime_usd import detect_regime_v2
     regime = detect_regime_v2(features_df, row_idx=-1)
     print(f"[inference] Regime: {regime['regime']} (mult={regime['multiplier']})")
+
+    # Regime-conditional factor mask (3.3)
+    current_regime_label = _get_regime_label(features_df.index[-1])
+    mask_data = _load_regime_factor_mask()
+    X_for_pred, masked_factors = _apply_regime_mask(X_latest, current_regime_label, mask_data)
+    if masked_factors:
+        print(f"[inference] Regime gate active ({current_regime_label}): "
+              f"masked {len(masked_factors)} factors: {[f.split('_')[0] for f in masked_factors]}")
+
+    pred_raw = float(model.predict(X_latest)[0])
+    pred = float(model.predict(X_for_pred)[0])
+    grade = _signal_grade(pred)
+    print(f"[inference] Prediction: {pred:+.4f}% (20d), Grade: {grade}")
+    if masked_factors:
+        print(f"[inference]   (raw pred without mask: {pred_raw:+.4f}%, mask delta: {pred-pred_raw:+.4f}%)")
+    print(f"[inference] Date: {features_df.index[-1].strftime('%Y-%m-%d')}")
 
     # SHAP
     print("\n[inference] Computing SHAP attribution...")

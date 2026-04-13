@@ -167,11 +167,11 @@ def _detect_layer2(features_df: pd.DataFrame, row_idx: int) -> dict:
     row = features_df.iloc[row_idx]
     vix_z = row.get("F4_VIX", 0.0)
     vix_mom_z = row.get("vix_momentum_z", 0.0)
-    credit_z = row.get("F8_CreditSpread", 0.0)
-    dxy_mom = row.get("F7_DXYMomentum", 0.0)
+    credit_z = row.get("F8_CreditResidual", row.get("F8_CreditSpread", 0.0))
+    yield_delta = row.get("F7_LongYieldDelta", 0.0)
 
     vol_high = (vix_z > 1.0) or (vix_z > 0.5 and vix_mom_z > 0.5)
-    liq_good = (credit_z < 0) or (dxy_mom > 0)  # Narrowing spreads or USD trending
+    liq_good = (credit_z < 0) or (yield_delta > 0)  # Narrowing credit residual or rising yields (USD-positive)
 
     if not vol_high and liq_good:
         liqvol = "Trending"
@@ -212,8 +212,9 @@ def _detect_layer3(features_df: pd.DataFrame, row_idx: int) -> dict:
     events = []
 
     # ── 3.1 Rate Shock Attribution ─────────────────────────────────────
-    rate_path_z = row.get("F6_RatePath", 0.0)
-    if abs(rate_path_z) > RATE_SHOCK_THRESHOLD:
+    # v2: use YC momentum (yield curve flattening speed) instead of deprecated RatePath
+    rate_shock_z = row.get("F6_YCMomentum", row.get("F6_RatePath", 0.0))
+    if abs(rate_shock_z) > RATE_SHOCK_THRESHOLD:
         dxy_eff = row.get("dxy_efficiency", 0.5)
         dxy_atr_r = row.get("dxy_atr_ratio", 1.0)
         dxy_sideways = (dxy_eff < 0.35) or (dxy_atr_r < 0.75)
@@ -229,7 +230,7 @@ def _detect_layer3(features_df: pd.DataFrame, row_idx: int) -> dict:
             shock_type = "inflation"
         else:
             # Fed repricing — higher rates expected
-            shock_delta = +0.10 if rate_path_z > 0 else -0.10
+            shock_delta = +0.10 if rate_shock_z > 0 else -0.10
             shock_type = "expectation"
 
         delta += shock_delta
@@ -261,10 +262,14 @@ def _detect_layer3(features_df: pd.DataFrame, row_idx: int) -> dict:
         pass  # ruptures not available or data issue
 
     # ── 3.3 Dollar Smile Distinction ───────────────────────────────────
-    dxy_z = row.get("F7_DXYMomentum", 0.0)
+    # v2: use DXY efficiency + ATR ratio instead of deleted F7_DXYMomentum
+    dxy_eff = row.get("dxy_efficiency", 0.5)
+    dxy_atr_r = row.get("dxy_atr_ratio", 1.0)
+    dxy_trending_up = (dxy_eff > 0.4) and (dxy_atr_r > 1.0)
+    dxy_trending_dn = (dxy_eff > 0.4) and (dxy_atr_r < 0.8)
     vix_z = row.get("F4_VIX", 0.0)
 
-    if dxy_z > 0.5:
+    if dxy_trending_up:
         # USD strengthening
         if vix_z > 0.5:
             # Risk-off USD strength (safe haven)
@@ -274,7 +279,7 @@ def _detect_layer3(features_df: pd.DataFrame, row_idx: int) -> dict:
             # Growth-driven USD strength
             smile_delta = SMILE_DELTA["growth"]
             smile_type = "growth"
-    elif dxy_z < -0.5:
+    elif dxy_trending_dn:
         # USD weakening
         if vix_z > 1.5:
             # US-specific crisis (DXY down + VIX very high)

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "更多",
+  "usingComponents": {
+    "chart-canvas": "/components/chart-canvas/chart-canvas"
+  }
+}
