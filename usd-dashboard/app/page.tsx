@@ -5,16 +5,16 @@ import { ScoreGauge } from '@/components/gauge/ScoreGauge'
 import { DxyStatsGrid } from '@/components/cards/DxyStatsGrid'
 import { ScoreHistory } from '@/components/charts/ScoreHistory'
 import { RfCard, PiRiskCard, CyCard } from '@/components/cards/ComponentCard'
-import { VolAlertCard } from '@/components/cards/VolAlertCard'
+// VolAlertCard moved to /analytics (因子面板 tab)
 import { HedgeCard } from '@/components/cards/HedgeCard'
 import { YieldDecompCard } from '@/components/charts/YieldDecomp'
 import { FxPairCard } from '@/components/cards/FxPairCard'
 import { CftcBars } from '@/components/charts/CftcBars'
 import { SignalTimeline } from '@/components/cards/SignalTimeline'
 import {
-  useScore, useComponents, useVolAlert,
+  useScore, useComponents,
   useDxy, useFxPairs, useYieldDecomp,
-  useHedge, useSignalHistory, volAlertHistory,
+  useHedge, useSignalHistory,
 } from '@/lib/useUsdData'
 import { mockData } from '@/data/mockData'
 
@@ -32,14 +32,14 @@ export default function Dashboard() {
   // SWR hooks — auto-refresh every 5 min, fall back to mock if pipeline not yet run
   const { data: score, isLoading: scoreLoading }       = useScore()
   const { rf, pi_risk, cy, isLoading: compLoading }    = useComponents()
-  const { data: volAlert, isLoading: volLoading }       = useVolAlert()
+  // volAlert moved to analytics page
   const { data: dxy, isLoading: dxyLoading }            = useDxy()
   const { data: fx }                                    = useFxPairs()
   const { data: yieldDecomp }                           = useYieldDecomp()
   const { data: hedge }                                 = useHedge()
   const { data: signalHistory }                         = useSignalHistory()
 
-  const isLoading = scoreLoading || compLoading || dxyLoading || volLoading
+  const isLoading = scoreLoading || compLoading || dxyLoading
 
   return (
     <div className="min-h-screen bg-[#0a0e1a] flex flex-col">
@@ -100,17 +100,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ═══ Row 3: σ_alert Full Width ══════════════════════════════════ */}
-        <section>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-px flex-1 bg-slate-800" />
-            <span className="text-xs text-slate-500 tracking-widest uppercase">波动率预警因子</span>
-            <div className="h-px flex-1 bg-slate-800" />
-          </div>
-          <VolAlertCard data={volAlert} history={volAlertHistory} />
-        </section>
-
-        {/* ═══ Row 4: Hedge + Yield Decomp ════════════════════════════════ */}
+        {/* ═══ Row 3: Hedge + Yield Decomp ════════════════════════════════ */}
         <section>
           <div className="flex items-center gap-3 mb-3">
             <div className="h-px flex-1 bg-slate-800" />

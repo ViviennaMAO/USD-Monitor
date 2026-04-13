@@ -1,13 +1,15 @@
 'use client'
 
-export type AnalyticsTab = 'shap' | 'ic' | 'regime' | 'correlation' | 'nav'
+export type AnalyticsTab = 'factors' | 'shap' | 'ic' | 'regime' | 'correlation' | 'nav' | 'health'
 
 const TABS: { id: AnalyticsTab; label: string; sub: string }[] = [
+  { id: 'factors',     label: '因子面板',  sub: '12因子' },
   { id: 'shap',        label: 'SHAP 归因',  sub: '瀑布图' },
   { id: 'ic',          label: 'IC 追踪',    sub: '信息系数' },
   { id: 'regime',      label: 'Regime',     sub: '热力图' },
   { id: 'correlation', label: '相关性',     sub: '矩阵' },
   { id: 'nav',         label: '净值曲线',   sub: '账户表现' },
+  { id: 'health',      label: '模型健康',   sub: '诊断' },
 ]
 
 interface AnalyticsTabsProps {
