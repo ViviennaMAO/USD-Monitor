@@ -3,7 +3,7 @@
 export type AnalyticsTab = 'factors' | 'shap' | 'ic' | 'regime' | 'correlation' | 'nav' | 'health'
 
 const TABS: { id: AnalyticsTab; label: string; sub: string }[] = [
-  { id: 'factors',     label: '因子面板',  sub: '12因子' },
+  { id: 'factors',     label: '波动率看板',  sub: 'σ_alert' },
   { id: 'shap',        label: 'SHAP 归因',  sub: '瀑布图' },
   { id: 'ic',          label: 'IC 追踪',    sub: '信息系数' },
   { id: 'regime',      label: 'Regime',     sub: '热力图' },

@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
       <main className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 py-6">
         <div className="mb-4">
           <h1 className="text-sm font-medium text-slate-300">
-            {activeTab === 'factors'     && '因子面板 — 12因子实时监控'}
+            {activeTab === 'factors'     && '波动率看板 — 12因子实时监控'}
             {activeTab === 'shap'        && 'SHAP 归因 — 因子边际贡献瀑布图'}
             {activeTab === 'ic'          && 'IC 追踪 — 信息系数时序'}
             {activeTab === 'regime'      && 'Regime — 利率周期因子效力热力图'}
@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
             {activeTab === 'health'      && '模型健康 — 诊断与熔断'}
           </h1>
           <p className="text-[11px] text-slate-600 mt-0.5">
-            {activeTab === 'factors'     && '直接美元波动率 · 跨资产波动率 · 交叉复合信号'}
+            {activeTab === 'factors'     && 'σ_alert 波动率预警 · 跨资产隐含波动率 · 交叉复合信号'}
             {activeTab === 'shap'        && '基于 SHAP 值分解当日各因子对 γ 评分的边际贡献'}
             {activeTab === 'ic'          && '滚动 252 日信息系数时序 · Regime 背景着色'}
             {activeTab === 'regime'      && '各因子在加息期 / 降息期 / 震荡期的平均 IC 表现'}
