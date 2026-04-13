@@ -233,11 +233,6 @@ export function VolAlertCard({ data: d, history }: VolAlertCardProps) {
       <div className="p-5 space-y-5">
         {/* ── Layer 1: Direct Factors ────────────────────────────────────── */}
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-px flex-1 bg-slate-700" />
-            <span className="text-xs font-semibold text-slate-400 tracking-wider">一、直接美元波动率因子</span>
-            <div className="h-px flex-1 bg-slate-700" />
-          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FactorBox
               id="F1"
@@ -262,11 +257,6 @@ export function VolAlertCard({ data: d, history }: VolAlertCardProps) {
 
         {/* ── Layer 2: Cross-Asset Factors ───────────────────────────────── */}
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-px flex-1 bg-slate-700" />
-            <span className="text-xs font-semibold text-slate-400 tracking-wider">二、跨资产波动率因子</span>
-            <div className="h-px flex-1 bg-slate-700" />
-          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <FactorBox
               id="F3"
@@ -319,11 +309,6 @@ export function VolAlertCard({ data: d, history }: VolAlertCardProps) {
 
         {/* ── Layer 3: Composite Factors ────────────────────────────────── */}
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-px flex-1 bg-slate-700" />
-            <span className="text-xs font-semibold text-slate-400 tracking-wider">三、交叉复合信号</span>
-            <div className="h-px flex-1 bg-slate-700" />
-          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <FactorBox
               id="F8"
