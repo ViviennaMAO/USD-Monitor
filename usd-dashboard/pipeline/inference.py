@@ -10,7 +10,8 @@ from xgboost import XGBRegressor
 from scipy.stats import spearmanr
 
 from config_v2 import (
-    FACTOR_COLS, FACTOR_DISPLAY, FACTOR_SHORT_IDS,
+    ALL_FACTOR_COLS as FACTOR_COLS,
+    FACTOR_DISPLAY, ALL_SHORT_IDS as FACTOR_SHORT_IDS,
     MODEL_PATH, OUTPUT_DIR, TRAIN_END,
     SIGNAL_THRESHOLDS, REGIME_DATE_LABELS,
 )

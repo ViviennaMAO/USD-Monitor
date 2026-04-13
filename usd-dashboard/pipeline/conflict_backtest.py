@@ -21,7 +21,7 @@ from datetime import datetime
 from xgboost import XGBRegressor
 
 from config_v2 import (
-    FACTOR_COLS, MODEL_PATH, OUTPUT_DIR, TRAIN_END,
+    ALL_FACTOR_COLS as FACTOR_COLS, MODEL_PATH, OUTPUT_DIR, TRAIN_END,
     FORWARD_DAYS, SIGNAL_THRESHOLDS, ATR_STOP_MULT,
     ACCOUNT_EQUITY, TRADE_COST_BPS,
 )

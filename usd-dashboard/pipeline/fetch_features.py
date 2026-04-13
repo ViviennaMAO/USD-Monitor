@@ -104,6 +104,14 @@ def fetch_yahoo_history(start: str, end: str) -> pd.DataFrame:
         "DXY": "DX-Y.NYB",
         "VIX": "^VIX",
         "MOVE": "^MOVE",
+        # σ_alert factor data sources (v3 merge)
+        "VVIX": "^VVIX",
+        "VXN": "^VXN",
+        "OVX": "^OVX",
+        "GVZ": "^GVZ",
+        "HYG": "HYG",
+        "QQQ": "QQQ",
+        "SPY": "SPY",
     }
 
     frames = {}
@@ -123,6 +131,10 @@ def fetch_yahoo_history(start: str, end: str) -> pd.DataFrame:
                 frames["DXY_high"] = data["High"]
                 frames["DXY_low"] = data["Low"]
                 frames["DXY_open"] = data["Open"]
+            elif name == "HYG":
+                frames["HYG_close"] = data["Close"]
+            elif name in ("QQQ", "SPY"):
+                frames[f"{name}_close"] = data["Close"]
             else:
                 frames[f"{name}_close"] = data["Close"]
 

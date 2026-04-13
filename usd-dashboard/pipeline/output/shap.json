@@ -1,57 +1,117 @@
 {
-  "base_value": 0.49861,
-  "output_value": 0.990142,
-  "date": "2026-04-09",
+  "base_value": -0.099675,
+  "output_value": -0.779191,
+  "date": "2026-04-13",
   "factors": [
     {
+      "name": "滞胀压力 (OVX×TIPS)",
+      "shap_value": -0.833713,
+      "factor_value": 2.2443
+    },
+    {
+      "name": "高收益波动 (HYG RV)",
+      "shap_value": -0.756753,
+      "factor_value": 1.3625
+    },
+    {
+      "name": "原油波动率 (OVX)",
+      "shap_value": 0.63047,
+      "factor_value": 1.6264
+    },
+    {
       "name": "期限利差 (10Y−2Y)",
-      "shap_value": 0.497657,
-      "factor_value": -0.6057
+      "shap_value": 0.28949,
+      "factor_value": -0.7362
     },
     {
-      "name": "风险情绪 (VIX)",
-      "shap_value": -0.319372,
-      "factor_value": 0.6843
-    },
-    {
-      "name": "通胀预期 (BEI 10Y)",
-      "shap_value": 0.318639,
-      "factor_value": 0.2244
-    },
-    {
-      "name": "信用残差 (BBB⊥VIX)",
-      "shap_value": 0.174218,
-      "factor_value": 0.5115
-    },
-    {
-      "name": "长端利率动量 (10YΔ20d)",
-      "shap_value": -0.160874,
-      "factor_value": 0.4011
+      "name": "风险反转 (RR proxy)",
+      "shap_value": 0.160391,
+      "factor_value": 0.0458
     },
     {
       "name": "资金压力 (SOFR−IORB)",
-      "shap_value": 0.150379,
-      "factor_value": -0.3132
+      "shap_value": 0.140361,
+      "factor_value": -0.4529
     },
     {
       "name": "波动率差 (VIX−MOVE)",
-      "shap_value": -0.100997,
-      "factor_value": 0.2903
+      "shap_value": -0.121186,
+      "factor_value": 0.6667
+    },
+    {
+      "name": "风险情绪 (VIX)",
+      "shap_value": -0.118813,
+      "factor_value": 0.2113
+    },
+    {
+      "name": "汇率残差 (DXY⊥利差)",
+      "shap_value": -0.112322,
+      "factor_value": -1.3438
+    },
+    {
+      "name": "通胀预期 (BEI 10Y)",
+      "shap_value": 0.110303,
+      "factor_value": 0.78
+    },
+    {
+      "name": "尾部风险 (VVIX/VIX×RR)",
+      "shap_value": -0.082013,
+      "factor_value": -1.3863
+    },
+    {
+      "name": "黄金波动率 (GVZ)",
+      "shap_value": -0.066172,
+      "factor_value": 0.9129
     },
     {
       "name": "实际利率变化 (TIPS Δ20d)",
-      "shap_value": -0.04885,
-      "factor_value": 0.6309
+      "shap_value": 0.05223,
+      "factor_value": 0.7192
     },
     {
-      "name": "利率差 (Fed−ECB)",
-      "shap_value": -0.035777,
+      "name": "长端利率动量 (10YΔ20d)",
+      "shap_value": -0.043418,
+      "factor_value": 0.4016
+    },
+    {
+      "name": "科技溢出 (VXN-VIX×β)",
+      "shap_value": 0.04044,
       "factor_value": 0.0
     },
     {
       "name": "曲线动量 (利差Δ20d)",
-      "shap_value": 0.01651,
-      "factor_value": 0.0716
+      "shap_value": 0.038822,
+      "factor_value": -0.5291
+    },
+    {
+      "name": "信用残差 (BBB⊥VIX)",
+      "shap_value": -0.03624,
+      "factor_value": 0.5654
+    },
+    {
+      "name": "科技分化 (VXN−VIX)",
+      "shap_value": -0.029513,
+      "factor_value": 0.1832
+    },
+    {
+      "name": "RR×残差共振",
+      "shap_value": 0.028456,
+      "factor_value": -0.7385
+    },
+    {
+      "name": "恐慌溢价 (VVIX/VIX)",
+      "shap_value": 0.025734,
+      "factor_value": -0.0077
+    },
+    {
+      "name": "信用修复 (VXHYG×CDS)",
+      "shap_value": 0.022992,
+      "factor_value": 0.2771
+    },
+    {
+      "name": "利率差 (Fed−ECB)",
+      "shap_value": -0.019062,
+      "factor_value": 0.0
     }
   ]
 }

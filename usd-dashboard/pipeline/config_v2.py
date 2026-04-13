@@ -57,6 +57,28 @@ FACTOR_COLS = [
     "F10_FundingStress",    # SOFR-IORB dollar funding stress
 ]
 
+# ── 12 σ_alert Factors (v3: merged into training) ────────────────────────
+# Previously only computed in TypeScript (scoring.ts) for display.
+# Now ported to Python and included in ML training pipeline.
+# Naming: σ prefix to distinguish from F-series fundamentals.
+SIGMA_FACTOR_COLS = [
+    "σ1_RiskReversal",       # 3M 25D RR proxy (DXY residual z-score)
+    "σ2_FxRateResidual",     # FX rate-spread residual (|DXY residual| z)
+    "σ3_OVX",                # Oil volatility (OVX percentile)
+    "σ4_VVIX_VIX",           # Vol-of-vol ratio (VVIX/VIX)
+    "σ5_VXN_VIX",            # Tech-equity vol gap (VXN − VIX)
+    "σ6_VXHYG",              # High-yield implied vol (HYG realized vol)
+    "σ7_GVZ",                # Gold volatility
+    "σ8_RR_Residual",        # RR × Residual resonance (cross-factor)
+    "σ9_Stagflation",        # OVX × TIPS stagflation pressure
+    "σ10_TailRisk",          # VVIX/VIX × RR tail directional
+    "σ11_TechSpillover",     # VXN-VIX × QQQ/SPY divergence
+    "σ12_CreditRepair",      # VXHYG × CDS credit repair signal
+]
+
+# Combined factor universe for training
+ALL_FACTOR_COLS = FACTOR_COLS + SIGMA_FACTOR_COLS  # 22 total
+
 FACTOR_DISPLAY = {
     "F1_RateDiff":        "利率差 (Fed−ECB)",
     "F2_RealRateDelta":   "实际利率变化 (TIPS Δ20d)",
@@ -68,11 +90,26 @@ FACTOR_DISPLAY = {
     "F8_CreditResidual":  "信用残差 (BBB⊥VIX)",
     "F9_VolSpread":       "波动率差 (VIX−MOVE)",
     "F10_FundingStress":  "资金压力 (SOFR−IORB)",
+    # σ_alert factors
+    "σ1_RiskReversal":    "风险反转 (RR proxy)",
+    "σ2_FxRateResidual":  "汇率残差 (DXY⊥利差)",
+    "σ3_OVX":             "原油波动率 (OVX)",
+    "σ4_VVIX_VIX":        "恐慌溢价 (VVIX/VIX)",
+    "σ5_VXN_VIX":         "科技分化 (VXN−VIX)",
+    "σ6_VXHYG":           "高收益波动 (HYG RV)",
+    "σ7_GVZ":             "黄金波动率 (GVZ)",
+    "σ8_RR_Residual":     "RR×残差共振",
+    "σ9_Stagflation":     "滞胀压力 (OVX×TIPS)",
+    "σ10_TailRisk":       "尾部风险 (VVIX/VIX×RR)",
+    "σ11_TechSpillover":  "科技溢出 (VXN-VIX×β)",
+    "σ12_CreditRepair":   "信用修复 (VXHYG×CDS)",
 }
 
 # Short IDs for API (matches ic_tracking_F1.json etc.)
 FACTOR_SHORT_IDS = {f: f.split("_")[0] for f in FACTOR_COLS}
-# e.g. {"F1_RateDiff": "F1", ...}
+# σ factors: use full prefix as ID (σ1, σ2, ...)
+SIGMA_SHORT_IDS = {f: f.split("_")[0] for f in SIGMA_FACTOR_COLS}
+ALL_SHORT_IDS = {**FACTOR_SHORT_IDS, **SIGMA_SHORT_IDS}
 
 # ── XGBoost Hyperparameters (conservative, matching GoldMonitor) ───────────
 XGB_PARAMS = {

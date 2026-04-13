@@ -24,7 +24,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from scipy import stats
 
-from config_v2 import OUTPUT_DIR, FACTOR_COLS, FACTOR_DISPLAY
+from config_v2 import OUTPUT_DIR, ALL_FACTOR_COLS as FACTOR_COLS, FACTOR_DISPLAY
 
 
 class NaNSafeEncoder(json.JSONEncoder):

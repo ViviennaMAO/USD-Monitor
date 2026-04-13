@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-12T00:38:47.088564",
+  "timestamp": "2026-04-13T20:41:21.097801",
   "regimes": [
     "加息期",
     "降息期"
@@ -15,7 +15,19 @@
       "F7_LongYieldDelta": 1.0,
       "F8_CreditResidual": 1.0,
       "F9_VolSpread": 1.0,
-      "F10_FundingStress": 1.0
+      "F10_FundingStress": 1.0,
+      "σ1_RiskReversal": 1.0,
+      "σ2_FxRateResidual": 1.0,
+      "σ3_OVX": 1.0,
+      "σ4_VVIX_VIX": 1.0,
+      "σ5_VXN_VIX": 1.0,
+      "σ6_VXHYG": 1.0,
+      "σ7_GVZ": 1.0,
+      "σ8_RR_Residual": 1.0,
+      "σ9_Stagflation": 1.0,
+      "σ10_TailRisk": 1.0,
+      "σ11_TechSpillover": 1.0,
+      "σ12_CreditRepair": 1.0
     },
     "降息期": {
       "F1_RateDiff": 1.0,
@@ -27,7 +39,19 @@
       "F7_LongYieldDelta": 1.0,
       "F8_CreditResidual": 1.0,
       "F9_VolSpread": 1.0,
-      "F10_FundingStress": 1.0
+      "F10_FundingStress": 1.0,
+      "σ1_RiskReversal": 1.0,
+      "σ2_FxRateResidual": 1.0,
+      "σ3_OVX": 1.0,
+      "σ4_VVIX_VIX": 1.0,
+      "σ5_VXN_VIX": 1.0,
+      "σ6_VXHYG": 1.0,
+      "σ7_GVZ": 1.0,
+      "σ8_RR_Residual": 1.0,
+      "σ9_Stagflation": 1.0,
+      "σ10_TailRisk": 1.0,
+      "σ11_TechSpillover": 1.0,
+      "σ12_CreditRepair": 1.0
     }
   },
   "factor_regime_ic": {
@@ -41,7 +65,19 @@
       "F7_LongYieldDelta": 0.0979,
       "F8_CreditResidual": 0.0055,
       "F9_VolSpread": -0.1389,
-      "F10_FundingStress": -0.0375
+      "F10_FundingStress": -0.0375,
+      "σ1_RiskReversal": 0.0671,
+      "σ2_FxRateResidual": -0.1173,
+      "σ3_OVX": 0.0356,
+      "σ4_VVIX_VIX": -0.0008,
+      "σ5_VXN_VIX": -0.0311,
+      "σ6_VXHYG": -0.037,
+      "σ7_GVZ": 0.0372,
+      "σ8_RR_Residual": -0.1157,
+      "σ9_Stagflation": -0.1463,
+      "σ10_TailRisk": -0.1172,
+      "σ11_TechSpillover": -0.012,
+      "σ12_CreditRepair": -0.0729
     },
     "降息期": {
       "F1_RateDiff": null,
@@ -53,7 +89,19 @@
       "F7_LongYieldDelta": null,
       "F8_CreditResidual": null,
       "F9_VolSpread": null,
-      "F10_FundingStress": null
+      "F10_FundingStress": null,
+      "σ1_RiskReversal": null,
+      "σ2_FxRateResidual": null,
+      "σ3_OVX": null,
+      "σ4_VVIX_VIX": null,
+      "σ5_VXN_VIX": null,
+      "σ6_VXHYG": null,
+      "σ7_GVZ": null,
+      "σ8_RR_Residual": null,
+      "σ9_Stagflation": null,
+      "σ10_TailRisk": null,
+      "σ11_TechSpillover": null,
+      "σ12_CreditRepair": null
     }
   },
   "min_ic_threshold": -0.15,
