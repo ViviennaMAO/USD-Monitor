@@ -6,17 +6,31 @@ import {
 } from 'recharts'
 import { useIcTracking } from '@/lib/useUsdData'
 
-const FACTORS: { id: string; label: string }[] = [
-  { id: 'F1',  label: '利率差' },
-  { id: 'F2',  label: '实际利率' },
-  { id: 'F3',  label: '期限利差' },
-  { id: 'F4',  label: 'VIX' },
-  { id: 'F5',  label: '通胀预期' },
-  { id: 'F6',  label: '利率路径' },
-  { id: 'F7',  label: '美元动量' },
-  { id: 'F8',  label: '信用利差' },
-  { id: 'F9',  label: '波动率差' },
-  { id: 'F10', label: '资金压力' },
+const FACTORS: { id: string; label: string; group?: string }[] = [
+  // F-series: 基本面因子
+  { id: 'F1',  label: '利率差',     group: 'F' },
+  { id: 'F2',  label: '实际利率Δ',  group: 'F' },
+  { id: 'F3',  label: '期限利差',   group: 'F' },
+  { id: 'F4',  label: 'VIX',       group: 'F' },
+  { id: 'F5',  label: '通胀预期',   group: 'F' },
+  { id: 'F6',  label: '曲线动量',   group: 'F' },
+  { id: 'F7',  label: '长端利率Δ',  group: 'F' },
+  { id: 'F8',  label: '信用残差',   group: 'F' },
+  { id: 'F9',  label: '波动率差',   group: 'F' },
+  { id: 'F10', label: '资金压力',   group: 'F' },
+  // σ-series: 波动率因子
+  { id: 'σ1',  label: 'RR',        group: 'σ' },
+  { id: 'σ2',  label: '汇率残差',   group: 'σ' },
+  { id: 'σ3',  label: 'OVX',       group: 'σ' },
+  { id: 'σ4',  label: 'VVIX/VIX',  group: 'σ' },
+  { id: 'σ5',  label: 'VXN-VIX',   group: 'σ' },
+  { id: 'σ6',  label: 'VXHYG',     group: 'σ' },
+  { id: 'σ7',  label: 'GVZ',       group: 'σ' },
+  { id: 'σ8',  label: 'RR×残差',    group: 'σ' },
+  { id: 'σ9',  label: '滞胀',      group: 'σ' },
+  { id: 'σ10', label: '尾部风险',   group: 'σ' },
+  { id: 'σ11', label: '科技溢出',   group: 'σ' },
+  { id: 'σ12', label: '信用修复',   group: 'σ' },
 ]
 
 const REGIME_COLORS: Record<string, string> = {
@@ -74,7 +88,7 @@ export function IcTracking() {
     <div className="space-y-4">
       {/* Factor selector */}
       <div className="flex items-center gap-2 flex-wrap">
-        {FACTORS.map(f => (
+        {FACTORS.filter(f => f.group === 'F').map(f => (
           <button
             key={f.id}
             onClick={() => setFactor(f.id)}
@@ -82,6 +96,19 @@ export function IcTracking() {
               ${factor === f.id
                 ? 'bg-blue-600/30 border-blue-500 text-blue-300'
                 : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-500'}`}
+          >
+            {f.id} {f.label}
+          </button>
+        ))}
+        <div className="w-px h-5 bg-slate-700" />
+        {FACTORS.filter(f => f.group === 'σ').map(f => (
+          <button
+            key={f.id}
+            onClick={() => setFactor(f.id)}
+            className={`px-3 py-1 rounded text-xs font-mono border transition-colors
+              ${factor === f.id
+                ? 'bg-amber-600/30 border-amber-500 text-amber-300'
+                : 'bg-slate-800/50 border-slate-700 text-slate-500 hover:border-slate-500'}`}
           >
             {f.id} {f.label}
           </button>
