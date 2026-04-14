@@ -570,6 +570,24 @@ export interface SignalAttributionData {
   optimal_threshold: number
 }
 
+// ─── DCA Rhythm Signal (定投节奏信号灯) ─────────────────────────────────────
+export type DcaRhythm = 'accelerate' | 'normal' | 'hold' | 'pause' | 'pause_reduce'
+
+export interface DcaSignalData {
+  rhythm: DcaRhythm
+  label: string                // e.g. "正常定投", "加速定投"
+  fragility: number            // 0-100 脆弱度指数
+  confidence: number           // 1-5 信心刻度
+  consensus: {
+    bullish: number            // 因子看多数
+    neutral: number            // 因子中性数
+    bearish: number            // 因子看空数
+    total: number              // 总因子数 (12)
+    alignment: number          // 0-1 一致性
+  }
+  reason: string               // 一句话解释
+}
+
 // ─── Combined Dashboard Data ───────────────────────────────────────────────
 export interface DashboardData {
   score: ScoreData

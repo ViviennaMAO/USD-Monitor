@@ -6,6 +6,7 @@ import type {
   VolAlertData, DxyData, FxData, YieldDecompData,
   HedgeData, CftcData, SignalHistoryEntry,
   IcTrackingData, ShapData, RegimeIcData, CorrelationData, NavCurveData,
+  DcaSignalData,
 } from '@/types'
 import {
   mockData, volAlertHistory,
@@ -114,6 +115,22 @@ export function useCorrelation() {
 export function useNavCurve() {
   const { data, error, isLoading } = useSWR<NavCurveData>('/api/nav', fetcher, { refreshInterval: REFRESH })
   return { data: data ?? mockNavCurve, error, isLoading }
+}
+
+// ─── DCA Signal (定投节奏信号灯) ─────────────────────────────────────────────
+
+const defaultDca: DcaSignalData = {
+  rhythm: 'hold',
+  label: '维持不变',
+  fragility: 50,
+  confidence: 3,
+  consensus: { bullish: 5, neutral: 4, bearish: 3, total: 12, alignment: 0.42 },
+  reason: '数据加载中...',
+}
+
+export function useDcaSignal() {
+  const { data, error, isLoading } = useSWR<DcaSignalData>('/api/dca-signal', fetcher, { refreshInterval: REFRESH })
+  return { data: data ?? defaultDca, error, isLoading }
 }
 
 // Factor selector state — exported so AnalyticsPage and IcTracking share it

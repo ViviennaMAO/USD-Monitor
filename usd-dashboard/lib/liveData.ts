@@ -16,7 +16,7 @@ import {
 } from './yahooApi'
 import {
   computeDxyResidual,
-  scoreRf, scorePiRisk, scoreCy, scoreSigmaAlert, computeGamma,
+  scoreRf, scorePiRisk, scoreCy, scoreSigmaAlert, computeGamma, computeDcaSignal,
   type FredRaw, type YahooRaw, type CbRates, type Residual,
 } from './scoring'
 
@@ -228,6 +228,7 @@ export async function getLiveData() {
   const cy    = scoreCy(pipelineData)
   const sigma = scoreSigmaAlert(pipelineData)
   const gamma = computeGamma(rf.score, pi.score, cy.score, sigma, sigma.rr_zscore)
+  const dcaSignal = computeDcaSignal(gamma, sigma)
 
   return {
     ...snap,
@@ -236,6 +237,7 @@ export async function getLiveData() {
     cy,
     sigma,
     gamma,
+    dcaSignal,
   }
 }
 

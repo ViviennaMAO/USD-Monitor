@@ -11,10 +11,12 @@ import { YieldDecompCard } from '@/components/charts/YieldDecomp'
 import { FxPairCard } from '@/components/cards/FxPairCard'
 import { CftcBars } from '@/components/charts/CftcBars'
 import { SignalTimeline } from '@/components/cards/SignalTimeline'
+import { DcaSignalLight } from '@/components/cards/DcaSignalLight'
+import { FactorConsensusBar } from '@/components/cards/FactorConsensusBar'
 import {
   useScore, useComponents,
   useDxy, useFxPairs, useYieldDecomp,
-  useHedge, useSignalHistory,
+  useHedge, useSignalHistory, useDcaSignal,
 } from '@/lib/useUsdData'
 import { mockData } from '@/data/mockData'
 
@@ -34,6 +36,7 @@ export default function Dashboard() {
   const { rf, pi_risk, cy, isLoading: compLoading }    = useComponents()
   // volAlert moved to analytics page
   const { data: dxy, isLoading: dxyLoading }            = useDxy()
+  const { data: dcaSignal }                             = useDcaSignal()
   const { data: fx }                                    = useFxPairs()
   const { data: yieldDecomp }                           = useYieldDecomp()
   const { data: hedge }                                 = useHedge()
@@ -53,6 +56,16 @@ export default function Dashboard() {
         <div className="flex justify-end">
           <LiveIndicator isLoading={isLoading} />
         </div>
+
+        {/* ═══ Row 0: DCA Signal Light + Factor Consensus ═══════════════ */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-5">
+            <DcaSignalLight data={dcaSignal} />
+          </div>
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            <FactorConsensusBar data={dcaSignal.consensus} />
+          </div>
+        </section>
 
         {/* ═══ Row 1: Gauge + Stats + Score History ══════════════════════ */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">

@@ -532,3 +532,95 @@ export function computeGamma(
 
   return { gamma, signal, rf_score: rfScore, pi_risk_score: piScore, cy_score: cyScore, sigma_score: sigS, sigma_weight: sigmaW }
 }
+
+
+// ─── DCA Rhythm Signal (定投节奏信号灯) ─────────────────────────────────────
+
+import type { DcaRhythm, DcaSignalData } from '@/types'
+
+/**
+ * Compute DCA rhythm signal from gamma score + sigma alert data.
+ *
+ * Architecture (from roundtable consensus):
+ *   Layer 3 — 5-state signal light for personal investors
+ *   Based on γ score (direction) + fragility index (risk)
+ *   Fragility = f(factor_divergence, sigma_alert_level, conflict_score)
+ */
+export function computeDcaSignal(
+  gamma: GammaResult,
+  sigma: { score: number; push_count: number; suppress_count: number; alert_level: string },
+  conflictScore: number = 0,
+): DcaSignalData {
+  // ── Factor consensus from σ_alert directions ──
+  const pushN = sigma.push_count
+  const suppressN = sigma.suppress_count
+  const neutralN = 12 - pushN - suppressN
+  const total = 12
+
+  // Alignment = how many factors agree with majority direction (0-1)
+  const maxGroup = Math.max(pushN, suppressN, neutralN)
+  const alignment = maxGroup / total
+
+  // ── Fragility Index (0-100) ──
+  // Combines: factor divergence + sigma alert level + conflict score
+  const divergence = 1 - alignment  // 0 = all agree, 1 = max disagreement
+  const sigmaStress = sigma.score / 100  // 0-1
+  const conflict = Math.min(conflictScore, 1)  // 0-1
+
+  const fragility = r(clamp(
+    30 * divergence +      // factor disagreement weight
+    40 * sigmaStress +     // volatility stress weight
+    30 * conflict          // gamma-ML conflict weight
+  ) * 100)
+
+  // ── Confidence (1-5) ──
+  const confidence = fragility < 20 ? 5
+    : fragility < 35 ? 4
+    : fragility < 55 ? 3
+    : fragility < 75 ? 2
+    : 1
+
+  // ── DCA Rhythm decision ──
+  // Uses γ score (direction quality) + fragility (risk level)
+  const g = gamma.gamma
+  let rhythm: DcaRhythm
+  let label: string
+  let reason: string
+
+  if (fragility > 85) {
+    rhythm = 'pause_reduce'
+    label = '暂停+减持'
+    reason = `脆弱度极高(${fragility})，${pushN}个因子预警，建议暂停定投并适当减持`
+  } else if (fragility > 70 || sigma.alert_level === 'alert') {
+    rhythm = 'pause'
+    label = '暂停定投'
+    reason = `脆弱度偏高(${fragility})，波动率${sigma.alert_level === 'alert' ? '警报' : '预警'}，等待更清晰信号`
+  } else if (fragility > 45 || (g >= 35 && g < 65)) {
+    rhythm = 'hold'
+    label = '维持不变'
+    reason = `信号混合(γ=${g}，脆弱度=${fragility})，因子一致性${r(alignment * 100)}%，暂不操作`
+  } else if (g >= 65 && fragility < 30) {
+    rhythm = 'accelerate'
+    label = '加速定投'
+    reason = `γ看多(${g})且脆弱度低(${fragility})，${12 - pushN}个因子支持强势，可加大投入`
+  } else {
+    rhythm = 'normal'
+    label = '正常定投'
+    reason = `γ评分${g}，脆弱度${fragility}，因子一致性${r(alignment * 100)}%，按计划执行`
+  }
+
+  return {
+    rhythm,
+    label,
+    fragility,
+    confidence,
+    consensus: {
+      bullish: pushN,
+      neutral: neutralN,
+      bearish: suppressN,
+      total,
+      alignment: r(alignment, 2),
+    },
+    reason,
+  }
+}
