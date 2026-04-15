@@ -236,8 +236,14 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     # F4: VIX (risk sentiment)
     out["F4_VIX"] = rolling_zscore(df["VIX_close"])
 
-    # F5: Breakeven Inflation (10Y)
-    out["F5_BEI"] = rolling_zscore(df["T10YIE"])
+    # F5: Inflation Expectation — 5Y-5Y Forward (T5YIFR)
+    # Upgraded from T10YIE (10Y BEI): T5YIFR filters short-term oil noise,
+    # is the Fed's preferred inflation anchoring gauge, and more stable for regime detection.
+    # Falls back to T10YIE if T5YIFR unavailable (pre-2003 or missing).
+    fwd5y5y = df.get("T5YIFR", pd.Series(np.nan, index=df.index))
+    bei10y = df.get("T10YIE", pd.Series(np.nan, index=df.index))
+    inflation_anchor = fwd5y5y.where(fwd5y5y.notna(), bei10y)
+    out["F5_BEI"] = rolling_zscore(inflation_anchor)
 
     # ── Reformed Factors (post-bias-audit) ────────────────────────────
     # F6: Yield Curve Momentum — 20d change in term spread

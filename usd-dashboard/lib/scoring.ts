@@ -69,8 +69,9 @@ export interface FredRaw {
   dgs2: number
   dgs10: number
   tips10y: number   // DFII10
-  bei10y: number    // T10YIE
-  bei5y: number     // T5YIE
+  bei10y: number    // T10YIE  (10Y BEI — for yield decomp)
+  bei5y: number     // T5YIE   (5Y BEI — display only)
+  fwd5y5y: number   // T5YIFR  (5Y-5Y Forward — Fed's preferred inflation anchor)
   sofr: number
   iorb: number
   bbbSpread: number // BAMLC0A4CBBB

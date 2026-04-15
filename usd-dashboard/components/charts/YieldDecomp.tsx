@@ -21,10 +21,12 @@ export function YieldDecompCard({ data, hedge }: YieldDecompProps) {
     term_premium: '期限溢价驱动',
   }[data.driver]
 
+  const fwd = data.fwd5y5y ?? 2.20
   const dataRows = [
     { label: '实际利率 (TIPS 10Y)', value: `${data.real_rate.toFixed(2)}%` },
-    { label: '5Y BEI', value: `${data.bei_5y.toFixed(2)}%` },
+    { label: '通胀锚定 (5Y5Y Fwd)', value: `${fwd.toFixed(2)}%` },
     { label: '10Y BEI', value: `${data.bei_10y.toFixed(2)}%` },
+    { label: '5Y BEI', value: `${data.bei_5y.toFixed(2)}%` },
     { label: '期限溢价 (ACM近似)', value: `${data.term_premium > 0 ? '+' : ''}${(data.term_premium * 100).toFixed(0)}bps` },
     { label: '主要驱动', value: driverLabel },
   ]

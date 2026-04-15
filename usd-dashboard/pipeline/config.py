@@ -28,6 +28,7 @@ FRED_SERIES = {
     "tips10y":  "DFII10",     # 10Y TIPS (real rate)
     "bei10y":   "T10YIE",     # 10Y Breakeven Inflation
     "bei5y":    "T5YIE",      # 5Y Breakeven Inflation
+    "fwd5y5y":  "T5YIFR",    # 5Y-5Y Forward Inflation Expectation Rate
     "dxy_tw":   "DTWEXBGS",   # Trade-weighted DXY
     "sofr":     "SOFR",       # SOFR
     "iorb":     "IORB",       # IORB

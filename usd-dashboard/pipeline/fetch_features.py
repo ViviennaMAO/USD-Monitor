@@ -75,6 +75,7 @@ def fetch_fred_history(start: str, end: str) -> pd.DataFrame:
         "SOFR":          FRED_SERIES["sofr"],
         "IORB":          FRED_SERIES["iorb"],
         "BAMLC0A4CBBB":  FRED_SERIES["bbb_spread"],
+        "T5YIFR":        FRED_SERIES["fwd5y5y"],
     }
 
     for col_name, series_id in series_map.items():

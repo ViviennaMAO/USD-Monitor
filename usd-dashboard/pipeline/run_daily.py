@@ -135,7 +135,8 @@ def run():
     dgs10  = fred.get("dgs10", 4.28)
     tips10 = fred.get("tips10y", 1.85)
     bei10  = fred.get("bei10y", 2.33)
-    bei5   = fred.get("bei5y", 2.48)
+    bei5      = fred.get("bei5y", 2.48)
+    fwd5y5y   = fred.get("fwd5y5y", 2.20)
     tp_approx = round((dgs10 - fred.get("dgs2", 4.62)) * 100, 1)
 
     drivers = {"real_rate": tips10, "inflation": bei10, "term_premium": max(0, tp_approx / 100)}
@@ -148,9 +149,10 @@ def run():
         "term_premium": round(tp_approx / 100, 3),
         "driver":       driver,
         "bei_5y":       round(bei5, 2),
+        "fwd5y5y":      round(fwd5y5y, 2),
         "note": (
             f"当前10Y收益率{dgs10:.2f}%由{'实际利率' if driver=='real_rate' else '通胀预期' if driver=='inflation' else '期限溢价'}主导。"
-            f"BEI通胀预期{bei10:.2f}%，期限溢价{tp_approx:+.0f}bps（10Y-2Y利差近似）。"
+            f"BEI通胀预期{bei10:.2f}%，5Y5Y远期通胀锚定{fwd5y5y:.2f}%，期限溢价{tp_approx:+.0f}bps。"
         ),
     })
 

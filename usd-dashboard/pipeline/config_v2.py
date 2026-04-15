@@ -84,7 +84,7 @@ FACTOR_DISPLAY = {
     "F2_RealRateDelta":   "实际利率变化 (TIPS Δ20d)",
     "F3_TermSpread":      "期限利差 (10Y−2Y)",
     "F4_VIX":             "风险情绪 (VIX)",
-    "F5_BEI":             "通胀预期 (BEI 10Y)",
+    "F5_BEI":             "通胀锚定 (5Y5Y Fwd)",
     "F6_YCMomentum":      "曲线动量 (利差Δ20d)",
     "F7_LongYieldDelta":  "长端利率动量 (10YΔ20d)",
     "F8_CreditResidual":  "信用残差 (BBB⊥VIX)",
@@ -185,6 +185,7 @@ HMM_BASE_FACTORS = ["F1_RateDiff", "F4_VIX", "F5_BEI", "F3_TermSpread"]
 # ── Factor Audit Metadata (for dashboard display) ─────────────────────────
 FACTOR_AUDIT_LOG = {
     "F2": "v1→level, v2→Δ20d: 消除实际利率幻觉偏见",
+    "F5": "v1→T10YIE(10Y BEI, 含短期油价噪声+流动性溢价), v2→T5YIFR(5Y5Y远期通胀, Fed首选锚定指标, 更稳定)",
     "F6": "v1→RatePath(ICIR=-1.91), v2→YCMomentum: 消除与F1的共线性",
     "F7": "v1→DXYMomentum(ICIR=-2.16)→RateVol(ρ=0.93 vs F9)→LongYieldDelta: ρ=0.87 vs F2 acceptable (XGBoost handles collinearity, OOS IC +0.009)",
     "F8": "v1→CreditSpread(ρ=0.583 vs F4), v2→CreditResidual: 正交化去重",

@@ -177,11 +177,12 @@ export interface VolAlertData {
 // ─── Yield Decomp ──────────────────────────────────────────────────────────
 export interface YieldDecompData {
   nominal_10y: number
-  real_rate: number       // TIPS
-  bei_10y: number         // Breakeven inflation
+  real_rate: number       // TIPS (DFII10)
+  bei_10y: number         // 10Y Breakeven inflation (T10YIE)
   term_premium: number    // ACM approx
   driver: 'real_rate' | 'inflation' | 'term_premium'
-  bei_5y: number
+  bei_5y: number          // 5Y BEI (T5YIE)
+  fwd5y5y: number         // 5Y-5Y Forward Inflation (T5YIFR) — Fed's preferred anchor
   note: string
 }
 

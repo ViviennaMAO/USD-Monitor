@@ -93,6 +93,7 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
       'SOFR',
       'IORB',
       'BAMLC0A4CBBB', // BBB spread (CDS proxy)
+      'T5YIFR',       // 5Y-5Y Forward Inflation Expectation Rate
     ]),
     fredHistory('DTWEXBGS', 300),  // Trade-weighted DXY
     fredHistory('DGS2', 300),       // 2Y Treasury series
@@ -108,6 +109,7 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
     sofr:       fredValues['SOFR'],
     iorb:       fredValues['IORB'],
     bbbSpread:  fredValues['BAMLC0A4CBBB'],
+    fwd5y5y:    fredValues['T5YIFR'],
     dxy_tw_series: dxyTwHistory,
     dgs2_series:   dgs2History,
   }
