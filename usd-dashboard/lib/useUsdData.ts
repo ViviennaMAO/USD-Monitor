@@ -6,7 +6,7 @@ import type {
   VolAlertData, DxyData, FxData, YieldDecompData,
   HedgeData, CftcData, SignalHistoryEntry,
   IcTrackingData, ShapData, RegimeIcData, CorrelationData, NavCurveData,
-  DcaSignalData, MultiAssetSignalData,
+  DcaSignalData, MultiAssetSignalData, EventWindowData,
 } from '@/types'
 import {
   mockData, volAlertHistory,
@@ -142,6 +142,7 @@ const defaultMultiAsset: MultiAssetSignalData = {
   regimeReason: '数据加载中...',
   inflationAnchor: 2.20,
   wageGrowth: null,
+  fiscal: null,
   assets: [
     { asset: 'USD',    label: '美元',  symbol: 'DXY',    direction: 'neutral', confidence: 2, timeWindow: '1-3月',  reason: '数据加载中' },
     { asset: 'Gold',   label: '黄金',  symbol: 'XAU',    direction: 'neutral', confidence: 2, timeWindow: '3-6月',  reason: '数据加载中' },
@@ -153,6 +154,20 @@ const defaultMultiAsset: MultiAssetSignalData = {
 export function useMultiAssetSignals() {
   const { data, error, isLoading } = useSWR<MultiAssetSignalData>('/api/multi-asset-signals', fetcher, { refreshInterval: REFRESH })
   return { data: data ?? defaultMultiAsset, error, isLoading }
+}
+
+// ─── Event Window (叙事事件拦截器) ─────────────────────────────────────────
+
+const defaultEventWindow: EventWindowData = {
+  status: 'clear',
+  upcoming: [],
+  activeEvent: null,
+  message: '加载中...',
+}
+
+export function useEventWindow() {
+  const { data, error, isLoading } = useSWR<EventWindowData>('/api/event-window', fetcher, { refreshInterval: 30 * 60 * 1000 })
+  return { data: data ?? defaultEventWindow, error, isLoading }
 }
 
 // Factor selector state — exported so AnalyticsPage and IcTracking share it

@@ -104,6 +104,16 @@ export function MultiAssetSignals({ data }: { data: MultiAssetSignalData }) {
               }`}>{data.wageGrowth.toFixed(2)}%</span>
             </div>
           )}
+          {data.fiscal && (
+            <div className="flex items-center gap-1.5 justify-end" title={data.fiscal.note}>
+              <span className="text-[10px] text-slate-500">财政压力</span>
+              <span className={`text-xs font-mono ${
+                data.fiscal.level === 'extreme' ? 'text-red-400' :
+                data.fiscal.level === 'high' ? 'text-amber-400' :
+                data.fiscal.level === 'moderate' ? 'text-slate-300' : 'text-emerald-400'
+              }`}>{data.fiscal.debtGdp.toFixed(0)}% ({data.fiscal.pressureScore})</span>
+            </div>
+          )}
         </div>
       </div>
 

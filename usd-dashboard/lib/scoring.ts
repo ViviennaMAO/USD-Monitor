@@ -73,6 +73,7 @@ export interface FredRaw {
   bei5y: number     // T5YIE   (5Y BEI — display only)
   fwd5y5y: number   // T5YIFR  (5Y-5Y Forward — Fed's preferred inflation anchor)
   wageGrowth: number // FRBATLWGT (Atlanta Fed Wage Growth Tracker, monthly)
+  debtGdp: number    // GFDEGDQ188S (Federal Debt / GDP, quarterly, %)
   sofr: number
   iorb: number
   bbbSpread: number // BAMLC0A4CBBB
@@ -540,7 +541,7 @@ export function computeGamma(
 
 import type {
   DcaRhythm, DcaSignalData,
-  InflationRegime, AssetDirection, AssetSignal, MultiAssetSignalData,
+  InflationRegime, AssetDirection, AssetSignal, MultiAssetSignalData, FiscalPressure,
 } from '@/types'
 
 /**
@@ -639,7 +640,49 @@ const REGIME_LABELS: Record<InflationRegime, string> = {
   anchored_wage_spiral:  '锚定·工资螺旋',
   unanchored_demand:     '失锚·需求过热',
   deflation_return:      '通缩回归',
+  fiscal_dominance:      '财政主导·日本化',
   neutral:               '中性过渡',
+}
+
+/**
+ * Compute fiscal pressure index (0-100) from debt/GDP.
+ * Based on Summers 2024 warnings about US fiscal dominance transition.
+ *   <70%:    low pressure (pre-2008 norm)
+ *   70-100%: moderate (post-GFC)
+ *   100-120%: high (post-COVID)
+ *   >120%:   extreme (Japanification risk)
+ */
+export function computeFiscalPressure(debtGdp: number): FiscalPressure | null {
+  if (!isFinite(debtGdp) || debtGdp <= 0) return null
+
+  let level: FiscalPressure['level']
+  let score: number
+  let note: string
+
+  if (debtGdp < 70) {
+    level = 'low'
+    score = norm(debtGdp, 40, 70) * 30      // 0-30
+    note = `债务/GDP ${debtGdp.toFixed(0)}%,财政空间充足`
+  } else if (debtGdp < 100) {
+    level = 'moderate'
+    score = 30 + norm(debtGdp, 70, 100) * 30  // 30-60
+    note = `债务/GDP ${debtGdp.toFixed(0)}%,财政压力可控`
+  } else if (debtGdp < 120) {
+    level = 'high'
+    score = 60 + norm(debtGdp, 100, 120) * 25 // 60-85
+    note = `债务/GDP ${debtGdp.toFixed(0)}%,财政压力显著,利息负担增加`
+  } else {
+    level = 'extreme'
+    score = 85 + norm(debtGdp, 120, 150) * 15 // 85-100
+    note = `债务/GDP ${debtGdp.toFixed(0)}%,财政主导风险,Fed空间受限`
+  }
+
+  return {
+    debtGdp: r(debtGdp, 1),
+    pressureScore: r(score),
+    level,
+    note,
+  }
 }
 
 /**
@@ -654,9 +697,20 @@ export function computeInflationRegime(
   ovx: number,
   vix: number,
   tips10y: number,
+  fiscalPressureScore: number = 0,
 ): { regime: InflationRegime; label: string; reason: string } {
   const anchor = isFinite(fwd5y5y) ? fwd5y5y : 2.2
   const wage = wageGrowth != null && isFinite(wageGrowth) ? wageGrowth : 3.8
+
+  // Layer 0 (Summers): Fiscal dominance override
+  // When debt/GDP extreme AND inflation unanchored, traditional transmission breaks
+  if (fiscalPressureScore >= 85 && anchor > 2.5) {
+    return {
+      regime: 'fiscal_dominance',
+      label: REGIME_LABELS['fiscal_dominance'],
+      reason: `财政压力极高+通胀失锚(5Y5Y=${anchor.toFixed(2)}%),Fed空间受限,传统通胀→利率传导断裂`,
+    }
+  }
 
   // Layer 1: Anchor check
   const isAnchored = anchor >= 1.8 && anchor <= 2.8
@@ -722,6 +776,7 @@ const ASSET_MATRIX: Record<InflationRegime, [AssetDirection, number][]> = {
   anchored_wage_spiral:   [['bullish', 3],         ['bullish', 2],          ['strong_bearish', 4], ['bearish', 3]],
   unanchored_demand:      [['strong_bullish', 5],  ['bearish', 2],          ['strong_bearish', 5], ['strong_bearish', 5]],
   deflation_return:       [['bearish', 2],         ['bullish', 3],          ['bearish', 4],        ['strong_bullish', 5]],
+  fiscal_dominance:       [['strong_bearish', 4],  ['strong_bullish', 5],   ['bearish', 3],        ['strong_bearish', 5]],
   neutral:                [['neutral', 2],         ['neutral', 2],          ['neutral', 2],        ['neutral', 2]],
 }
 
@@ -740,6 +795,7 @@ function assetReason(asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds', regime: Inflati
       anchored_wage_spiral:  'Fed被迫鹰派,利率差走阔',
       unanchored_demand:     '实际利率飙升+避险双重推升',
       deflation_return:      '衰退型降息,美元走弱',
+      fiscal_dominance:      '财政可信度下降,储备多元化加速,美元结构性走弱',
       neutral:               '缺乏主导驱动',
     },
     Gold: {
@@ -748,6 +804,7 @@ function assetReason(asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds', regime: Inflati
       anchored_wage_spiral:  '实际利率波动,温和支撑',
       unanchored_demand:     '高名义利率压制金价',
       deflation_return:      '避险需求+降息预期',
+      fiscal_dominance:      '央行储备多元化+财政货币化对冲,结构性牛市',
       neutral:               '区间震荡',
     },
     Stocks: {
@@ -756,6 +813,7 @@ function assetReason(asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds', regime: Inflati
       anchored_wage_spiral:  '工资通胀直接压利润率(Sahm洞察)',
       unanchored_demand:     'Fed鹰派+利润率压缩双杀',
       deflation_return:      '衰退盈利下修',
+      fiscal_dominance:      '名义上涨但实际回报被稀释,龙头优于小盘',
       neutral:               '区间震荡',
     },
     Bonds: {
@@ -764,6 +822,7 @@ function assetReason(asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds', regime: Inflati
       anchored_wage_spiral:  'Fed维持紧缩,收益率走高',
       unanchored_demand:     '通胀+Fed+供给三杀',
       deflation_return:      '衰退+降息,长债大涨',
+      fiscal_dominance:      '期限溢价重定价,长债久期陷阱',
       neutral:               '区间震荡',
     },
   }
@@ -780,7 +839,11 @@ export function computeMultiAssetSignals(
   const vix = isFinite(yahoo.vix) ? yahoo.vix : 18
   const tips = isFinite(fred.tips10y) ? fred.tips10y : 1.85
 
-  const { regime, label, reason } = computeInflationRegime(anchor, wage, ovx, vix, tips)
+  // Fiscal pressure (Summers — structural US fiscal dominance risk)
+  const fiscal = computeFiscalPressure(fred.debtGdp)
+  const fiscalScore = fiscal?.pressureScore ?? 0
+
+  const { regime, label, reason } = computeInflationRegime(anchor, wage, ovx, vix, tips, fiscalScore)
   const reactions = ASSET_MATRIX[regime]
 
   const assetPrices: Record<string, { price: number; change: number }> = {
@@ -813,6 +876,7 @@ export function computeMultiAssetSignals(
     regimeReason: reason,
     inflationAnchor: r(anchor, 2),
     wageGrowth: wage != null ? r(wage, 2) : null,
+    fiscal,
     assets,
   }
 }

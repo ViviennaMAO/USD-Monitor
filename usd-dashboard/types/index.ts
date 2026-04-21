@@ -578,7 +578,31 @@ export type InflationRegime =
   | 'anchored_wage_spiral'    // 锚定+工资螺旋
   | 'unanchored_demand'       // 失锚+需求过热
   | 'deflation_return'        // 通缩回归 (衰退型)
+  | 'fiscal_dominance'        // 财政主导 (Summers — 日本化路径)
   | 'neutral'                 // 中性过渡态
+
+export interface FiscalPressure {
+  debtGdp: number             // 债务/GDP (%)
+  pressureScore: number       // 0-100 压力分数
+  level: 'low' | 'moderate' | 'high' | 'extreme'
+  note: string
+}
+
+export type EventWindowStatus = 'clear' | 'approaching' | 'imminent' | 'post'
+
+export interface UpcomingEvent {
+  date: string                // YYYY-MM-DD
+  type: 'FOMC' | 'CPI' | 'PCE' | 'NFP' | 'GDP'
+  name: string                // 中文事件名
+  daysUntil: number           // 距离今天的天数 (负数=已过)
+}
+
+export interface EventWindowData {
+  status: EventWindowStatus
+  upcoming: UpcomingEvent[]   // 最近的几个事件
+  activeEvent: UpcomingEvent | null  // 当前窗口内的事件 (imminent/post)
+  message: string             // 观察模式建议
+}
 
 export type AssetDirection =
   | 'strong_bullish' | 'bullish' | 'neutral' | 'bearish' | 'strong_bearish'
@@ -604,6 +628,7 @@ export interface MultiAssetSignalData {
   regimeReason: string       // 为什么是这个regime (one-liner)
   inflationAnchor: number    // T5YIFR 当前值
   wageGrowth: number | null  // 工资增长 Tracker (月频, 可为null)
+  fiscal: FiscalPressure | null  // 财政压力 (Summers)
   assets: AssetSignal[]      // 4个资产信号
 }
 

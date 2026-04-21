@@ -12,6 +12,7 @@ const fallback: MultiAssetSignalData = {
   regimeReason: '数据加载中...',
   inflationAnchor: 2.20,
   wageGrowth: null,
+  fiscal: null,
   assets: [
     { asset: 'USD',    label: '美元',  symbol: 'DXY',    direction: 'neutral', confidence: 2, timeWindow: '1-3月',  reason: '数据加载中' },
     { asset: 'Gold',   label: '黄金',  symbol: 'XAU',    direction: 'neutral', confidence: 2, timeWindow: '3-6月',  reason: '数据加载中' },
