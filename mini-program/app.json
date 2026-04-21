@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/inflation/inflation",
     "pages/market/market",
     "pages/signal/signal",
     "pages/analytics/analytics"
@@ -24,6 +25,12 @@
         "text": "总览",
         "iconPath": "static/images/tab-home.png",
         "selectedIconPath": "static/images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/inflation/inflation",
+        "text": "通胀",
+        "iconPath": "static/images/tab-signal.png",
+        "selectedIconPath": "static/images/tab-signal-active.png"
       },
       {
         "pagePath": "pages/market/market",

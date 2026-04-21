@@ -1,0 +1,174 @@
+<view class="page">
+
+  <!-- ═══ Loading ════════════════════════════════════════ -->
+  <view wx:if="{{loading}}" class="loading">
+    <view class="spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- ═══ Header ═════════════════════════════════════════ -->
+  <view wx:if="{{!loading}}" class="header">
+    <text class="title">通胀 → 资产看板</text>
+    <view class="header-meta">
+      <view class="dot"></view>
+      <text class="update-time">更新 {{lastUpdate}}</text>
+    </view>
+  </view>
+
+  <!-- ═══ Event Interceptor Banner ═══════════════════════ -->
+  <view wx:if="{{!loading && event}}"
+        class="event-card"
+        style="background: {{eventCfg.bg}}; border-color: {{eventCfg.color}}40">
+    <view class="event-main">
+      <text class="event-icon" style="color: {{eventCfg.color}}">{{eventCfg.icon}}</text>
+      <view class="event-text">
+        <view class="event-title">
+          <text class="event-label" style="color: {{eventCfg.color}}">{{eventCfg.label}}</text>
+          <text wx:if="{{event.status === 'imminent' || event.status === 'approaching'}}"
+                class="event-chip">narrative interceptor</text>
+        </view>
+        <text class="event-message">{{event.message}}</text>
+      </view>
+    </view>
+
+    <!-- Upcoming events list -->
+    <view wx:if="{{event.upcoming && event.upcoming.length > 0}}" class="event-list">
+      <view wx:for="{{event.upcoming}}" wx:key="date" class="event-item">
+        <text class="event-type" style="color: {{item.color}}">{{item.type}}</text>
+        <text class="event-date">{{item.date}}</text>
+        <text class="event-day">{{item.dayText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ═══ Regime Card ════════════════════════════════════ -->
+  <view wx:if="{{!loading && regime}}" class="regime-card">
+    <view class="regime-head">
+      <view class="regime-head-left">
+        <text class="section-label">通胀 REGIME</text>
+        <view class="regime-badge">{{regimeLabel}}</view>
+      </view>
+      <view class="regime-metrics">
+        <view class="metric-row">
+          <text class="metric-label">5Y5Y锚</text>
+          <text class="metric-val">{{inflationAnchor}}%</text>
+        </view>
+        <view wx:if="{{wageGrowth != null}}" class="metric-row">
+          <text class="metric-label">工资增长</text>
+          <text class="metric-val {{wageGrowth > 4.5 ? 'red' : wageGrowth > 4.0 ? 'amber' : 'green'}}">{{wageGrowth}}%</text>
+        </view>
+        <view wx:if="{{fiscal}}" class="metric-row">
+          <text class="metric-label">财政压力</text>
+          <text class="metric-val {{fiscal.level === 'extreme' ? 'red' : fiscal.level === 'high' ? 'amber' : fiscal.level === 'moderate' ? 'slate' : 'green'}}">{{fiscal.debtGdp}}% ({{fiscal.pressureScore}})</text>
+        </view>
+      </view>
+    </view>
+    <text class="regime-reason">{{regimeReason}}</text>
+  </view>
+
+  <!-- ═══ 4-Asset Grid ═══════════════════════════════════ -->
+  <view wx:if="{{!loading && assets.length > 0}}" class="section">
+    <view class="section-divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">四资产信号</text>
+      <view class="divider-line"></view>
+    </view>
+
+    <view class="asset-grid">
+      <view wx:for="{{assets}}" wx:key="asset" class="asset-card"
+            style="border-color: {{item.dirColor}}40">
+        <!-- Header -->
+        <view class="asset-head">
+          <view>
+            <text class="asset-label">{{item.label}}</text>
+            <text class="asset-symbol">{{item.symbol}}</text>
+          </view>
+          <view class="asset-dir" style="color: {{item.dirColor}}">
+            <text class="asset-arrow">{{item.dirArrow}}</text>
+            <text class="asset-dir-label">{{item.dirLabel}}</text>
+          </view>
+        </view>
+
+        <!-- Stars + window -->
+        <view class="asset-meta">
+          <view class="stars">
+            <text wx:for="{{item.stars}}" wx:key="index" wx:for-item="s"
+                  class="star"
+                  style="color: {{s.filled ? item.dirColor : '#334155'}}">★</text>
+          </view>
+          <text class="asset-window">{{item.timeWindow}}</text>
+        </view>
+
+        <!-- Price -->
+        <view wx:if="{{item.price != null}}" class="asset-price">
+          <text class="price-val">{{item.priceDisplay}}</text>
+          <text wx:if="{{item.change_1d_pct != null && item.change_1d_pct !== 0}}"
+                class="price-chg" style="color: {{item.changeColor}}">
+            {{item.change_1d_pct > 0 ? '+' : ''}}{{item.change_1d_pct}}%
+          </text>
+        </view>
+
+        <!-- Reason -->
+        <text class="asset-reason">{{item.reason}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ═══ Inflation Type Diagnosis ═══════════════════════ -->
+  <view wx:if="{{!loading && diagnosis}}" class="section">
+    <view class="section-divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">通胀类型诊断</text>
+      <view class="divider-line"></view>
+    </view>
+
+    <view class="diag-card">
+      <!-- Diag head -->
+      <view class="diag-head">
+        <view class="diag-badge-row">
+          <text class="section-label">类型</text>
+          <view class="diag-badge"
+                style="color: {{typeColor}}; background: {{typeColor}}22; border-color: {{typeColor}}55">
+            {{diagnosis.typeLabel}}
+          </view>
+        </view>
+        <view class="diag-right">
+          <text class="diag-right-label">主导驱动</text>
+          <text class="diag-right-val">{{diagnosis.dominantDriver}}</text>
+        </view>
+      </view>
+      <text class="diag-headline">{{diagnosis.headline}}</text>
+
+      <!-- Components -->
+      <view class="comp-list">
+        <view wx:for="{{diagnosis.components}}" wx:key="symbol" class="comp-row">
+          <view class="comp-top">
+            <view>
+              <text class="comp-label">{{item.label}}</text>
+              <text class="comp-symbol">{{item.symbol}}</text>
+            </view>
+            <view class="comp-right">
+              <text class="comp-yoy" style="color: {{item.zoneColor}}">{{item.yoyDisplay}}%</text>
+              <text class="comp-zone" style="color: {{item.zoneColor}}">{{item.zoneLabel}}</text>
+            </view>
+          </view>
+          <view class="comp-bar">
+            <view class="comp-bar-fill"
+                  style="width: {{item.barPct}}%; background: {{item.zoneColor}}"></view>
+          </view>
+          <text class="comp-note">{{item.note}}</text>
+        </view>
+      </view>
+
+      <text class="diag-footer">
+        * Blanchard 6型分类: 能源/工资螺旋/货币/需求/供给链/住房
+      </text>
+    </view>
+  </view>
+
+  <!-- ═══ Footer ═════════════════════════════════════════ -->
+  <view wx:if="{{!loading}}" class="footer">
+    <text class="footer-text">下拉刷新 · 数据来自 USD Monitor</text>
+  </view>
+
+</view>
