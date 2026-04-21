@@ -15,10 +15,12 @@ import { DcaSignalLight } from '@/components/cards/DcaSignalLight'
 import { FactorConsensusBar } from '@/components/cards/FactorConsensusBar'
 import { MultiAssetSignals } from '@/components/cards/MultiAssetSignals'
 import { EventInterceptor } from '@/components/cards/EventInterceptor'
+import { InflationTypeCard } from '@/components/cards/InflationTypeCard'
 import {
   useScore, useComponents,
   useDxy, useFxPairs, useYieldDecomp,
   useHedge, useSignalHistory, useDcaSignal, useMultiAssetSignals, useEventWindow,
+  useInflationDiagnosis,
 } from '@/lib/useUsdData'
 import { mockData } from '@/data/mockData'
 
@@ -41,6 +43,7 @@ export default function Dashboard() {
   const { data: dcaSignal }                             = useDcaSignal()
   const { data: multiAsset }                            = useMultiAssetSignals()
   const { data: eventWindow }                           = useEventWindow()
+  const { data: inflationDiag }                         = useInflationDiagnosis()
   const { data: fx }                                    = useFxPairs()
   const { data: yieldDecomp }                           = useYieldDecomp()
   const { data: hedge }                                 = useHedge()
@@ -74,14 +77,21 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ═══ Row 0.5: Multi-Asset Signal Tower (通胀→四资产) ═══════════ */}
+        {/* ═══ Row 0.5: Multi-Asset Signal Tower + Inflation Type ═══════ */}
         <section>
           <div className="flex items-center gap-3 mb-3">
             <div className="h-px flex-1 bg-slate-800" />
-            <span className="text-xs text-slate-500 tracking-widest uppercase">通胀 → 四资产信号塔</span>
+            <span className="text-xs text-slate-500 tracking-widest uppercase">通胀诊断 → 四资产信号塔</span>
             <div className="h-px flex-1 bg-slate-800" />
           </div>
-          <MultiAssetSignals data={multiAsset} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <MultiAssetSignals data={multiAsset} />
+            </div>
+            <div className="lg:col-span-1">
+              <InflationTypeCard data={inflationDiag} />
+            </div>
+          </div>
         </section>
 
         {/* ═══ Row 1: Gauge + Stats + Score History ══════════════════════ */}

@@ -74,6 +74,11 @@ export interface FredRaw {
   fwd5y5y: number   // T5YIFR  (5Y-5Y Forward — Fed's preferred inflation anchor)
   wageGrowth: number // FRBATLWGT (Atlanta Fed Wage Growth Tracker, monthly)
   debtGdp: number    // GFDEGDQ188S (Federal Debt / GDP, quarterly, %)
+  cpiEnergyYoY: number   // CPIENGSL YoY (%)
+  cpiShelterYoY: number  // CUSR0000SAH1 YoY (%)
+  cpiCoreYoY: number     // CPILFESL Core CPI YoY (%)
+  stickyCpi: number      // STICKCPIM157SFRBATL (m/m annualized, %)
+  medianCpi: number      // MEDCPIM158SFRBCLE (m/m annualized, %)
   sofr: number
   iorb: number
   bbbSpread: number // BAMLC0A4CBBB
@@ -542,6 +547,7 @@ export function computeGamma(
 import type {
   DcaRhythm, DcaSignalData,
   InflationRegime, AssetDirection, AssetSignal, MultiAssetSignalData, FiscalPressure,
+  InflationType, InflationComponent, InflationDiagnosis,
 } from '@/types'
 
 /**
@@ -878,5 +884,126 @@ export function computeMultiAssetSignals(
     wageGrowth: wage != null ? r(wage, 2) : null,
     fiscal,
     assets,
+  }
+}
+
+
+// ─── Inflation Type Diagnosis (Blanchard 6-type classifier) ────────────────
+
+const INFLATION_TYPE_LABELS: Record<InflationType, string> = {
+  energy_driven:  '能源驱动',
+  wage_spiral:    '工资螺旋',
+  monetary:       '货币驱动',
+  demand_pull:    '需求拉动',
+  supply_chain:   '供给链',
+  shelter_driven: '住房滞后',
+  mixed:          '多因素混合',
+  cooling:        '全面回落',
+}
+
+function zoneOf(yoy: number, hotThr: number, elevatedThr: number, coolThr = 0): InflationComponent['zone'] {
+  if (!isFinite(yoy)) return 'normal'
+  if (yoy >= hotThr) return 'hot'
+  if (yoy >= elevatedThr) return 'elevated'
+  if (yoy < coolThr) return 'cool'
+  return 'normal'
+}
+
+export function computeInflationDiagnosis(
+  fred: FredRaw,
+  wageGrowth: number | null,
+): InflationDiagnosis {
+  const energy = isFinite(fred.cpiEnergyYoY) ? fred.cpiEnergyYoY : 0
+  const shelter = isFinite(fred.cpiShelterYoY) ? fred.cpiShelterYoY : 4.0
+  const core = isFinite(fred.cpiCoreYoY) ? fred.cpiCoreYoY : 3.0
+  const sticky = isFinite(fred.stickyCpi) ? fred.stickyCpi : 3.0
+  const median = isFinite(fred.medianCpi) ? fred.medianCpi : 3.0
+  const wage = wageGrowth != null && isFinite(wageGrowth) ? wageGrowth : 3.8
+
+  const components: InflationComponent[] = [
+    {
+      label: '能源',
+      symbol: 'CPI Energy',
+      yoy: r(energy, 2),
+      zone: zoneOf(energy, 10, 3, -3),
+      note: energy >= 10 ? '能源价格大幅上涨,供给冲击' : energy < -3 ? '能源回落,压低总CPI' : '能源温和',
+    },
+    {
+      label: '住房',
+      symbol: 'CPI Shelter',
+      yoy: r(shelter, 2),
+      zone: zoneOf(shelter, 6, 4, 2),
+      note: shelter >= 6 ? 'OER滞后推动' : shelter >= 4 ? '住房粘性显著' : '住房回归正常',
+    },
+    {
+      label: '核心',
+      symbol: 'Core CPI',
+      yoy: r(core, 2),
+      zone: zoneOf(core, 5, 3.5, 2),
+      note: core >= 5 ? '核心失控' : core >= 3.5 ? '核心高位粘性' : '核心回归目标',
+    },
+    {
+      label: '粘性',
+      symbol: 'Sticky CPI',
+      yoy: r(sticky, 2),
+      zone: zoneOf(sticky, 5, 3.5, 2),
+      note: sticky >= 5 ? '粘性项失锚' : sticky >= 3.5 ? '粘性项偏高' : '粘性回归',
+    },
+    {
+      label: '中位数',
+      symbol: 'Median CPI',
+      yoy: r(median, 2),
+      zone: zoneOf(median, 5, 3.5, 2),
+      note: median >= 5 ? '广泛通胀' : median >= 3.5 ? '广泛偏高' : '广泛温和',
+    },
+  ]
+
+  // ── Classification logic (Blanchard type prioritization) ──
+  let type: InflationType
+  let dominantDriver: string
+  let headline: string
+
+  const allCool = core < 2.5 && shelter < 3 && sticky < 3 && energy < 2
+
+  if (allCool) {
+    type = 'cooling'
+    dominantDriver = '所有组件同步回落'
+    headline = `核心${core.toFixed(1)}%+粘性${sticky.toFixed(1)}%同步回落,通胀全面降温`
+  } else if (energy >= 10 && core < 4) {
+    type = 'energy_driven'
+    dominantDriver = '能源'
+    headline = `能源CPI同比+${energy.toFixed(1)}%主导,核心相对可控`
+  } else if (wage >= 4.5 && sticky >= 3.5) {
+    type = 'wage_spiral'
+    dominantDriver = '工资'
+    headline = `工资增长${wage.toFixed(1)}%+粘性CPI ${sticky.toFixed(1)}%,工资-价格螺旋启动`
+  } else if (shelter >= 5 && core < 4) {
+    type = 'shelter_driven'
+    dominantDriver = '住房'
+    headline = `住房同比+${shelter.toFixed(1)}%,OER滞后效应主导(13月滞后)`
+  } else if (median >= 4.5 && core >= 4.5) {
+    type = 'monetary'
+    dominantDriver = '广泛'
+    headline = `核心${core.toFixed(1)}%+中位数${median.toFixed(1)}%同步偏高,广泛型通胀`
+  } else if (core >= 3.5 && energy < 5 && shelter < 5) {
+    type = 'demand_pull'
+    dominantDriver = '核心商品/服务'
+    headline = `核心CPI ${core.toFixed(1)}%,需求拉动型通胀`
+  } else if (energy >= 5 && shelter >= 4) {
+    type = 'supply_chain'
+    dominantDriver = '商品价格'
+    headline = `能源+住房同步偏高,供给链压力`
+  } else {
+    type = 'mixed'
+    dominantDriver = '多组件'
+    headline = `核心${core.toFixed(1)}%/粘性${sticky.toFixed(1)}%/住房${shelter.toFixed(1)}%,多因素混合`
+  }
+
+  return {
+    type,
+    typeLabel: INFLATION_TYPE_LABELS[type],
+    dominantDriver,
+    components,
+    headline,
   }
 }

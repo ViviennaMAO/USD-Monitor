@@ -17,7 +17,7 @@ import {
 import {
   computeDxyResidual,
   scoreRf, scorePiRisk, scoreCy, scoreSigmaAlert, computeGamma, computeDcaSignal,
-  computeMultiAssetSignals,
+  computeMultiAssetSignals, computeInflationDiagnosis,
   type FredRaw, type YahooRaw, type CbRates, type Residual,
 } from './scoring'
 
@@ -71,6 +71,15 @@ function goldTrend30d(closeSeries: number[]): number {
   return parseFloat(((now - old) / old * 100).toFixed(2))
 }
 
+/** Compute 12-month YoY change (%) from a monthly level series sorted oldest→newest. */
+function yoyFromMonthly(series: number[]): number {
+  if (series.length < 13) return NaN
+  const last = series[series.length - 1]
+  const yearAgo = series[series.length - 13]
+  if (!isFinite(last) || !isFinite(yearAgo) || yearAgo === 0) return NaN
+  return ((last - yearAgo) / yearAgo) * 100
+}
+
 /** 1-day return (%) from last 2 closes. */
 function ret1d(closeSeries: number[]): number {
   if (closeSeries.length < 2) return 0
@@ -85,7 +94,14 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
   const cb = cbRates()
 
   // ── FRED: fetch current values + history series for residual ──────────────
-  const [fredValues, dxyTwHistory, dgs2History] = await Promise.all([
+  const [
+    fredValues,
+    dxyTwHistory,
+    dgs2History,
+    cpiEnergyHist,
+    cpiShelterHist,
+    cpiCoreHist,
+  ] = await Promise.all([
     fredBatch([
       'FEDFUNDS', 'DGS2', 'DGS10',
       'DFII10',   // 10Y TIPS real rate
@@ -97,9 +113,14 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
       'T5YIFR',       // 5Y-5Y Forward Inflation Expectation Rate
       'FRBATLWGT',    // Atlanta Fed Wage Growth Tracker (monthly, %)
       'GFDEGDQ188S',  // Federal Debt as % of GDP (quarterly) — fiscal pressure
+      'STICKCPIM157SFRBATL',  // Atlanta Sticky Price CPI (m/m annualized rate)
+      'MEDCPIM158SFRBCLE',    // Cleveland Median CPI (m/m annualized rate)
     ]),
     fredHistory('DTWEXBGS', 300),  // Trade-weighted DXY
     fredHistory('DGS2', 300),       // 2Y Treasury series
+    fredHistory('CPIENGSL', 15),    // Energy CPI level (for YoY)
+    fredHistory('CUSR0000SAH1', 15), // Shelter CPI level (for YoY)
+    fredHistory('CPILFESL', 15),    // Core CPI level (for YoY)
   ])
 
   const fred: FredRaw = {
@@ -115,6 +136,11 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
     fwd5y5y:    fredValues['T5YIFR'],
     wageGrowth: fredValues['FRBATLWGT'],
     debtGdp:    fredValues['GFDEGDQ188S'],
+    cpiEnergyYoY:  yoyFromMonthly(cpiEnergyHist),
+    cpiShelterYoY: yoyFromMonthly(cpiShelterHist),
+    cpiCoreYoY:    yoyFromMonthly(cpiCoreHist),
+    stickyCpi:     fredValues['STICKCPIM157SFRBATL'],
+    medianCpi:     fredValues['MEDCPIM158SFRBCLE'],
     dxy_tw_series: dxyTwHistory,
     dgs2_series:   dgs2History,
   }
@@ -237,6 +263,7 @@ export async function getLiveData() {
   const gamma = computeGamma(rf.score, pi.score, cy.score, sigma, sigma.rr_zscore)
   const dcaSignal = computeDcaSignal(gamma, sigma)
   const multiAssetSignals = computeMultiAssetSignals(snap.fred, snap.yahoo)
+  const inflationDiagnosis = computeInflationDiagnosis(snap.fred, snap.fred.wageGrowth)
 
   return {
     ...snap,
@@ -247,6 +274,7 @@ export async function getLiveData() {
     gamma,
     dcaSignal,
     multiAssetSignals,
+    inflationDiagnosis,
   }
 }
 

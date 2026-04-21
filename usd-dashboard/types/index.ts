@@ -588,6 +588,33 @@ export interface FiscalPressure {
   note: string
 }
 
+// ─── Inflation Type Diagnosis (Blanchard 6 types) ──────────────────────────
+export type InflationType =
+  | 'energy_driven'     // 能源驱动
+  | 'wage_spiral'       // 工资-价格螺旋
+  | 'monetary'          // 货币驱动
+  | 'demand_pull'       // 需求拉动
+  | 'supply_chain'      // 供给链
+  | 'shelter_driven'    // 住房滞后
+  | 'mixed'             // 多因素混合
+  | 'cooling'           // 全面回落
+
+export interface InflationComponent {
+  label: string         // 中文标签
+  symbol: string        // 英文缩写
+  yoy: number           // 同比 (%)
+  zone: 'hot' | 'elevated' | 'normal' | 'cool'  // 温度
+  note: string          // 一句话解读
+}
+
+export interface InflationDiagnosis {
+  type: InflationType
+  typeLabel: string               // 中文类型
+  dominantDriver: string          // 主导驱动组件
+  components: InflationComponent[] // 4+ 个组件
+  headline: string                // 一句话诊断
+}
+
 export type EventWindowStatus = 'clear' | 'approaching' | 'imminent' | 'post'
 
 export interface UpcomingEvent {

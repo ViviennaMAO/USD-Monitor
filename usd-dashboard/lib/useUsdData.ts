@@ -6,7 +6,7 @@ import type {
   VolAlertData, DxyData, FxData, YieldDecompData,
   HedgeData, CftcData, SignalHistoryEntry,
   IcTrackingData, ShapData, RegimeIcData, CorrelationData, NavCurveData,
-  DcaSignalData, MultiAssetSignalData, EventWindowData,
+  DcaSignalData, MultiAssetSignalData, EventWindowData, InflationDiagnosis,
 } from '@/types'
 import {
   mockData, volAlertHistory,
@@ -168,6 +168,21 @@ const defaultEventWindow: EventWindowData = {
 export function useEventWindow() {
   const { data, error, isLoading } = useSWR<EventWindowData>('/api/event-window', fetcher, { refreshInterval: 30 * 60 * 1000 })
   return { data: data ?? defaultEventWindow, error, isLoading }
+}
+
+// ─── Inflation Diagnosis (Blanchard 6-type classifier) ─────────────────────
+
+const defaultInflationDiag: InflationDiagnosis = {
+  type: 'mixed',
+  typeLabel: '多因素混合',
+  dominantDriver: '加载中',
+  components: [],
+  headline: '数据加载中...',
+}
+
+export function useInflationDiagnosis() {
+  const { data, error, isLoading } = useSWR<InflationDiagnosis>('/api/inflation-diagnosis', fetcher, { refreshInterval: REFRESH })
+  return { data: data ?? defaultInflationDiag, error, isLoading }
 }
 
 // Factor selector state — exported so AnalyticsPage and IcTracking share it
