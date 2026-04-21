@@ -72,6 +72,7 @@ export interface FredRaw {
   bei10y: number    // T10YIE  (10Y BEI — for yield decomp)
   bei5y: number     // T5YIE   (5Y BEI — display only)
   fwd5y5y: number   // T5YIFR  (5Y-5Y Forward — Fed's preferred inflation anchor)
+  wageGrowth: number // FRBATLWGT (Atlanta Fed Wage Growth Tracker, monthly)
   sofr: number
   iorb: number
   bbbSpread: number // BAMLC0A4CBBB
@@ -537,7 +538,10 @@ export function computeGamma(
 
 // ─── DCA Rhythm Signal (定投节奏信号灯) ─────────────────────────────────────
 
-import type { DcaRhythm, DcaSignalData } from '@/types'
+import type {
+  DcaRhythm, DcaSignalData,
+  InflationRegime, AssetDirection, AssetSignal, MultiAssetSignalData,
+} from '@/types'
 
 /**
  * Compute DCA rhythm signal from gamma score + sigma alert data.
@@ -623,5 +627,192 @@ export function computeDcaSignal(
       alignment: r(alignment, 2),
     },
     reason,
+  }
+}
+
+
+// ─── Multi-Asset Signal Tower (通胀驱动的四资产信号) ───────────────────────
+
+const REGIME_LABELS: Record<InflationRegime, string> = {
+  anchored_disinflation: '锚定·渐进回落',
+  anchored_supply_shock: '锚定·供给冲击',
+  anchored_wage_spiral:  '锚定·工资螺旋',
+  unanchored_demand:     '失锚·需求过热',
+  deflation_return:      '通缩回归',
+  neutral:               '中性过渡',
+}
+
+/**
+ * Classify current inflation regime from factor values.
+ * Based on Keynes 5-layer decision tree (roundtable consensus):
+ *   Layer 1: Is T5YIFR anchored in [2.0, 2.5]?
+ *   Layer 2: What type of inflation? (supply/wage/demand/disinflation)
+ */
+export function computeInflationRegime(
+  fwd5y5y: number,
+  wageGrowth: number | null,
+  ovx: number,
+  vix: number,
+  tips10y: number,
+): { regime: InflationRegime; label: string; reason: string } {
+  const anchor = isFinite(fwd5y5y) ? fwd5y5y : 2.2
+  const wage = wageGrowth != null && isFinite(wageGrowth) ? wageGrowth : 3.8
+
+  // Layer 1: Anchor check
+  const isAnchored = anchor >= 1.8 && anchor <= 2.8
+
+  // Deflation return (recession signals)
+  if (anchor < 1.8 && vix > 22) {
+    return {
+      regime: 'deflation_return',
+      label: REGIME_LABELS['deflation_return'],
+      reason: `5Y5Y远期通胀跌至${anchor.toFixed(2)}%(<1.8%)+避险情绪升温,衰退回归型`,
+    }
+  }
+
+  // Unanchored demand overheating
+  if (!isAnchored && anchor > 2.8) {
+    return {
+      regime: 'unanchored_demand',
+      label: REGIME_LABELS['unanchored_demand'],
+      reason: `通胀预期失锚(5Y5Y=${anchor.toFixed(2)}%),需求侧过热`,
+    }
+  }
+
+  // Wage spiral (anchored but wage hot)
+  if (isAnchored && wage >= 4.5) {
+    return {
+      regime: 'anchored_wage_spiral',
+      label: REGIME_LABELS['anchored_wage_spiral'],
+      reason: `工资增长${wage.toFixed(1)}%≥4.5%,工资-价格螺旋风险,压缩企业利润`,
+    }
+  }
+
+  // Supply shock (anchored but oil vol high)
+  if (isAnchored && ovx > 55) {
+    return {
+      regime: 'anchored_supply_shock',
+      label: REGIME_LABELS['anchored_supply_shock'],
+      reason: `OVX=${ovx.toFixed(0)}>55,原油波动率冲击供给侧`,
+    }
+  }
+
+  // Anchored disinflation (goldilocks)
+  if (isAnchored && wage < 4.0 && tips10y > 1.0) {
+    return {
+      regime: 'anchored_disinflation',
+      label: REGIME_LABELS['anchored_disinflation'],
+      reason: `5Y5Y锚定${anchor.toFixed(2)}%+工资温和+实际利率正值,软着陆路径`,
+    }
+  }
+
+  return {
+    regime: 'neutral',
+    label: REGIME_LABELS['neutral'],
+    reason: `5Y5Y=${anchor.toFixed(2)}%,工资=${wage.toFixed(1)}%,暂无主导叙事`,
+  }
+}
+
+// Asset reaction matrix — rows: regime, values: [USD, Gold, Stocks, Bonds]
+// Each value: [direction, confidence]
+const ASSET_MATRIX: Record<InflationRegime, [AssetDirection, number][]> = {
+  // Order: [USD, Gold, Stocks, Bonds]
+  anchored_disinflation:  [['bearish', 3],         ['bullish', 2],          ['strong_bullish', 4], ['strong_bullish', 5]],
+  anchored_supply_shock:  [['bullish', 4],         ['bullish', 4],          ['bearish', 3],        ['bearish', 3]],
+  anchored_wage_spiral:   [['bullish', 3],         ['bullish', 2],          ['strong_bearish', 4], ['bearish', 3]],
+  unanchored_demand:      [['strong_bullish', 5],  ['bearish', 2],          ['strong_bearish', 5], ['strong_bearish', 5]],
+  deflation_return:       [['bearish', 2],         ['bullish', 3],          ['bearish', 4],        ['strong_bullish', 5]],
+  neutral:                [['neutral', 2],         ['neutral', 2],          ['neutral', 2],        ['neutral', 2]],
+}
+
+const ASSET_META: { asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds'; label: string; symbol: string; timeWindow: string }[] = [
+  { asset: 'USD',    label: '美元',  symbol: 'DXY',    timeWindow: '1-3月' },
+  { asset: 'Gold',   label: '黄金',  symbol: 'XAU',    timeWindow: '3-6月' },
+  { asset: 'Stocks', label: '美股',  symbol: 'SPX',    timeWindow: '1-3月' },
+  { asset: 'Bonds',  label: '美债',  symbol: 'UST10Y', timeWindow: '6-12月' },
+]
+
+function assetReason(asset: 'USD' | 'Gold' | 'Stocks' | 'Bonds', regime: InflationRegime): string {
+  const reasons: Record<'USD' | 'Gold' | 'Stocks' | 'Bonds', Partial<Record<InflationRegime, string>>> = {
+    USD: {
+      anchored_disinflation: 'Fed可信度回升,但降息预期压制美元',
+      anchored_supply_shock: '避险情绪+利率差维持,美元受益',
+      anchored_wage_spiral:  'Fed被迫鹰派,利率差走阔',
+      unanchored_demand:     '实际利率飙升+避险双重推升',
+      deflation_return:      '衰退型降息,美元走弱',
+      neutral:               '缺乏主导驱动',
+    },
+    Gold: {
+      anchored_disinflation: '实际利率下行+央行多元化支撑',
+      anchored_supply_shock: '地缘风险+通胀对冲需求',
+      anchored_wage_spiral:  '实际利率波动,温和支撑',
+      unanchored_demand:     '高名义利率压制金价',
+      deflation_return:      '避险需求+降息预期',
+      neutral:               '区间震荡',
+    },
+    Stocks: {
+      anchored_disinflation: '软着陆+降息预期+盈利扩张,最优环境',
+      anchored_supply_shock: '成本上升压缩利润率',
+      anchored_wage_spiral:  '工资通胀直接压利润率(Sahm洞察)',
+      unanchored_demand:     'Fed鹰派+利润率压缩双杀',
+      deflation_return:      '衰退盈利下修',
+      neutral:               '区间震荡',
+    },
+    Bonds: {
+      anchored_disinflation: '降息预期推动久期行情,40年一遇买点',
+      anchored_supply_shock: '通胀预期上修,利率上行',
+      anchored_wage_spiral:  'Fed维持紧缩,收益率走高',
+      unanchored_demand:     '通胀+Fed+供给三杀',
+      deflation_return:      '衰退+降息,长债大涨',
+      neutral:               '区间震荡',
+    },
+  }
+  return reasons[asset][regime] ?? '区间震荡'
+}
+
+export function computeMultiAssetSignals(
+  fred: FredRaw,
+  yahoo: YahooRaw,
+): MultiAssetSignalData {
+  const anchor = isFinite(fred.fwd5y5y) ? fred.fwd5y5y : 2.2
+  const wage = isFinite(fred.wageGrowth) ? fred.wageGrowth : null
+  const ovx = isFinite(yahoo.ovx) ? yahoo.ovx : 40
+  const vix = isFinite(yahoo.vix) ? yahoo.vix : 18
+  const tips = isFinite(fred.tips10y) ? fred.tips10y : 1.85
+
+  const { regime, label, reason } = computeInflationRegime(anchor, wage, ovx, vix, tips)
+  const reactions = ASSET_MATRIX[regime]
+
+  const assetPrices: Record<string, { price: number; change: number }> = {
+    USD:    { price: isFinite(yahoo.dxy) ? yahoo.dxy : 103, change: 0 },
+    Gold:   { price: isFinite(yahoo.gold) ? yahoo.gold : 2600, change: 0 },
+    Stocks: { price: isFinite(yahoo.spy) ? yahoo.spy : 450, change: isFinite(yahoo.spy_ret) ? yahoo.spy_ret : 0 },
+    Bonds:  { price: isFinite(fred.dgs10) ? fred.dgs10 : 4.28, change: 0 },
+  }
+
+  const assets: AssetSignal[] = ASSET_META.map((meta, i) => {
+    const [direction, confidence] = reactions[i]
+    const priceInfo = assetPrices[meta.asset]
+    return {
+      asset: meta.asset,
+      label: meta.label,
+      symbol: meta.symbol,
+      direction,
+      confidence,
+      timeWindow: meta.timeWindow,
+      reason: assetReason(meta.asset, regime),
+      price: r(priceInfo.price, 2),
+      change_1d_pct: r(priceInfo.change, 3),
+    }
+  })
+
+  return {
+    date: new Date().toISOString().slice(0, 10),
+    regime,
+    regimeLabel: label,
+    regimeReason: reason,
+    inflationAnchor: r(anchor, 2),
+    wageGrowth: wage != null ? r(wage, 2) : null,
+    assets,
   }
 }

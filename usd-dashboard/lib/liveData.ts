@@ -17,6 +17,7 @@ import {
 import {
   computeDxyResidual,
   scoreRf, scorePiRisk, scoreCy, scoreSigmaAlert, computeGamma, computeDcaSignal,
+  computeMultiAssetSignals,
   type FredRaw, type YahooRaw, type CbRates, type Residual,
 } from './scoring'
 
@@ -94,6 +95,7 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
       'IORB',
       'BAMLC0A4CBBB', // BBB spread (CDS proxy)
       'T5YIFR',       // 5Y-5Y Forward Inflation Expectation Rate
+      'FRBATLWGT',    // Atlanta Fed Wage Growth Tracker (monthly, %)
     ]),
     fredHistory('DTWEXBGS', 300),  // Trade-weighted DXY
     fredHistory('DGS2', 300),       // 2Y Treasury series
@@ -110,6 +112,7 @@ async function fetchLiveSnapshot(): Promise<LiveSnapshot> {
     iorb:       fredValues['IORB'],
     bbbSpread:  fredValues['BAMLC0A4CBBB'],
     fwd5y5y:    fredValues['T5YIFR'],
+    wageGrowth: fredValues['FRBATLWGT'],
     dxy_tw_series: dxyTwHistory,
     dgs2_series:   dgs2History,
   }
@@ -231,6 +234,7 @@ export async function getLiveData() {
   const sigma = scoreSigmaAlert(pipelineData)
   const gamma = computeGamma(rf.score, pi.score, cy.score, sigma, sigma.rr_zscore)
   const dcaSignal = computeDcaSignal(gamma, sigma)
+  const multiAssetSignals = computeMultiAssetSignals(snap.fred, snap.yahoo)
 
   return {
     ...snap,
@@ -240,6 +244,7 @@ export async function getLiveData() {
     sigma,
     gamma,
     dcaSignal,
+    multiAssetSignals,
   }
 }
 

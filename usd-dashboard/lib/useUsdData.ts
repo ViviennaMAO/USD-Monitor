@@ -6,7 +6,7 @@ import type {
   VolAlertData, DxyData, FxData, YieldDecompData,
   HedgeData, CftcData, SignalHistoryEntry,
   IcTrackingData, ShapData, RegimeIcData, CorrelationData, NavCurveData,
-  DcaSignalData,
+  DcaSignalData, MultiAssetSignalData,
 } from '@/types'
 import {
   mockData, volAlertHistory,
@@ -131,6 +131,28 @@ const defaultDca: DcaSignalData = {
 export function useDcaSignal() {
   const { data, error, isLoading } = useSWR<DcaSignalData>('/api/dca-signal', fetcher, { refreshInterval: REFRESH })
   return { data: data ?? defaultDca, error, isLoading }
+}
+
+// ─── Multi-Asset Signals (通胀驱动的四资产信号塔) ──────────────────────────
+
+const defaultMultiAsset: MultiAssetSignalData = {
+  date: new Date().toISOString().slice(0, 10),
+  regime: 'neutral',
+  regimeLabel: '中性过渡',
+  regimeReason: '数据加载中...',
+  inflationAnchor: 2.20,
+  wageGrowth: null,
+  assets: [
+    { asset: 'USD',    label: '美元',  symbol: 'DXY',    direction: 'neutral', confidence: 2, timeWindow: '1-3月',  reason: '数据加载中' },
+    { asset: 'Gold',   label: '黄金',  symbol: 'XAU',    direction: 'neutral', confidence: 2, timeWindow: '3-6月',  reason: '数据加载中' },
+    { asset: 'Stocks', label: '美股',  symbol: 'SPX',    direction: 'neutral', confidence: 2, timeWindow: '1-3月',  reason: '数据加载中' },
+    { asset: 'Bonds',  label: '美债',  symbol: 'UST10Y', direction: 'neutral', confidence: 2, timeWindow: '6-12月', reason: '数据加载中' },
+  ],
+}
+
+export function useMultiAssetSignals() {
+  const { data, error, isLoading } = useSWR<MultiAssetSignalData>('/api/multi-asset-signals', fetcher, { refreshInterval: REFRESH })
+  return { data: data ?? defaultMultiAsset, error, isLoading }
 }
 
 // Factor selector state — exported so AnalyticsPage and IcTracking share it

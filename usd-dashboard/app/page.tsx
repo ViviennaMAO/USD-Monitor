@@ -13,10 +13,11 @@ import { CftcBars } from '@/components/charts/CftcBars'
 import { SignalTimeline } from '@/components/cards/SignalTimeline'
 import { DcaSignalLight } from '@/components/cards/DcaSignalLight'
 import { FactorConsensusBar } from '@/components/cards/FactorConsensusBar'
+import { MultiAssetSignals } from '@/components/cards/MultiAssetSignals'
 import {
   useScore, useComponents,
   useDxy, useFxPairs, useYieldDecomp,
-  useHedge, useSignalHistory, useDcaSignal,
+  useHedge, useSignalHistory, useDcaSignal, useMultiAssetSignals,
 } from '@/lib/useUsdData'
 import { mockData } from '@/data/mockData'
 
@@ -37,6 +38,7 @@ export default function Dashboard() {
   // volAlert moved to analytics page
   const { data: dxy, isLoading: dxyLoading }            = useDxy()
   const { data: dcaSignal }                             = useDcaSignal()
+  const { data: multiAsset }                            = useMultiAssetSignals()
   const { data: fx }                                    = useFxPairs()
   const { data: yieldDecomp }                           = useYieldDecomp()
   const { data: hedge }                                 = useHedge()
@@ -65,6 +67,16 @@ export default function Dashboard() {
           <div className="lg:col-span-7 flex flex-col justify-center">
             <FactorConsensusBar data={dcaSignal.consensus} />
           </div>
+        </section>
+
+        {/* ═══ Row 0.5: Multi-Asset Signal Tower (通胀→四资产) ═══════════ */}
+        <section>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-px flex-1 bg-slate-800" />
+            <span className="text-xs text-slate-500 tracking-widest uppercase">通胀 → 四资产信号塔</span>
+            <div className="h-px flex-1 bg-slate-800" />
+          </div>
+          <MultiAssetSignals data={multiAsset} />
         </section>
 
         {/* ═══ Row 1: Gauge + Stats + Score History ══════════════════════ */}

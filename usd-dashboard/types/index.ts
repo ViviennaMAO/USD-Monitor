@@ -571,6 +571,42 @@ export interface SignalAttributionData {
   optimal_threshold: number
 }
 
+// ─── Multi-Asset Signals (通胀驱动的四资产信号塔) ──────────────────────────
+export type InflationRegime =
+  | 'anchored_disinflation'   // 锚定+渐进回落 (软着陆)
+  | 'anchored_supply_shock'   // 锚定+供给冲击
+  | 'anchored_wage_spiral'    // 锚定+工资螺旋
+  | 'unanchored_demand'       // 失锚+需求过热
+  | 'deflation_return'        // 通缩回归 (衰退型)
+  | 'neutral'                 // 中性过渡态
+
+export type AssetDirection =
+  | 'strong_bullish' | 'bullish' | 'neutral' | 'bearish' | 'strong_bearish'
+
+export type AssetKey = 'USD' | 'Gold' | 'Stocks' | 'Bonds'
+
+export interface AssetSignal {
+  asset: AssetKey
+  label: string              // 美元 / 黄金 / 美股 / 美债
+  symbol: string             // DXY / XAU / SPX / UST10Y
+  direction: AssetDirection
+  confidence: number         // 1-5 stars
+  timeWindow: string         // "1-3月", "3-6月", etc.
+  reason: string             // one-line driver explanation
+  price?: number             // current price/level
+  change_1d_pct?: number     // today's change
+}
+
+export interface MultiAssetSignalData {
+  date: string
+  regime: InflationRegime
+  regimeLabel: string        // 中文regime名
+  regimeReason: string       // 为什么是这个regime (one-liner)
+  inflationAnchor: number    // T5YIFR 当前值
+  wageGrowth: number | null  // 工资增长 Tracker (月频, 可为null)
+  assets: AssetSignal[]      // 4个资产信号
+}
+
 // ─── DCA Rhythm Signal (定投节奏信号灯) ─────────────────────────────────────
 export type DcaRhythm = 'accelerate' | 'normal' | 'hold' | 'pause' | 'pause_reduce'
 
