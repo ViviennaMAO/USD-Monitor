@@ -34,8 +34,35 @@ Page({
 
   switchTab(e) {
     const idx = parseInt(e.currentTarget.dataset.idx, 10);
-    this.setData({ activeTab: idx });
+    const leavingTab0 = this.data.activeTab === 0 && idx !== 0;
+
+    // Fix: Native type="2d" canvas layer can persist visually above other
+    // tabs after wx:if unmounts it. Clear + collapse the canvas before
+    // switching to prevent the heatmap from bleeding over Tab 1/2 content.
+    if (leavingTab0) {
+      this._clearCanvas();
+      this.setData({ activeTab: idx, chartHeight: 1 });
+    } else {
+      this.setData({ activeTab: idx });
+    }
     this.loadTab(idx);
+  },
+
+  _clearCanvas() {
+    try {
+      const query = wx.createSelectorQuery().in(this);
+      query.select('#corrChart').fields({ node: true, size: true }).exec(res => {
+        if (res && res[0] && res[0].node) {
+          const canvas = res[0].node;
+          const ctx = canvas.getContext('2d');
+          if (ctx && canvas.width > 0 && canvas.height > 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('[Market] clearCanvas noop', e);
+    }
   },
 
   switchPeriod(e) {
@@ -144,10 +171,14 @@ Page({
   },
 
   _drawChart() {
+    // Guard: only draw when Tab 0 is active (setTimeout may fire after a
+    // tab switch, which would otherwise draw onto a stale/hidden canvas)
+    if (this.data.activeTab !== 0) return;
     if (!this._chartData) return;
     const query = wx.createSelectorQuery().in(this);
     query.select('#corrChart').fields({ node: true, size: true }).exec(res => {
       if (!res || !res[0]) return;
+      if (this.data.activeTab !== 0) return;
       const canvas = res[0].node;
       const ctx = canvas.getContext('2d');
       const dpr = wx.getSystemInfoSync().pixelRatio;
