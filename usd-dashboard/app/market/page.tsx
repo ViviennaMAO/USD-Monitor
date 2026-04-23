@@ -3,7 +3,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { StatusBar } from '@/components/layout/StatusBar'
-import { CorrelationMatrix } from '@/components/analytics/CorrelationMatrix'
 import { YieldCurveChart } from '@/components/rates/YieldCurveChart'
 import { SofrSpreadChart } from '@/components/rates/SofrSpreadChart'
 import { RepoMarketChart } from '@/components/rates/RepoMarketChart'
@@ -16,20 +15,18 @@ import type {
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
-type Tab = 'correlation' | 'rates' | 'liquidity' | 'fed'
+type Tab = 'rates' | 'liquidity' | 'fed'
 
 const TABS: { id: Tab; label: string; color: string; activeColor: string }[] = [
-  { id: 'correlation', label: '跨资产相关性', color: 'text-slate-500', activeColor: 'border-cyan-500 text-cyan-400' },
   { id: 'rates',       label: '利率验证',     color: 'text-slate-500', activeColor: 'border-emerald-500 text-emerald-400' },
   { id: 'liquidity',   label: '流动性验证',   color: 'text-slate-500', activeColor: 'border-blue-500 text-blue-400' },
   { id: 'fed',         label: '美联储',       color: 'text-slate-500', activeColor: 'border-amber-500 text-amber-400' },
 ]
 
 export default function MarketPage() {
-  const [tab, setTab] = useState<Tab>('correlation')
+  const [tab, setTab] = useState<Tab>('rates')
 
   // Data fetching
-  const { data: corrData }  = useSWR('/api/correlation', fetcher, { refreshInterval: 5 * 60 * 1000 })
   const { data: yieldData } = useSWR<YieldCurveData>('/api/rates/yield-curve', fetcher, { refreshInterval: 5 * 60 * 1000 })
   const { data: sofrData }  = useSWR<SofrAnalysisData>('/api/rates/sofr', fetcher, { refreshInterval: 5 * 60 * 1000 })
   const { data: repoData }  = useSWR<RepoMarketData>('/api/rates/repo', fetcher, { refreshInterval: 5 * 60 * 1000 })
@@ -75,47 +72,6 @@ export default function MarketPage() {
 
       {/* Main */}
       <main className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 py-6">
-
-        {/* ═══ Tab: Cross-Asset Correlation ═══ */}
-        {tab === 'correlation' && (
-          <div>
-            <div className="mb-4">
-              <h1 className="text-lg font-semibold text-slate-200">跨资产相关性矩阵</h1>
-              <p className="text-xs text-slate-500 mt-1">
-                因子间 Pearson 相关系数 · 检测多重共线性与分散化机会
-              </p>
-            </div>
-            {corrData ? (
-              <CorrelationMatrix />
-            ) : (
-              <LoadingPlaceholder />
-            )}
-
-            {/* Verification summary */}
-            {unified && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <VerifyCard
-                  title="美元-黄金"
-                  value={corrData?.matrix?.[3]?.[2]?.toFixed(2) || '--'}
-                  desc="负相关 → 对冲价值高"
-                  status={corrData?.matrix?.[3]?.[2] < -0.4 ? 'confirmed' : 'pending'}
-                />
-                <VerifyCard
-                  title="美元-新兴市场"
-                  value={corrData?.matrix?.[3]?.[0]?.toFixed(2) || '--'}
-                  desc="正相关 → 资金回流效应"
-                  status={corrData?.matrix?.[3]?.[0] > 0.3 ? 'confirmed' : 'pending'}
-                />
-                <VerifyCard
-                  title="股债相关性"
-                  value={corrData?.matrix?.[0]?.[1]?.toFixed(2) || '--'}
-                  desc="决定风险平价有效性"
-                  status="info"
-                />
-              </div>
-            )}
-          </div>
-        )}
 
         {/* ═══ Tab: Rates ═══ */}
         {tab === 'rates' && (
@@ -242,19 +198,3 @@ function IndicatorPill({ label, value, action, factor }: { label: string; value:
   )
 }
 
-function VerifyCard({ title, value, desc, status }: { title: string; value: string; desc: string; status: 'confirmed' | 'pending' | 'info' }) {
-  const borderColor = status === 'confirmed' ? 'border-emerald-500/30' : status === 'pending' ? 'border-amber-500/30' : 'border-slate-700'
-  const badgeColor = status === 'confirmed' ? 'bg-emerald-500/15 text-emerald-400' : status === 'pending' ? 'bg-amber-500/15 text-amber-400' : 'bg-slate-700 text-slate-400'
-  const badgeText = status === 'confirmed' ? '已确认' : status === 'pending' ? '待确认' : '参考'
-
-  return (
-    <div className={`bg-slate-900/60 border ${borderColor} rounded-xl p-4`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-slate-400">{title}</span>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${badgeColor}`}>{badgeText}</span>
-      </div>
-      <div className="text-xl font-mono font-bold text-slate-200 mb-1">{value}</div>
-      <div className="text-[10px] text-slate-500">{desc}</div>
-    </div>
-  )
-}

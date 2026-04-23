@@ -16,30 +16,8 @@
 
   <view wx:if="{{ !loading }}" class="tab-content px-24">
 
-    <!-- ═══ Tab 0: Cross-Asset Correlation ═══ -->
+    <!-- ═══ Tab 0: Rates Verification ═══ -->
     <view wx:if="{{ activeTab === 0 }}">
-      <view class="flex-row justify-between items-center mb-16">
-        <text class="card-title" style="margin-bottom:0">跨资产相关性矩阵</text>
-        <view class="period-toggle">
-          <view class="period-btn {{ corrPeriod === '30d' ? 'active' : '' }}" data-p="30d" bindtap="switchPeriod">30d</view>
-          <view class="period-btn {{ corrPeriod === '90d' ? 'active' : '' }}" data-p="90d" bindtap="switchPeriod">90d</view>
-        </view>
-      </view>
-      <view class="card">
-        <canvas type="2d" id="corrChart" class="corr-chart" style="height: {{ chartHeight }}rpx;"></canvas>
-      </view>
-      <!-- Key insights -->
-      <view class="verify-card" wx:if="{{ corrInsights.length > 0 }}">
-        <text class="verify-title">关键发现</text>
-        <view wx:for="{{ corrInsights }}" wx:key="text" class="trigger-item" style="margin-top:8rpx;">
-          <text class="trigger-bullet">→</text>
-          <text class="trigger-text">{{ item.text }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- ═══ Tab 1: Rates Verification ═══ -->
-    <view wx:if="{{ activeTab === 1 }}">
       <!-- Yield curve judgment -->
       <view class="judgment-bar {{ ratesJudgment.dir === 'bull' ? 'judgment-bull' : ratesJudgment.dir === 'bear' ? 'judgment-bear' : 'judgment-neutral' }}">
         <text class="judgment-icon">{{ ratesJudgment.icon }}</text>
@@ -87,8 +65,8 @@
       </view>
     </view>
 
-    <!-- ═══ Tab 2: Liquidity Verification ═══ -->
-    <view wx:if="{{ activeTab === 2 }}">
+    <!-- ═══ Tab 1: Liquidity Verification ═══ -->
+    <view wx:if="{{ activeTab === 1 }}">
       <!-- Liquidity judgment -->
       <view class="judgment-bar {{ liqJudgment.dir === 'bull' ? 'judgment-bull' : liqJudgment.dir === 'bear' ? 'judgment-bear' : 'judgment-neutral' }}">
         <text class="judgment-icon">{{ liqJudgment.icon }}</text>

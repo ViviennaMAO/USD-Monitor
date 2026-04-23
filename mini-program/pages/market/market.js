@@ -1,26 +1,18 @@
 const { loadOutput } = require('../../utils/request');
 const { fmt, pct } = require('../../utils/util');
-const chart = require('../../utils/chart');
-
-// 6 cross-asset tickers
-const ASSETS = ['SPX', '长债', '黄金', '美元', '原油', 'BTC'];
 
 Page({
   data: {
     activeTab: 0,
-    tabs: ['跨资产', '利率', '流动性'],
+    tabs: ['利率', '流动性'],
     loading: true,
-    chartHeight: 500,
-    // Tab 0: Correlation
-    corrPeriod: '30d',
-    corrInsights: [],
-    // Tab 1: Rates
+    // Tab 0: Rates
     ratesJudgment: { icon: '--', text: '--', dir: 'neutral', confirmed: 0, total: 0 },
     ratesScores: { spread: '--', realRate: '--', termSpread: '--' },
     ratesIndicators: [],
     ratesConfirmedPct: 0,
     ratesTriggers: [],
-    // Tab 2: Liquidity
+    // Tab 1: Liquidity
     liqJudgment: { icon: '--', text: '--', dir: 'neutral', confirmed: 0, total: 0 },
     liqScores: { sofr: '--', rrp: '--', stress: '--' },
     liqIndicators: [],
@@ -28,172 +20,27 @@ Page({
     liqTriggers: []
   },
 
-  _chartData: null,
-
   onLoad() { this.loadTab(0); },
 
   switchTab(e) {
     const idx = parseInt(e.currentTarget.dataset.idx, 10);
-    const leavingTab0 = this.data.activeTab === 0 && idx !== 0;
-
-    // Fix: Native type="2d" canvas layer can persist visually above other
-    // tabs after wx:if unmounts it. Clear + collapse the canvas before
-    // switching to prevent the heatmap from bleeding over Tab 1/2 content.
-    if (leavingTab0) {
-      this._clearCanvas();
-      this.setData({ activeTab: idx, chartHeight: 1 });
-    } else {
-      this.setData({ activeTab: idx });
-    }
+    this.setData({ activeTab: idx });
     this.loadTab(idx);
-  },
-
-  _clearCanvas() {
-    try {
-      const query = wx.createSelectorQuery().in(this);
-      query.select('#corrChart').fields({ node: true, size: true }).exec(res => {
-        if (res && res[0] && res[0].node) {
-          const canvas = res[0].node;
-          const ctx = canvas.getContext('2d');
-          if (ctx && canvas.width > 0 && canvas.height > 0) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }
-        }
-      });
-    } catch (e) {
-      console.warn('[Market] clearCanvas noop', e);
-    }
-  },
-
-  switchPeriod(e) {
-    const p = e.currentTarget.dataset.p;
-    this.setData({ corrPeriod: p });
-    this.loadTab(0);
   },
 
   async loadTab(idx) {
     this.setData({ loading: true });
     try {
-      if (idx === 0) await this._loadCorrelation();
-      else if (idx === 1) await this._loadRates();
-      else if (idx === 2) await this._loadLiquidity();
+      if (idx === 0) await this._loadRates();
+      else if (idx === 1) await this._loadLiquidity();
     } catch (e) {
       console.error('[Market] loadTab failed', e);
     }
     this.setData({ loading: false });
-    if (idx === 0) {
-      setTimeout(() => this._drawChart(), 100);
-    }
   },
 
   // ══════════════════════════════════════════
-  // Tab 0: Cross-Asset Correlation
-  // ══════════════════════════════════════════
-  async _loadCorrelation() {
-    const [unified, corr] = await Promise.all([
-      loadOutput('unified_signal'),
-      loadOutput('correlation').catch(() => null)
-    ]);
-
-    // Build correlation matrix from real data or generate from unified context
-    let matrix, labels;
-    if (corr && corr.matrix && corr.labels) {
-      matrix = corr.matrix;
-      labels = corr.labels;
-    } else {
-      // Generate contextual cross-asset correlation from regime data
-      labels = ASSETS;
-      matrix = this._generateCorrMatrix(unified);
-    }
-
-    const n = labels.length;
-    this.setData({ chartHeight: Math.max(500, n * 80 + 60) });
-
-    // Generate insights
-    const insights = this._buildCorrInsights(matrix, labels, unified);
-    this.setData({ corrInsights: insights });
-
-    this._chartData = {
-      type: 'heatmap',
-      opts: { matrix, rowLabels: labels, colLabels: labels, minVal: -1, maxVal: 1 }
-    };
-  },
-
-  _generateCorrMatrix(unified) {
-    const action = (unified.action || '').toUpperCase();
-    const isLong = action === 'LONG';
-    // SPX, 长债, 黄金, 美元, 原油, BTC
-    if (isLong) {
-      return [
-        [ 1.00,  0.15, -0.30,  0.45, 0.35,  0.20],
-        [ 0.15,  1.00,  0.55, -0.25, -0.10, -0.05],
-        [-0.30,  0.55,  1.00, -0.65, 0.10,  0.30],
-        [ 0.45, -0.25, -0.65,  1.00, 0.15, -0.20],
-        [ 0.35, -0.10,  0.10,  0.15, 1.00,  0.25],
-        [ 0.20, -0.05,  0.30, -0.20, 0.25,  1.00]
-      ];
-    }
-    return [
-      [ 1.00,  0.05, -0.15,  0.30, 0.40,  0.35],
-      [ 0.05,  1.00,  0.40, -0.10, -0.20, -0.10],
-      [-0.15,  0.40,  1.00, -0.55, 0.15,  0.25],
-      [ 0.30, -0.10, -0.55,  1.00, 0.10, -0.15],
-      [ 0.40, -0.20,  0.15,  0.10, 1.00,  0.30],
-      [ 0.35, -0.10,  0.25, -0.15, 0.30,  1.00]
-    ];
-  },
-
-  _buildCorrInsights(matrix, labels, unified) {
-    const insights = [];
-    const n = labels.length;
-    // Find strongest positive and negative pairs (excluding diagonal)
-    let maxCorr = -2, minCorr = 2, maxPair = '', minPair = '';
-    for (let i = 0; i < n; i++) {
-      for (let j = i + 1; j < n; j++) {
-        const v = matrix[i][j];
-        if (v > maxCorr) { maxCorr = v; maxPair = `${labels[i]}/${labels[j]}`; }
-        if (v < minCorr) { minCorr = v; minPair = `${labels[i]}/${labels[j]}`; }
-      }
-    }
-    insights.push({ text: `最强正相关: ${maxPair} (${maxCorr.toFixed(2)})` });
-    insights.push({ text: `最强负相关: ${minPair} (${minCorr.toFixed(2)})` });
-
-    // USD-specific insight
-    const usdIdx = labels.indexOf('美元');
-    const goldIdx = labels.indexOf('黄金');
-    if (usdIdx >= 0 && goldIdx >= 0) {
-      const usdGold = matrix[usdIdx][goldIdx];
-      if (Math.abs(usdGold) > 0.5) {
-        insights.push({ text: `美元-黄金负相关显著 (${usdGold.toFixed(2)})，对冲价值高` });
-      }
-    }
-    return insights;
-  },
-
-  _drawChart() {
-    // Guard: only draw when Tab 0 is active (setTimeout may fire after a
-    // tab switch, which would otherwise draw onto a stale/hidden canvas)
-    if (this.data.activeTab !== 0) return;
-    if (!this._chartData) return;
-    const query = wx.createSelectorQuery().in(this);
-    query.select('#corrChart').fields({ node: true, size: true }).exec(res => {
-      if (!res || !res[0]) return;
-      if (this.data.activeTab !== 0) return;
-      const canvas = res[0].node;
-      const ctx = canvas.getContext('2d');
-      const dpr = wx.getSystemInfoSync().pixelRatio;
-      const w = res[0].width, h = res[0].height;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, w, h);
-      const { type, opts } = this._chartData;
-      if (type === 'heatmap') chart.drawHeatmap(ctx, w, h, opts);
-    });
-  },
-
-  // ══════════════════════════════════════════
-  // Tab 1: Rates Verification
+  // Tab 0: Rates Verification
   // ══════════════════════════════════════════
   async _loadRates() {
     const [unified, cal] = await Promise.all([
