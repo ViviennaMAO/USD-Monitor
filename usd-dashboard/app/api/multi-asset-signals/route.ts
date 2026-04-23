@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getLiveData } from '@/lib/liveData'
+import { loadMacroSnapshot } from '@/lib/macroSnapshot'
+import { computeMultiAssetSignals } from '@/lib/scoring'
 import type { MultiAssetSignalData } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -23,6 +24,15 @@ const fallback: MultiAssetSignalData = {
 
 export async function GET() {
   try {
+    // Primary: pipeline macro_snapshot.json (works on Vercel, Yahoo/FRED agnostic)
+    const snap = await loadMacroSnapshot()
+    if (snap) {
+      const signals = computeMultiAssetSignals(snap.fred, snap.yahoo)
+      return NextResponse.json({ ...signals, date: snap.date })
+    }
+
+    // Fallback: try live-fetch (local dev with FRED_API_KEY)
+    const { getLiveData } = await import('@/lib/liveData')
     const { multiAssetSignals } = await getLiveData()
     return NextResponse.json(multiAssetSignals)
   } catch (e) {

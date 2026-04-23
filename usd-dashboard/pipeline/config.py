@@ -33,6 +33,8 @@ FRED_SERIES = {
     "sofr":     "SOFR",       # SOFR
     "iorb":     "IORB",       # IORB
     "bbb_spread":"BAMLC0A4CBBB", # BBB spread (CDS proxy)
+    "wage_growth": "FRBATLWGT",  # Atlanta Fed Wage Growth Tracker (monthly, %)
+    "debt_gdp":   "GFDEGDQ188S", # Federal Debt as % of GDP (quarterly)
 }
 
 # Yahoo Finance tickers

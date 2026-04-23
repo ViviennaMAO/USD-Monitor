@@ -217,6 +217,51 @@ def run():
     history = history[-30:]
     _write("signal_history.json", history)
 
+    # macro_snapshot.json — raw values for Next.js APIs to avoid live-fetch
+    # dependency on Vercel (Yahoo Finance blocks many Vercel IPs, FRED needs key)
+    def _safe(v, default=None):
+        try:
+            import math
+            if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))):
+                return default
+            return v
+        except Exception:
+            return default
+
+    _write("macro_snapshot.json", {
+        "date":        data_date,
+        # Yahoo prices
+        "dxy":         _safe(yahoo.get("dxy")),
+        "gold":        _safe(yahoo.get("gold")),
+        "spy":         _safe(yahoo.get("spy")),
+        "qqq":         _safe(yahoo.get("qqq")),
+        "vix":         _safe(yahoo.get("vix")),
+        "vvix":        _safe(yahoo.get("vvix")),
+        "vxn":         _safe(yahoo.get("vxn")),
+        "ovx":         _safe(yahoo.get("ovx")),
+        "gvz":         _safe(yahoo.get("gvz")),
+        "hyg":         _safe(yahoo.get("hyg")),
+        "eurusd":      _safe(yahoo.get("eurusd")),
+        "usdjpy":      _safe(yahoo.get("usdjpy")),
+        "spy_ret":     _safe(yahoo.get("spy_ret")),
+        "qqq_ret":     _safe(yahoo.get("qqq_ret")),
+        # FRED fundamentals
+        "fedfunds":    _safe(fred.get("fedfunds")),
+        "dgs2":        _safe(fred.get("dgs2")),
+        "dgs10":       _safe(fred.get("dgs10")),
+        "tips10y":     _safe(fred.get("tips10y")),
+        "bei10y":      _safe(fred.get("bei10y")),
+        "bei5y":       _safe(fred.get("bei5y")),
+        "fwd5y5y":     _safe(fred.get("fwd5y5y")),
+        "sofr":        _safe(fred.get("sofr")),
+        "iorb":        _safe(fred.get("iorb")),
+        "bbb_spread":  _safe(fred.get("bbb_spread")),
+        "wage_growth": _safe(fred.get("wage_growth")),
+        "debt_gdp":    _safe(fred.get("debt_gdp")),
+        # Derived
+        "residual":    _safe(data.get("residual", {}).get("residual")),
+    })
+
     print(f"\n✅ Pipeline complete — γ={gamma_data['gamma']} ({gamma_data['signal']})")
     print(f"   r_f={rf['score']} | π_risk={pi['score']} | cy={cy['score']} | σ_alert={sigma['score']}\n")
 

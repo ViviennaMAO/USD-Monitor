@@ -1,48 +1,48 @@
 {
   "rf": {
-    "score": 100.0,
-    "signal": "USD 看多",
+    "score": 60.5,
+    "signal": "混合信号",
     "sub_factors": [
       {
         "label": "Fed vs ECB 利差",
         "weight_label": "57%",
-        "value": "+nan%",
-        "score": 100.0,
-        "direction": "negative"
+        "value": "+0.64%",
+        "score": 44.0,
+        "direction": "positive"
       },
       {
         "label": "Fed vs BOJ 利差",
         "weight_label": "14%",
-        "value": "+nan%",
-        "score": 100.0,
-        "direction": "negative"
+        "value": "+3.39%",
+        "score": 89.8,
+        "direction": "positive"
       },
       {
         "label": "Fed vs BOE 利差",
         "weight_label": "12%",
-        "value": "+nan%",
-        "score": 100.0,
+        "value": "+-0.61%",
+        "score": 23.2,
         "direction": "negative"
       },
       {
         "label": "实际利率 (10Y-BEI)",
         "weight_label": "10%",
-        "value": "nan%",
-        "score": 100.0,
-        "direction": "neutral"
+        "value": "1.92%",
+        "score": 73.0,
+        "direction": "positive"
       },
       {
         "label": "利率路径 (2Y vs Fed)",
         "weight_label": "7%",
-        "value": "鸽派",
-        "score": 100.0,
-        "direction": "negative"
+        "value": "鹰派",
+        "score": 71.3,
+        "direction": "positive"
       }
     ],
     "data_rows": [
       {
         "label": "Fed Funds",
-        "value": "nan%"
+        "value": "3.64%"
       },
       {
         "label": "ECB Main",
@@ -66,27 +66,27 @@
       },
       {
         "label": "2Y Treasury",
-        "value": "nan%"
+        "value": "3.78%"
       }
     ]
   },
   "pi_risk": {
-    "score": 18.5,
+    "score": 22.1,
     "signal": "全球避险 · USD看多",
     "risk_type": "global_risk",
     "sub_factors": [
       {
         "label": "期限溢价 (10Y-2Y slope)",
         "weight_label": "40%",
-        "value": "+nanbps",
-        "score": 100.0,
+        "value": "+52bps",
+        "score": 82.7,
         "direction": "neutral"
       },
       {
         "label": "VIX",
         "weight_label": "35%",
-        "value": "19.7",
-        "score": 27.5,
+        "value": "19.4",
+        "score": 26.3,
         "direction": "neutral"
       },
       {
@@ -100,7 +100,7 @@
     "data_rows": [
       {
         "label": "10Y TP (slope approx)",
-        "value": "+nanbps"
+        "value": "+52bps"
       },
       {
         "label": "10Y Treasury",
@@ -108,11 +108,11 @@
       },
       {
         "label": "2Y Treasury",
-        "value": "nan%"
+        "value": "3.78%"
       },
       {
         "label": "VIX",
-        "value": "19.7"
+        "value": "19.4"
       },
       {
         "label": "MOVE",
@@ -120,67 +120,67 @@
       },
       {
         "label": "TP 分位数",
-        "value": "25%ile"
+        "value": "38%ile"
       }
     ],
-    "note": "VIX 19.7 + TP +nanbps → 全球避险(Flight to Safety)。 当前风险分类：✅ 全球风险 → USD看多。"
+    "note": "VIX 19.4 + TP +52bps → 全球避险(Flight to Safety)。 当前风险分类：✅ 全球风险 → USD看多。"
   },
   "cy": {
-    "score": 15.9,
-    "signal": "cy 支撑美元",
+    "score": 44.1,
+    "signal": "USD 中性",
     "sub_factors": [
       {
         "label": "黄金走势 (30d)",
         "weight_label": "50%",
-        "value": "-8.0%",
-        "score": 6.7,
+        "value": "-7.6%",
+        "score": 8.1,
         "direction": "positive"
       },
       {
         "label": "SOFR-IORB 利差",
         "weight_label": "25%",
-        "value": "+nanbps",
-        "score": 0.0,
+        "value": "-2bps",
+        "score": 60.0,
         "direction": "neutral"
       },
       {
         "label": "DXY 残差溢价",
         "weight_label": "25%",
-        "value": "+0.00pts",
-        "score": 50.0,
+        "value": "-13.41pts",
+        "score": 100.0,
         "direction": "neutral"
       }
     ],
     "data_rows": [
       {
         "label": "黄金价格",
-        "value": "$4,708"
+        "value": "$4,729"
       },
       {
         "label": "黄金 30d 趋势",
-        "value": "-8.0%"
+        "value": "-7.6%"
       },
       {
         "label": "SOFR",
-        "value": "nan%"
+        "value": "3.63%"
       },
       {
         "label": "IORB",
-        "value": "nan%"
+        "value": "3.65%"
       },
       {
         "label": "SOFR-IORB",
-        "value": "+nanbps"
+        "value": "-2bps"
       },
       {
         "label": "DXY 利率隐含值",
-        "value": "98.79"
+        "value": "112.06"
       },
       {
         "label": "DXY 超额溢价",
-        "value": "+0.00pts"
+        "value": "-13.41pts"
       }
     ],
-    "note": "黄金回落(-8.0% 30日)，cy影响温和。 SOFR-IORB +nanbps，资金市场基本健康。 DXY残差中性(+0.00pts)。"
+    "note": "黄金回落(-7.6% 30日)，cy影响温和。 SOFR-IORB -2bps，资金市场基本健康。 DXY残差-偏便宜(-13.41pts)。"
   }
 }

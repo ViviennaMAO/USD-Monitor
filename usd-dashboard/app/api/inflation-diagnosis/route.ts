@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getLiveData } from '@/lib/liveData'
+import { loadMacroSnapshot } from '@/lib/macroSnapshot'
+import { computeInflationDiagnosis } from '@/lib/scoring'
 import type { InflationDiagnosis } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -15,6 +16,15 @@ const fallback: InflationDiagnosis = {
 
 export async function GET() {
   try {
+    // Primary: pipeline macro_snapshot.json
+    const snap = await loadMacroSnapshot()
+    if (snap) {
+      const diagnosis = computeInflationDiagnosis(snap.fred, snap.fred.wageGrowth)
+      return NextResponse.json(diagnosis)
+    }
+
+    // Fallback: live-fetch
+    const { getLiveData } = await import('@/lib/liveData')
     const { inflationDiagnosis } = await getLiveData()
     return NextResponse.json(inflationDiagnosis)
   } catch (e) {

@@ -1,21 +1,21 @@
 {
-  "score": 17.8,
+  "score": 16.6,
   "alert_level": "calm",
-  "push_count": 3,
-  "suppress_count": 2,
+  "push_count": 4,
+  "suppress_count": 3,
   "net_direction": "expansion",
-  "summary": "推升因子(3个，含VVIX/VIX偏高)超过压制因子(2个)，整体偏向波动率扩张方向。 油价冲击归因：混合",
+  "summary": "推升因子(4个，含VVIX/VIX偏高)超过压制因子(3个)，整体偏向波动率扩张方向。 油价冲击归因：去美元化(USD−−)",
   "f1_rr": {
-    "value": 0.0,
-    "zscore": 0.0,
-    "percentile": 100.0,
-    "score": 0.0,
+    "value": -1.5,
+    "zscore": 0.08,
+    "percentile": 51.2,
+    "score": 3.1,
     "direction": "neutral"
   },
   "f2_residual": {
-    "value": 0.0,
-    "zscore": 0.0,
-    "score": 0.0,
+    "value": -13.411,
+    "zscore": -0.0,
+    "score": 0.1,
     "direction": "neutral"
   },
   "f3_ovx": {
@@ -26,17 +26,17 @@
   },
   "f4_vvix_vix": {
     "vvix": 98.73,
-    "vix": 19.69,
-    "value": 5.01,
-    "score": 67.1,
+    "vix": 19.37,
+    "value": 5.1,
+    "score": 69.9,
     "direction": "push"
   },
   "f5_vxn_vix": {
-    "vix": 19.69,
+    "vix": 19.37,
     "vxn": 23.58,
-    "gap": 3.89,
+    "gap": 4.21,
     "trigger": false,
-    "score": 64.8,
+    "score": 70.2,
     "direction": "latent_push"
   },
   "f6_vxhyg": {
@@ -52,27 +52,27 @@
     "direction": "suppress"
   },
   "f8_rr_residual": {
-    "composite_z": 0.0,
+    "composite_z": 0.08,
     "is_resonance": false,
-    "score": 0.0,
+    "score": 2.6,
     "direction": "neutral"
   },
   "f9_stagflation": {
     "ovx": 76.77,
-    "tips": NaN,
-    "score": 26.8,
+    "tips": 1.92,
+    "score": 6.2,
     "direction": "neutral"
   },
   "f10_tail_directional": {
-    "value": 0.0,
-    "score": 0.0,
-    "direction": "neutral"
+    "value": 7.65,
+    "score": 100.0,
+    "direction": "push"
   },
   "f11_tech_spillover": {
-    "gap": 3.89,
-    "spillover": 2.54,
+    "gap": 4.21,
+    "spillover": 2.75,
     "trigger": false,
-    "score": 50.7,
+    "score": 54.9,
     "direction": "neutral"
   },
   "f12_credit_repair": {
@@ -82,14 +82,14 @@
     "direction": "neutral"
   },
   "f13_oil_shock_type": {
-    "shock_type": "mixed",
+    "shock_type": "dedollarize",
     "ovx": 76.77,
     "spy_weak": false,
     "bei_rising": false,
     "gold_vol_up": true,
-    "dxy_residual": 0.0,
-    "score": 45.0,
-    "direction": "neutral",
-    "usd_mult": 0.0
+    "dxy_residual": -13.411,
+    "score": 15.0,
+    "direction": "suppress",
+    "usd_mult": -1.0
   }
 }

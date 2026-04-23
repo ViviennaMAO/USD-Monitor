@@ -1,11 +1,11 @@
 {
-  "price": 98.793,
-  "change_1d": 0.203,
-  "change_1d_pct": 0.206,
+  "price": 98.653,
+  "change_1d": 0.063,
+  "change_1d_pct": 0.064,
   "high_52w": 100.51,
   "low_52w": 98.05,
-  "real_rate": NaN,
-  "sofr": NaN,
+  "real_rate": 1.92,
+  "sofr": 3.63,
   "history": [
     {
       "date": "2026-03-12",
@@ -125,7 +125,7 @@
     },
     {
       "date": "2026-04-23",
-      "price": 98.792
+      "price": 98.658
     }
   ]
 }

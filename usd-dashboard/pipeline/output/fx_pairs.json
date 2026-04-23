@@ -3,22 +3,22 @@
     {
       "symbol": "DXY",
       "label": "DXY Index",
-      "price": 98.79,
-      "change_pct": 0.2,
+      "price": 98.65,
+      "change_pct": 0.07,
       "signal": "NEUTRAL"
     },
     {
       "symbol": "EURUSD",
       "label": "EUR/USD",
-      "price": 1.1685,
-      "change_pct": -0.5,
+      "price": 1.1695,
+      "change_pct": -0.41,
       "signal": "BEARISH"
     },
     {
       "symbol": "USDJPY",
       "label": "USD/JPY",
-      "price": 159.7,
-      "change_pct": 0.21,
+      "price": 159.52,
+      "change_pct": 0.11,
       "signal": "NEUTRAL"
     },
     {
@@ -31,7 +31,7 @@
     {
       "symbol": "USDMXN",
       "label": "USD/MXN",
-      "price": 17.4,
+      "price": 17.36,
       "change_pct": 0.0,
       "signal": "NEUTRAL"
     }
@@ -75,9 +75,9 @@
     },
     {
       "date": "2026-04-23",
-      "eurusd": 1.1685,
-      "usdjpy": 159.7,
-      "dxy": 98.79
+      "eurusd": 1.1696,
+      "usdjpy": 159.54,
+      "dxy": 98.66
     }
   ]
 }

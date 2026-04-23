@@ -3,8 +3,8 @@
   "cip_basis": -18.5,
   "eur_long": 12.4,
   "jpy_long": -8.2,
-  "dxy_rate_divergence": 0.0,
-  "sofr": NaN,
+  "dxy_rate_divergence": -13.41,
+  "sofr": 3.63,
   "estr": 2.9,
   "note": "对冲传导效率中等。CIP基差轻度偏负，反映美元短端融资压力。资管机构EUR持有多头，JPY净空头维持。"
 }
