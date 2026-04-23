@@ -9,7 +9,8 @@ from xgboost import XGBRegressor
 from scipy.stats import spearmanr
 
 from config_v2 import (
-    FACTOR_COLS, FACTOR_DISPLAY, FACTOR_SHORT_IDS,
+    ALL_FACTOR_COLS_PRUNED as FACTOR_COLS,
+    FACTOR_DISPLAY, ALL_SHORT_IDS as FACTOR_SHORT_IDS,
     XGB_PARAMS, FORWARD_DAYS, TRAIN_END, OUTPUT_DIR,
     HORIZONS,
 )

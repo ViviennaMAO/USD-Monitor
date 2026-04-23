@@ -1,0 +1,83 @@
+{
+  "pairs": [
+    {
+      "symbol": "DXY",
+      "label": "DXY Index",
+      "price": 98.79,
+      "change_pct": 0.2,
+      "signal": "NEUTRAL"
+    },
+    {
+      "symbol": "EURUSD",
+      "label": "EUR/USD",
+      "price": 1.1685,
+      "change_pct": -0.5,
+      "signal": "BEARISH"
+    },
+    {
+      "symbol": "USDJPY",
+      "label": "USD/JPY",
+      "price": 159.7,
+      "change_pct": 0.21,
+      "signal": "NEUTRAL"
+    },
+    {
+      "symbol": "USDCNY",
+      "label": "USD/CNY",
+      "price": 6.8341,
+      "change_pct": 0.0,
+      "signal": "NEUTRAL"
+    },
+    {
+      "symbol": "USDMXN",
+      "label": "USD/MXN",
+      "price": 17.4,
+      "change_pct": 0.0,
+      "signal": "NEUTRAL"
+    }
+  ],
+  "trend": [
+    {
+      "date": "2026-04-15",
+      "eurusd": 1.1799,
+      "usdjpy": 158.79,
+      "dxy": 98.06
+    },
+    {
+      "date": "2026-04-16",
+      "eurusd": 1.1809,
+      "usdjpy": 158.81,
+      "dxy": 98.22
+    },
+    {
+      "date": "2026-04-17",
+      "eurusd": 1.1783,
+      "usdjpy": 159.2,
+      "dxy": 98.1
+    },
+    {
+      "date": "2026-04-20",
+      "eurusd": 1.1741,
+      "usdjpy": 159.16,
+      "dxy": 98.05
+    },
+    {
+      "date": "2026-04-21",
+      "eurusd": 1.1784,
+      "usdjpy": 158.84,
+      "dxy": 98.41
+    },
+    {
+      "date": "2026-04-22",
+      "eurusd": 1.1744,
+      "usdjpy": 159.37,
+      "dxy": 98.59
+    },
+    {
+      "date": "2026-04-23",
+      "eurusd": 1.1685,
+      "usdjpy": 159.7,
+      "dxy": 98.79
+    }
+  ]
+}

@@ -48,7 +48,7 @@ def run():
     print("[4/6] Scoring cy...")
     cy = score_cy(data)
 
-    print("[5/6] Scoring σ_alert (12 factors)...")
+    print("[5/6] Scoring σ_alert (13 factors)...")
     sigma = score_sigma_alert(data)
     rr_z  = sigma.get("rr_zscore", 0.0)
 

@@ -1,35 +1,38 @@
 {
-  "date": "2026-04-13",
-  "prediction": -0.7792,
-  "signal_grade": "Sell",
+  "date": "2026-04-23",
+  "prediction": 0.0902,
+  "signal_grade": "Neutral",
   "regime": {
-    "regime": "中性·Trending",
-    "regime_en": "Neutral·Trending",
-    "multiplier": 0.89,
-    "confidence": 0.5,
-    "risk_off_score": 4.2,
+    "regime": "通缩·Trending",
+    "regime_en": "Deflation·Trending",
+    "multiplier": 1.1,
+    "confidence": 0.56,
+    "risk_off_score": 3.7,
     "risk_on_score": 0.0,
     "layer1": {
-      "quadrant": "Neutral",
-      "quadrant_cn": "中性",
-      "quad_mult": 0.85,
+      "quadrant": "Deflation",
+      "quadrant_cn": "通缩",
+      "quad_mult": 1.0,
       "fed_cycle": "Neutral",
       "fed_adj": 0.0,
-      "multiplier": 0.85
+      "multiplier": 1.0
     },
     "layer2": {
       "hmm_state": "Neutral",
-      "hmm_confidence": 0.5,
+      "hmm_confidence": 0.56,
       "liqvol_regime": "Trending",
       "adj_factor": 1.05
     },
     "layer3": {
-      "overlay_delta": 0.0,
-      "events": [],
+      "overlay_delta": 0.05,
+      "events": [
+        "rate_shock:expectation(+0.10)",
+        "smile:mild_risk_on(-0.05)"
+      ],
       "changepoint_detected": false,
-      "smile_type": "neutral"
+      "smile_type": "mild_risk_on"
     },
     "version": "2.0-usd"
   },
-  "dxy_price": 98.65
+  "dxy_price": 98.59
 }

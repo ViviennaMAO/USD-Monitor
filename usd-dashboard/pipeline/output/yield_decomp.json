@@ -1,0 +1,10 @@
+{
+  "nominal_10y": 4.3,
+  "real_rate": NaN,
+  "bei_10y": NaN,
+  "term_premium": NaN,
+  "driver": "real_rate",
+  "bei_5y": NaN,
+  "fwd5y5y": 2.15,
+  "note": "当前10Y收益率4.30%由实际利率主导。BEI通胀预期nan%，5Y5Y远期通胀锚定2.15%，期限溢价+nanbps。"
+}

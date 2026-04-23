@@ -18,7 +18,7 @@ TRAIN_END = "2025-09-30"
 FORWARD_DAYS = 20          # 20-day forward return target
 ZSCORE_WINDOW = 252         # 1 year rolling Z-score
 ZSCORE_CLIP = 5.0           # Clip Z-scores to [-5, 5]
-CACHE_TTL_HOURS = 20        # Refetch if cache older than this
+CACHE_TTL_HOURS = 999       # Refetch if cache older than this (999=use cache, Yahoo rate-limited)
 
 # ── Training Strategy (v2: regime-aware) ──────────────────────────────────
 # Addresses 3.1 (CV expanding window) + 3.3 (IC decay via regime drift)
@@ -74,10 +74,36 @@ SIGMA_FACTOR_COLS = [
     "σ10_TailRisk",          # VVIX/VIX × RR tail directional
     "σ11_TechSpillover",     # VXN-VIX × QQQ/SPY divergence
     "σ12_CreditRepair",      # VXHYG × CDS credit repair signal
+    "σ13_OilShockType",      # Oil shock attribution: demand(+1) vs supply/geo(-0.5) vs dedollarize(-1)
 ]
 
 # Combined factor universe for training
-ALL_FACTOR_COLS = FACTOR_COLS + SIGMA_FACTOR_COLS  # 22 total
+ALL_FACTOR_COLS = FACTOR_COLS + SIGMA_FACTOR_COLS  # 23 total (pre-pruning)
+
+# ── Factor Deduplication & Orthogonalization (P2 fix) ────────────────────
+# Addresses 7 high-correlation warnings from model_health.json.
+#
+# DROP (ρ > 0.95, essentially duplicates — keeping the one with better IC):
+#   σ9_Stagflation  (ρ=0.989 vs σ3_OVX, IC: +0.34 vs +0.36) → drop σ9
+#   σ10_TailRisk    (ρ=0.980 vs σ2_FxRateResidual)           → drop σ10
+#
+# ORTHOGONALIZE (0.75 < ρ < 0.95, rolling OLS residualization):
+#   σ4_VVIX_VIX ⊥ F4_VIX         (ρ=-0.89)  "vol-of-vol premium beyond VIX level"
+#   F7_LongYieldDelta ⊥ F2_RealRateDelta (ρ=+0.83)  "nominal vs real rate delta"
+#   F6_YCMomentum ⊥ F3_TermSpread       (ρ=+0.78)  "curve momentum beyond slope"
+#   σ1_RiskReversal ⊥ σ2_FxRateResidual (ρ=+0.78)  "directional RR beyond residual"
+FACTOR_DROP = ["σ9_Stagflation", "σ10_TailRisk"]
+FACTOR_ORTHO_PAIRS = [
+    # (dependent, regressor) — dependent = dependent ⊥ regressor
+    ("σ4_VVIX_VIX",        "F4_VIX"),
+    ("F7_LongYieldDelta",  "F2_RealRateDelta"),
+    ("F6_YCMomentum",      "F3_TermSpread"),
+    ("σ1_RiskReversal",    "σ2_FxRateResidual"),
+]
+FACTOR_ORTHO_WINDOW = 252  # 1-year rolling OLS
+
+# Pruned factor list (21 factors) — used for training and inference
+ALL_FACTOR_COLS_PRUNED = [f for f in ALL_FACTOR_COLS if f not in FACTOR_DROP]
 
 FACTOR_DISPLAY = {
     "F1_RateDiff":        "利率差 (Fed−ECB)",
@@ -103,6 +129,7 @@ FACTOR_DISPLAY = {
     "σ10_TailRisk":       "尾部风险 (VVIX/VIX×RR)",
     "σ11_TechSpillover":  "科技溢出 (VXN-VIX×β)",
     "σ12_CreditRepair":   "信用修复 (VXHYG×CDS)",
+    "σ13_OilShockType":   "油价冲击归因 (供给/需求/去美元化)",
 }
 
 # Short IDs for API (matches ic_tracking_F1.json etc.)

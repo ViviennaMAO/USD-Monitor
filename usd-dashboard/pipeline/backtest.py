@@ -11,12 +11,13 @@ from xgboost import XGBRegressor
 from scipy.stats import spearmanr
 
 from config_v2 import (
-    FACTOR_COLS, MODEL_PATH, OUTPUT_DIR, TRAIN_END,
+    ALL_FACTOR_COLS_PRUNED as FACTOR_COLS, MODEL_PATH, OUTPUT_DIR, TRAIN_END,
     FORWARD_DAYS, SIGNAL_THRESHOLDS, ATR_STOP_MULT,
     ACCOUNT_EQUITY, MIN_HOLD_DAYS, TRADE_COST_BPS,
 )
 from kelly import compute_kelly_risk, position_size
 from circuit_breaker import CircuitBreaker, ic_signal_scale
+from signal_router import route_normal, _ml_direction, ML_DOMINANT_IC
 
 
 class NaNSafeEncoder(json.JSONEncoder):

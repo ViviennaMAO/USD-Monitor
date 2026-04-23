@@ -8,6 +8,7 @@ import pandas as pd
 
 from config_v2 import (
     FACTOR_COLS, SIGMA_FACTOR_COLS, ALL_FACTOR_COLS,
+    ALL_FACTOR_COLS_PRUNED, FACTOR_DROP, FACTOR_ORTHO_PAIRS, FACTOR_ORTHO_WINDOW,
     ZSCORE_WINDOW, ZSCORE_CLIP, FORWARD_DAYS,
 )
 
@@ -204,6 +205,57 @@ def _build_sigma_factors(df: pd.DataFrame, out: pd.DataFrame) -> pd.DataFrame:
     credit_repair = -hyg_rv_chg * (1 - bbb_norm)  # Falling HY vol + low spreads = repair
     out["σ12_CreditRepair"] = rolling_zscore(credit_repair)
 
+    # ── σ13: Oil Shock Type Attribution ──────────────────────────────
+    # Classifies WHY oil volatility is elevated:
+    #   demand shock  (OVX↑ + SPY↑ + curve steepen) → USD bullish (+1)
+    #   supply/geo    (OVX↑ + SPY↓ + BEI spike)     → USD initially bid then bearish (-0.5)
+    #   dedollarize   (OVX↑ + GVZ↑ + DXY residual↓) → USD bearish (-1)
+    #   none          (OVX calm)                      → neutral (0)
+    #
+    # Implementation: continuous signal via signed interaction terms,
+    # not discrete labels — preserves gradient for XGBoost.
+    ovx_z = rolling_zscore(ovx)
+    spy_ret_20d = spy.pct_change(20)
+    gvz_z = rolling_zscore(gvz)
+    bei_mom_20d = tips.diff(20)  # TIPS change as inflation momentum proxy
+
+    # Gate: only active when OVX is elevated (z > 0.5)
+    ovx_gate = (ovx_z.clip(lower=0) - 0.5).clip(lower=0) / 1.5  # 0 when z≤0.5, ramps to 1 at z=2
+
+    # Demand component: OVX high + equities rising + curve steepening
+    # Positive values = demand-driven oil strength = USD bullish
+    term_spread_raw = df.get("DGS10", pd.Series(0.0, index=df.index)) - df.get("DGS2", pd.Series(0.0, index=df.index))
+    ts_mom_20d = term_spread_raw.diff(20)
+    demand_signal = (
+        spy_ret_20d.clip(-0.10, 0.10) * 10  # scale to ~[-1, +1]
+        + _norm(ts_mom_20d.fillna(0), -0.5, 0.5) * 2 - 1  # steepening = +1, flattening = -1
+    )
+
+    # Supply/geo component: OVX high + equities falling + inflation spiking
+    # Negative values = supply shock = USD bearish (after initial safe-haven bid)
+    bei_spike = rolling_zscore(bei_mom_20d)
+    supply_signal = -(
+        (-spy_ret_20d).clip(lower=0) * 10  # equity weakness magnitude
+        * bei_spike.clip(lower=0)           # inflation acceleration
+    )
+
+    # Dedollarization component: OVX high + gold vol rising + DXY weak vs rates
+    # Negative values = petrodollar recycling disruption = USD bearish
+    dxy_resid_z = rolling_zscore(dxy_resid)
+    dedollar_signal = -(
+        gvz_z.clip(lower=0)             # gold vol elevated
+        * (-dxy_resid_z).clip(lower=0)   # DXY weaker than rates imply
+    )
+
+    # Composite: weighted sum, gated by OVX level
+    oil_shock_raw = ovx_gate * (
+        0.40 * demand_signal
+        + 0.35 * supply_signal
+        + 0.25 * dedollar_signal
+    )
+
+    out["σ13_OilShockType"] = rolling_zscore(oil_shock_raw)
+
     return out
 
 
@@ -325,9 +377,42 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
         if col in out.columns:
             out[col] = out[col].fillna(0.0)
 
+    # ── Factor Deduplication & Orthogonalization (P2) ─────────────────
+    # Step 1: Drop near-duplicate factors (ρ > 0.95)
+    dropped = []
+    for col in FACTOR_DROP:
+        if col in out.columns:
+            dropped.append(col)
+    if dropped:
+        print(f"[features] Dropping {len(dropped)} redundant factors: {[c.split('_')[0] for c in dropped]}")
+
+    # Step 2: Orthogonalize high-correlation pairs (0.75 < ρ < 0.95)
+    # Uses rolling OLS: dependent_ortho = dependent - β × regressor
+    ortho_count = 0
+    for dep_col, reg_col in FACTOR_ORTHO_PAIRS:
+        if dep_col in out.columns and reg_col in out.columns:
+            dep = out[dep_col]
+            reg = out[reg_col]
+            ortho_result = _orthogonalize_rolling(dep, reg, window=FACTOR_ORTHO_WINDOW)
+            # Replace with orthogonalized version, re-zscore to maintain [-5,5] range
+            ortho_z = rolling_zscore(ortho_result.fillna(0))
+            out[dep_col] = ortho_z.fillna(0.0)
+            ortho_count += 1
+            # Report correlation reduction
+            valid = dep.notna() & reg.notna() & ortho_z.notna()
+            if valid.sum() > 100:
+                rho_before = dep[valid].corr(reg[valid])
+                rho_after = ortho_z[valid].corr(reg[valid])
+                print(f"  {dep_col.split('_')[0]} ⊥ {reg_col.split('_')[0]}: "
+                      f"rho {rho_before:+.3f} -> {rho_after:+.3f}")
+
+    if ortho_count:
+        print(f"[features] Orthogonalized {ortho_count} factor pairs")
+
     print(f"[features] Built {len(ALL_FACTOR_COLS)} factors ({len(FACTOR_COLS)} fundamental + {len(SIGMA_FACTOR_COLS)} σ_alert), {len(out)} rows")
+    print(f"[features] After pruning: {len(ALL_FACTOR_COLS_PRUNED)} active factors (dropped {len(FACTOR_DROP)})")
     print(f"[features] Factor coverage:")
-    for col in ALL_FACTOR_COLS:
+    for col in ALL_FACTOR_COLS_PRUNED:
         if col in out.columns:
             non_zero = (out[col] != 0).sum()
             print(f"  {col}: {non_zero} non-zero ({non_zero/len(out)*100:.0f}%)")

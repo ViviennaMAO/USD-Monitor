@@ -1,5 +1,5 @@
 """
-USD Monitor — Unified Signal Router (P0)
+USD Monitor — Unified Signal Router (P0 + v2 IC-Adaptive)
 
 Resolves the dual-engine conflict between:
   - TypeScript γ scoring engine (rule-based, 0-100)
@@ -8,8 +8,16 @@ Resolves the dual-engine conflict between:
 Architecture:
   1. Compute conflict score between γ and ML signals
   2. Route through regime-aware decision matrix
-  3. Generate SHAP conflict diagnosis when signals diverge
-  4. Output unified_signal.json for Dashboard + Backtest
+  3. **v2**: IC-adaptive routing — when ML is healthy (IC > 0.10),
+     ML gets dominant weight; when degraded, γ leads
+  4. Generate SHAP conflict diagnosis when signals diverge
+  5. Output unified_signal.json for Dashboard + Backtest
+
+v2 Changes (2026-04-16):
+  - IC-adaptive credibility: ML-dominant when IC > 0.10, balanced when 0-0.10, γ-dominant when IC < 0
+  - Conflict option direction follows ML (not γ) when ML IC > 0.10
+  - γ=neutral + ML signal → size 75% (was 50%) when ML healthy
+  - Added model_health parameter to route_signal()
 
 References: Roundtable discussion 2026-04-08
   - Dalio: 3×3 credibility matrix
@@ -132,10 +140,20 @@ def determine_regime_state(
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# 3×3 Credibility Matrix (Dalio)
+# IC-Adaptive Model Health Thresholds
 # ══════════════════════════════════════════════════════════════════════════
 
-# (gamma_direction, ml_direction) → {action, size_mult, stop_mult}
+ML_DOMINANT_IC = 0.10       # Above this: ML leads routing decisions
+ML_BALANCED_IC = 0.00       # Above this: equal weight γ/ML
+                            # Below 0: γ leads (ML degraded)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# 3×3 Credibility Matrices (Dalio) — IC-Adaptive
+# ══════════════════════════════════════════════════════════════════════════
+
+# BASELINE matrix: (gamma_direction, ml_direction) → {action, size_mult, stop_mult}
+# Used when IC is between 0 and ML_DOMINANT_IC (balanced mode)
 CREDIBILITY_MATRIX = {
     # Full consensus — maximum conviction
     ("bull",    "buy"):     {"action": "LONG",  "size_mult": 1.00, "stop_mult": 1.0},
@@ -151,36 +169,107 @@ CREDIBILITY_MATRIX = {
     ("neutral", "neutral"): {"action": "FLAT",  "size_mult": 0.00, "stop_mult": 1.0},
 
     # Contradiction — Taleb's "conflict option"
-    # NOT flat: tiny position + wide stop = asymmetric payoff
     ("bull",    "sell"):    {"action": "CONFLICT_OPTION", "size_mult": 0.25, "stop_mult": 1.5},
     ("bear",    "buy"):     {"action": "CONFLICT_OPTION", "size_mult": 0.25, "stop_mult": 1.5},
 }
 
+# ML-DOMINANT matrix: when IC > ML_DOMINANT_IC
+# Key diffs: ML direction gets priority, sizes boosted when ML has signal
+CREDIBILITY_MATRIX_ML_DOM = {
+    # Full consensus — max conviction (same)
+    ("bull",    "buy"):     {"action": "LONG",  "size_mult": 1.00, "stop_mult": 1.0},
+    ("bear",    "sell"):    {"action": "SHORT", "size_mult": 1.00, "stop_mult": 1.0},
 
-def route_normal(gamma_score: float, ml_pred: float) -> dict:
-    """Normal regime: 3×3 credibility matrix."""
+    # γ agrees, ML neutral → smaller position (γ alone not enough)
+    ("bull",    "neutral"): {"action": "LONG",  "size_mult": 0.30, "stop_mult": 1.0},
+    ("bear",    "neutral"): {"action": "SHORT", "size_mult": 0.30, "stop_mult": 1.0},
+
+    # ML has signal, γ neutral → ML leads, boosted size (was 0.50)
+    ("neutral", "buy"):     {"action": "LONG",  "size_mult": 0.75, "stop_mult": 1.0},
+    ("neutral", "sell"):    {"action": "SHORT", "size_mult": 0.75, "stop_mult": 1.0},
+
+    # No signal
+    ("neutral", "neutral"): {"action": "FLAT",  "size_mult": 0.00, "stop_mult": 1.0},
+
+    # Contradiction — follow ML direction (not γ) when ML is healthy
+    ("bull",    "sell"):    {"action": "ML_OVERRIDE", "size_mult": 0.40, "stop_mult": 1.3},
+    ("bear",    "buy"):     {"action": "ML_OVERRIDE", "size_mult": 0.40, "stop_mult": 1.3},
+}
+
+# γ-DOMINANT matrix: when IC < 0 (ML degraded)
+CREDIBILITY_MATRIX_GAMMA_DOM = {
+    # Full consensus — still trust
+    ("bull",    "buy"):     {"action": "LONG",  "size_mult": 0.80, "stop_mult": 1.0},
+    ("bear",    "sell"):    {"action": "SHORT", "size_mult": 0.80, "stop_mult": 1.0},
+
+    # γ has signal, ML anything → follow γ at reduced size
+    ("bull",    "neutral"): {"action": "LONG",  "size_mult": 0.50, "stop_mult": 1.2},
+    ("bear",    "neutral"): {"action": "SHORT", "size_mult": 0.50, "stop_mult": 1.2},
+
+    # ML has signal, γ neutral → distrust ML when IC < 0
+    ("neutral", "buy"):     {"action": "FLAT",  "size_mult": 0.00, "stop_mult": 1.0},
+    ("neutral", "sell"):    {"action": "FLAT",  "size_mult": 0.00, "stop_mult": 1.0},
+
+    # No signal
+    ("neutral", "neutral"): {"action": "FLAT",  "size_mult": 0.00, "stop_mult": 1.0},
+
+    # Contradiction — follow γ (ML is wrong), but small size
+    ("bull",    "sell"):    {"action": "LONG",  "size_mult": 0.25, "stop_mult": 1.5},
+    ("bear",    "buy"):     {"action": "SHORT", "size_mult": 0.25, "stop_mult": 1.5},
+}
+
+
+def _select_matrix(rolling_ic: float) -> tuple:
+    """Select credibility matrix based on rolling IC."""
+    if rolling_ic >= ML_DOMINANT_IC:
+        return CREDIBILITY_MATRIX_ML_DOM, "ml_dominant"
+    elif rolling_ic >= ML_BALANCED_IC:
+        return CREDIBILITY_MATRIX, "balanced"
+    else:
+        return CREDIBILITY_MATRIX_GAMMA_DOM, "gamma_dominant"
+
+
+def route_normal(gamma_score: float, ml_pred: float, rolling_ic: float = 0.10) -> dict:
+    """Normal regime: IC-adaptive 3×3 credibility matrix."""
     g_dir = _gamma_direction(gamma_score)
     m_dir = _ml_direction(ml_pred)
 
-    entry = CREDIBILITY_MATRIX.get((g_dir, m_dir), {"action": "FLAT", "size_mult": 0, "stop_mult": 1.0})
+    matrix, matrix_mode = _select_matrix(rolling_ic)
+    entry = matrix.get((g_dir, m_dir), {"action": "FLAT", "size_mult": 0, "stop_mult": 1.0})
 
-    # For conflict option, direction follows γ (López de Prado:
-    # "at regime breaks, causal model is more stable than momentum")
-    if entry["action"] == "CONFLICT_OPTION":
-        direction = "LONG" if gamma_score >= 50 else "SHORT"
-    elif entry["action"] in ("LONG", "SHORT"):
-        direction = entry["action"]
+    # Resolve direction
+    action = entry["action"]
+    if action == "ML_OVERRIDE":
+        # ML-dominant: follow ML direction in conflict
+        direction = "LONG" if ml_pred > 0 else "SHORT"
+    elif action == "CONFLICT_OPTION":
+        # Balanced mode: conflict option direction depends on IC
+        if rolling_ic >= ML_DOMINANT_IC:
+            direction = "LONG" if ml_pred > 0 else "SHORT"
+        else:
+            direction = "LONG" if gamma_score >= 50 else "SHORT"
+    elif action in ("LONG", "SHORT"):
+        direction = action
     else:
         direction = "FLAT"
+
+    # Determine source label
+    m_dir_as_gamma = m_dir.replace("buy", "bull").replace("sell", "bear")
+    if g_dir == m_dir_as_gamma:
+        source = "consensus"
+    elif action in ("ML_OVERRIDE", "CONFLICT_OPTION"):
+        source = "conflict_option"
+    elif entry["size_mult"] > 0:
+        source = "partial_consensus"
+    else:
+        source = "no_signal"
 
     return {
         "action": direction,
         "size_mult": entry["size_mult"],
         "stop_mult": entry["stop_mult"],
-        "source": "consensus" if g_dir == m_dir.replace("buy", "bull").replace("sell", "bear") else
-                  "partial_consensus" if entry["size_mult"] == 0.5 else
-                  "conflict_option" if entry["action"] == "CONFLICT_OPTION" else
-                  "no_signal",
+        "source": source,
+        "matrix_mode": matrix_mode,
         "gamma_dir": g_dir,
         "ml_dir": m_dir,
     }
@@ -199,18 +288,29 @@ def route_policy_shock(gamma_score: float) -> dict:
     }
 
 
-def route_transition(gamma_score: float, ml_pred: float) -> dict:
+def route_transition(gamma_score: float, ml_pred: float, rolling_ic: float = 0.10) -> dict:
     """
     Transition regime (conflict > 0.6): Taleb's conflict option.
     Tiny position + wide stop = buying optionality on regime resolution.
-    Direction follows γ (causal model more stable at regime breaks).
+
+    v2: Direction follows ML when IC > 0.10 (ML is reliable even during transitions).
+    Falls back to γ when ML is degraded.
     """
     g_dir = _gamma_direction(gamma_score)
+
+    # v2: IC-adaptive direction
+    if rolling_ic >= ML_DOMINANT_IC:
+        direction = "LONG" if ml_pred > 0 else "SHORT"
+        source = "conflict_option_ml"
+    else:
+        direction = "LONG" if gamma_score >= 50 else "SHORT"
+        source = "conflict_option_gamma"
+
     return {
-        "action": "LONG" if gamma_score >= 50 else "SHORT",
+        "action": direction,
         "size_mult": 0.25,
         "stop_mult": 1.5,     # ATR × 5.25 (= 3.5 × 1.5)
-        "source": "conflict_option",
+        "source": source,
         "gamma_dir": g_dir,
         "ml_dir": _ml_direction(ml_pred),
     }
@@ -329,6 +429,7 @@ def route_signal(
     date: str = "",
     calibration=None,
     orthogonalization=None,
+    rolling_ic: float = 0.10,
 ) -> dict:
     """
     Unified Signal Router — merges γ and ML into a single trading decision.
@@ -344,13 +445,18 @@ def route_signal(
         date: date string
         calibration: P1 Bayesian calibration result (optional)
         orthogonalization: P1 OLS orthogonalization result (optional)
+        rolling_ic: float, 60-day rolling Spearman IC of ML model (v2)
 
     Returns:
         Unified signal dict → saved as unified_signal.json
     """
     print("=" * 60)
-    print("[router] Unified Signal Router (P0 + P1)")
+    print("[router] Unified Signal Router (P0 + P1 + v2 IC-Adaptive)")
     print("=" * 60)
+
+    # v2: Determine routing mode from IC
+    _, matrix_mode = _select_matrix(rolling_ic)
+    print(f"  Rolling IC: {rolling_ic:.3f} → matrix mode: {matrix_mode}")
 
     # ── P1: Orthogonalization ─────────────────────────────────────────────
     # Use orthogonalized ML if available (removes γ-redundant info)
@@ -405,18 +511,18 @@ def route_signal(
     regime_state = determine_regime_state(regime_result, conflict, vix_z)
     print(f"  Regime state: {regime_state}")
 
-    # ── Step 3: Route signal ─────────────────────────────────────────────
+    # ── Step 3: Route signal (v2: IC-adaptive) ─────────────────────────────
     if regime_state == "crisis":
         decision = route_crisis()
     elif regime_state == "policy_shock":
         decision = route_policy_shock(gamma_score)
     elif regime_state == "transition":
-        decision = route_transition(gamma_score, ml_for_routing)
+        decision = route_transition(gamma_score, ml_for_routing, rolling_ic=rolling_ic)
     else:
-        decision = route_normal(gamma_score, ml_for_routing)
+        decision = route_normal(gamma_score, ml_for_routing, rolling_ic=rolling_ic)
 
     print(f"  Decision: {decision['action']} (size={decision['size_mult']:.0%}, "
-          f"source={decision['source']})")
+          f"source={decision['source']}, matrix={decision.get('matrix_mode', 'n/a')})")
 
     # ── Step 4: Conflict diagnosis ───────────────────────────────────────
     diagnosis = diagnose_conflict(gamma_components, shap_factors, conflict)
@@ -452,11 +558,13 @@ def route_signal(
             "multiplier": regime_result.get("multiplier", 1.0),
         },
 
-        # Unified decision
+        # Unified decision (v2: IC-adaptive)
         "action": decision["action"],
         "size_mult": decision["size_mult"],
         "stop_mult": decision["stop_mult"],
         "signal_source": decision["source"],
+        "matrix_mode": decision.get("matrix_mode", "balanced"),
+        "rolling_ic": round(rolling_ic, 4),
 
         # Conflict diagnosis
         "diagnosis": diagnosis,

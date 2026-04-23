@@ -1,0 +1,95 @@
+{
+  "score": 17.8,
+  "alert_level": "calm",
+  "push_count": 3,
+  "suppress_count": 2,
+  "net_direction": "expansion",
+  "summary": "推升因子(3个，含VVIX/VIX偏高)超过压制因子(2个)，整体偏向波动率扩张方向。 油价冲击归因：混合",
+  "f1_rr": {
+    "value": 0.0,
+    "zscore": 0.0,
+    "percentile": 100.0,
+    "score": 0.0,
+    "direction": "neutral"
+  },
+  "f2_residual": {
+    "value": 0.0,
+    "zscore": 0.0,
+    "score": 0.0,
+    "direction": "neutral"
+  },
+  "f3_ovx": {
+    "value": 76.77,
+    "percentile": 88.8,
+    "score": 26.8,
+    "direction": "push"
+  },
+  "f4_vvix_vix": {
+    "vvix": 98.73,
+    "vix": 19.69,
+    "value": 5.01,
+    "score": 67.1,
+    "direction": "push"
+  },
+  "f5_vxn_vix": {
+    "vix": 19.69,
+    "vxn": 23.58,
+    "gap": 3.89,
+    "trigger": false,
+    "score": 64.8,
+    "direction": "latent_push"
+  },
+  "f6_vxhyg": {
+    "value": 6.57,
+    "change_pct": -91.83,
+    "score": 89.5,
+    "direction": "suppress"
+  },
+  "f7_gvz": {
+    "value": 27.09,
+    "change_pct": -7.57,
+    "score": 59.7,
+    "direction": "suppress"
+  },
+  "f8_rr_residual": {
+    "composite_z": 0.0,
+    "is_resonance": false,
+    "score": 0.0,
+    "direction": "neutral"
+  },
+  "f9_stagflation": {
+    "ovx": 76.77,
+    "tips": NaN,
+    "score": 26.8,
+    "direction": "neutral"
+  },
+  "f10_tail_directional": {
+    "value": 0.0,
+    "score": 0.0,
+    "direction": "neutral"
+  },
+  "f11_tech_spillover": {
+    "gap": 3.89,
+    "spillover": 2.54,
+    "trigger": false,
+    "score": 50.7,
+    "direction": "neutral"
+  },
+  "f12_credit_repair": {
+    "vxhyg_chg": -91.83,
+    "cds": 100.0,
+    "score": 25.0,
+    "direction": "neutral"
+  },
+  "f13_oil_shock_type": {
+    "shock_type": "mixed",
+    "ovx": 76.77,
+    "spy_weak": false,
+    "bei_rising": false,
+    "gold_vol_up": true,
+    "dxy_residual": 0.0,
+    "score": 45.0,
+    "direction": "neutral",
+    "usd_mult": 0.0
+  }
+}

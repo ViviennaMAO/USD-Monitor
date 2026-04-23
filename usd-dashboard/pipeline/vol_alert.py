@@ -123,19 +123,56 @@ def score_sigma_alert(data: dict) -> dict:
     f12 = min(100, credit_calm * 100)
     f12_dir = "suppress" if vxhyg_chg < -15 and cds_ig < 80 else "neutral"
 
+    # ── F13: Oil Shock Type Attribution ──────────────────────────────────────
+    # Classifies OVX elevation cause: demand(+) vs supply/geo(-) vs dedollarize(-)
+    # Uses real-time data already available in this function
+    ovx_elevated = ovx > 70  # OVX gate threshold for real-time
+    spy_weak_5d  = yahoo.get("spy_ret", 0.0) < -0.5  # SPY daily ret as proxy
+    bei_rising   = fred.get("bei10y", 2.33) > 2.50 and tips_1y > 2.0  # inflation momentum
+    gold_vol_up  = gvz > 22  # gold vol elevated
+
+    if not ovx_elevated:
+        f13_type = "none"
+        f13 = 50.0  # neutral
+        f13_dir = "neutral"
+        f13_usd_mult = 0.0
+    elif not spy_weak_5d and not gold_vol_up:
+        # Demand-driven: OVX up + equities OK + no gold panic
+        f13_type = "demand"
+        f13 = 75.0  # bullish for USD
+        f13_dir = "push"
+        f13_usd_mult = 1.0
+    elif spy_weak_5d and bei_rising:
+        # Supply/geo shock: OVX up + equities weak + inflation spiking
+        f13_type = "supply_geo"
+        f13 = 30.0  # bearish for USD (after initial safe-haven)
+        f13_dir = "suppress"
+        f13_usd_mult = -0.5
+    elif gold_vol_up and dxy_residual < -0.5:
+        # Dedollarization: OVX up + gold vol up + DXY weaker than rates imply
+        f13_type = "dedollarize"
+        f13 = 15.0  # most bearish for USD
+        f13_dir = "suppress"
+        f13_usd_mult = -1.0
+    else:
+        f13_type = "mixed"
+        f13 = 45.0
+        f13_dir = "neutral"
+        f13_usd_mult = 0.0
+
     # ── Layer weights ─────────────────────────────────────────────────────────
     direct_score    = 0.50 * f1 + 0.50 * f2
     cross_asset     = 0.30 * f3 + 0.25 * f4 + 0.20 * f5 + 0.15 * f6 + 0.10 * f7
-    composite_score = 0.30 * f8 + 0.25 * f9 + 0.20 * f10 + 0.15 * f11 + 0.10 * f12
+    composite_score = 0.25 * f8 + 0.20 * f9 + 0.15 * f10 + 0.15 * f11 + 0.10 * f12 + 0.15 * f13
 
-    suppress_dirs = [f6_dir, f7_dir, f12_dir]
+    suppress_dirs = [f6_dir, f7_dir, f12_dir, f13_dir]
     suppress_n    = sum(1 for d in suppress_dirs if d == "suppress")
     suppress_pen  = suppress_n * 5
 
     sigma = 0.30 * direct_score + 0.35 * cross_asset + 0.35 * composite_score
     sigma = round(float(np.clip(sigma - suppress_pen, 0, 100)), 1)
 
-    push_dirs = [f1_dir, f2_dir, f3_dir, f4_dir, f5_dir, f8_dir, f9_dir, f10_dir, f11_dir]
+    push_dirs = [f1_dir, f2_dir, f3_dir, f4_dir, f5_dir, f8_dir, f9_dir, f10_dir, f11_dir, f13_dir]
     push_n    = sum(1 for d in push_dirs if d in ("push", "latent_push"))
 
     if sigma >= 75 and push_n >= 5:
@@ -159,6 +196,7 @@ def score_sigma_alert(data: dict) -> dict:
             f"推升因子({push_n}个，含{'RR极端、' if abs(rr_zscore)>1 else ''}{'OVX高位、' if ovx>80 else ''}{'VVIX/VIX偏高' if vvix_vix>4.5 else ''})"
             f"{'超过' if push_n > suppress_n else '未超过'}压制因子({suppress_n}个)，"
             f"整体偏向波动率{'扩张' if net_dir == 'expansion' else '收缩'}方向。"
+            f"{(' 油价冲击归因：' + {'demand': '需求驱动(USD+)', 'supply_geo': '供给/地缘冲击(USD−)', 'dedollarize': '去美元化(USD−−)', 'mixed': '混合', 'none': '无冲击'}.get(f13_type, '')) if ovx_elevated else ''}"
         ),
         "f1_rr": {
             "value": round(rr_proxy, 3), "zscore": round(rr_zscore, 2),
@@ -207,6 +245,13 @@ def score_sigma_alert(data: dict) -> dict:
         "f12_credit_repair": {
             "vxhyg_chg": round(vxhyg_chg, 2), "cds": round(cds_ig, 1),
             "score": round(f12, 1), "direction": f12_dir,
+        },
+        "f13_oil_shock_type": {
+            "shock_type": f13_type, "ovx": round(ovx, 2),
+            "spy_weak": spy_weak_5d, "bei_rising": bei_rising,
+            "gold_vol_up": gold_vol_up, "dxy_residual": round(dxy_residual, 3),
+            "score": round(f13, 1), "direction": f13_dir,
+            "usd_mult": f13_usd_mult,
         },
         # For trend chart
         "rr_zscore": round(rr_zscore, 3),
